@@ -1,0 +1,98 @@
+* {
+    box-sizing: border-box !important;
+}
+
+/* Force autofill styling */
+.auth input:-webkit-autofill,
+.auth input:-webkit-autofill:hover,
+.auth input:-webkit-autofill:focus,
+.auth input:-webkit-autofill:active {
+    -webkit-text-fill-color: #3d3a3a !important; /* Ensures text remains black */
+    caret-color: #3d3a3a !important; /* Ensures blinking cursor is visible */
+    background-color: #fff !important; /* Forces white background */
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+    box-shadow: 0 0 0px 1000px #fff inset !important;
+    border: 1px solid #ccc !important; /* Optional: Adds a visible border */
+}
+
+/* Apply styles to all input fields */
+.auth input,
+.auth .form-control {
+    border: 1px solid #ccc !important; /* Optional: Adds a visible border */
+    background-color: #fff !important;
+    color: #3d3a3a !important;
+    appearance: none; /* Helps prevent browser styling interference */
+}
+
+/* Force text color */
+.auth label,
+.auth h1, .auth h2, .auth h3, .auth h4, .auth h5, .auth h6,
+.auth p {
+    color: #000 !important;
+}
+
+html, body {
+    /* overflow: hidden !important; */
+    margin: 0;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+[class*="primary"] {
+    background-color: #2257BF !important;
+    border-color: #034383 !important;
+}
+
+.container-fluid {
+    min-height: 100vh;
+}
+
+.section-height {
+    height: 95vh;
+}
+
+.bg-light {
+    background-color: rgba(0, 51, 102, .8) !important;
+}
+
+.logo {
+    width: 15rem;
+}
+
+@media only screen and (max-width: 998px) {
+    html, body {
+        font-size: 90% !important;
+        overflow-y: scroll;
+    }
+
+    .section-height {
+        height: 97vh !important;
+    }
+}
+
+@media only screen and (min-width: 767px){
+
+    html, body {
+        height: 100%;
+    }
+}
+
+@media only screen and (min-width: 600px) and (max-width: 768px){
+    html {
+        font-size: .7em;
+    }
+}
+
+
+@media only screen and (max-height: 500px){
+    html {
+        font-size: 60% !important;
+    }
+
+    .section-height {
+        display: block;
+        /* max-height: 320px !important; */
+    }
+}
