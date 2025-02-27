@@ -20,9 +20,13 @@ const _nav = [
     },
     {
       component: CNavItem,
-      name: 'Profile',
+      name: 'Basic Information',
       to: '/user-profile',
       icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+      badge: {
+        color: 'warning',
+        text: '20%',
+      },
     },
     {
       component: CNavItem,

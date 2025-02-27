@@ -7,7 +7,7 @@ const Users = React.lazy(() => import('./views/users/Users'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
-  { path: '/user-profile', name: 'Profile', element: Profile },
+  { path: '/user-profile', name: 'Basic Information', element: Profile },
   { path: '/users', name: 'Users', element: Users },
 ]
 

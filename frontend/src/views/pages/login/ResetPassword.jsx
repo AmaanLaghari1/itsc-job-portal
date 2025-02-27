@@ -39,7 +39,6 @@ export default function ResetPassword() {
         setSubmitting(false)
 
         const response = await setPassword(values)
-        console.log(response)
 
         if(response.status === 200){
             Alert({status: true, text: response.data.message || "Password changed."})

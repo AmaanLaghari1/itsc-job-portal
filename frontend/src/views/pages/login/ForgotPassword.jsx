@@ -59,10 +59,17 @@ const ForgotPassword = () => {
                         <a href="" className="btn-link text-decoration-none">Try something else</a>
                         </Form>
                     </Formik>
-                    : 
-                    <p align='justify' className="lead fw-bolder fst-italic px-4">
+                    :
+                    <div>
+                        <div className="navbar-brand">
+                                <Link to='login'>
+                                    <img src={logo} style={{width: "14rem"}} alt="" />
+                                </Link>
+                            </div>
+                    <p align='justify' className="lead fw-bolder fst-italic px-4 my-3">
                         We have sent you a link to reset your password. Kindly check your email address.
                     </p>
+                    </div>
                 }
             </div>
         </div>

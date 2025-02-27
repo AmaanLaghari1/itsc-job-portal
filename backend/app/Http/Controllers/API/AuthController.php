@@ -274,9 +274,6 @@ class AuthController extends Controller
             return response()->json(["status" => false, "message" => "Invalid OTP"], 401);
         }
 
-//        $expiry = Carbon::parse($verification->created_at)->diffInMinutes(now());
-
-
         $expiryTime = $verification->updated_at->addMinutes(5); // Assuming 30 minutes expiry
         if (now()->greaterThan($expiryTime)) {
             // Verification has expired

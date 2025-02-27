@@ -4,14 +4,18 @@ import FormControl from '../../components/FormControl'
 import Alert from '../../components/Alert'
 import * as Yup from 'yup'
 import dummyPic from '../../assets/images/avatars/2.jpg'
+import { useSelector } from 'react-redux'
 
 const Profile = () => {
+    const auth = useSelector(state => state.auth.authData)
+    console.log(auth)
+
     const initialValues = {
-        name: 'John Doe',
-        surname: 'Doe',
-        cnic_no: 4130240498767,
-        email: 'jondoe@gmail.com',
-        phone_no: 3133771378,
+        name: auth.user.FIRST_NAME || '-',
+        surname: auth.user.LAST_NAME || '-',
+        cnic_no: auth.user.CNIC_NO || '-',
+        email: auth.user.EMAIL || '-',
+        phone: auth.user.PHONE || '-',
     }
 
     const validations = Yup.object({
@@ -20,7 +24,7 @@ const Profile = () => {
         cnic_no: Yup.number()
             .min(1111111111111, 'CNIC No. invalid!')
             .required('CNIC is required!'),
-        phone_no: Yup.number()
+        phone: Yup.number()
             .min(1111111111, 'Phone No. invalid!'),
         email: Yup.string().email('Invalid email format').required('Email is required!'),
     });
@@ -37,8 +41,10 @@ const Profile = () => {
                 <img src={dummyPic} width={150} height={150} className='rounded-circle' alt="" />
             </div>
             <div className="basic-info">
-                <h1>John Doe</h1>
-                <p className="lead">jondoe@gmail.com</p>
+                <h1>{`${auth.user.FIRST_NAME || ''}  ${auth.user.LAST_NAME || ''}`}</h1>
+                <p className="lead">
+                    {auth.user.EMAIL || ''}
+                </p>
             </div>
         </div>
         <Formik
@@ -49,31 +55,31 @@ const Profile = () => {
                 <div className="form-group">
                     <div className="row">
                         <div className="col-sm-6 my-2">
-                            <FormControl control='input' type='text' label='Name' name='name' disabled />
+                            <FormControl control='input' type='text' label='Name' name='name' />
                         </div>
                         <div className="col-sm-6 my-2">
-                            <FormControl control='input' type='text' label='Surname' name='surname' disabled />
+                            <FormControl control='input' type='text' label='Surname' name='surname' />
                         </div>
                     </div>
                 </div>
                 <div className="form-group">
                     <div className="row">
                         <div className="col-sm-6 my-2">
-                            <FormControl control='input' type='text' label='CNIC No.' name='cnic_no'
+                            <FormControl control='input' type='text' label='CNIC No.' name='cnic_no' disabled
                             onInput={(e) => {
                                 e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
                             }}
                             />
                         </div>
                         <div className="col-sm-6 my-2">
-                            <FormControl control='input' type='email' label='Email' name='email' />
+                            <FormControl control='input' type='email' label='Email' name='email' disabled />
                         </div>
                     </div>
                 </div>
                 <div className="form-group">
                     <div className="row">
                         <div className="col-sm-6 my-2">
-                            <FormControl control='input' type='text' label='Phone No.' name='phone_no'
+                            <FormControl control='input' type='text' label='Phone No.' name='phone'
                             onInput={(e) => {
                                 e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
                             }}

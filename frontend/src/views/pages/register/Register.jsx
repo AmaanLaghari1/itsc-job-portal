@@ -9,7 +9,6 @@ import Alert from '../../../components/Alert.js'
 import { useDispatch } from 'react-redux'
 import { register } from '../../../actions/AuthAction.js'
 import { useState } from 'react'
-// import VerifyEmail from './VerifyEmail.jsx'
 
 function Signup() {
     const dispatch = useDispatch()
@@ -24,7 +23,7 @@ function Signup() {
         password: '',
         password_confirmation: '',
         cnic_no: '',
-        phone_no: ''
+        phone: ''
     }
 
     const validations = Yup.object({
@@ -97,7 +96,7 @@ function Signup() {
                                     <FormControl control='input' type="text" name="email" label="Email" required={true} />
                                 </div>
                                 <div className="col-6">
-                                    <FormControl control='input' type="tel" name="phone_no" label="Phone No." 
+                                    <FormControl control='input' type="tel" name="phone" label="Mobile No." 
                                     onInput={(e) => {
                                         e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
                                     }}

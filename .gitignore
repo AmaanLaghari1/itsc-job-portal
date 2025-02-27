@@ -6,6 +6,7 @@
 /backend/storage/*.key
 /backend/vendor
 /backend.env
+/frontend/.env
 /backend.env.backup
 /backend.env.production
 /backend.phpunit.result.cache
@@ -18,3 +19,4 @@
 /backend/.idea
 /backend/.vscode
 /frontend/node_modules
+.env
