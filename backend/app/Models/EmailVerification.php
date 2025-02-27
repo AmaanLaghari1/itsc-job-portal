@@ -10,10 +10,11 @@ class EmailVerification extends Model
     use HasFactory;
 
     public $table = 'email_verifications';
+    protected $primaryKey = 'ID';
 
     public $fillable = [
-        'email',
-        'token',
-        'data'
+        'EMAIL',
+        'TOKEN',
+        'DATA'
     ];
 }

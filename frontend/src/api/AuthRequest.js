@@ -46,3 +46,30 @@ export const resendOtp = (formdata) => {
         }
     })
 }
+
+export const setPassword = (formdata) => {
+    return API.post("change-password", formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const resetPassword = (formdata) => {
+    return API.post("reset-password", formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const verifyPasswordToken = (token) => {
+    return API.get("verify-password-token/"+token, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}

@@ -36,6 +36,17 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    public function setAttribute($key, $value)
+    {
+        if (is_string($value)) {
+            if($key !== 'EMAIL' && $key !== 'PASSWORD'){
+                $value = strtoupper($value); // Convert the value to uppercase
+            }
+        }
+
+        parent::setAttribute($key, $value);
+    }
+
     protected $hidden = [
         'PASSWORD',
         'PASSWORD_TOKEN',
@@ -49,15 +60,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'PASSWORD' => 'hashed',
+        'FORGET_PASSWORD' => 'hashed',
     ];
-
-    public function setAttribute($key, $value)
-    {
-        // Capitalize the field name
-        $key = strtoupper($key);
-
-        return parent::setAttribute($key, $value);
-    }
 
     public function getAuthIdentifierName()
     {

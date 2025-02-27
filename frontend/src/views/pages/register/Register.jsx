@@ -28,10 +28,10 @@ function Signup() {
     }
 
     const validations = Yup.object({
-        first_name: Yup.string().required('First Name is required!'),
+        first_name: Yup.string().required('Fullname is required!'),
         fname: Yup.string().required("Father's Name is required!"),
-        last_name: Yup.string().required('Last name is required!'),
-        cnic_no: Yup.number().min(1111111111111, 'CNIC No. must contain only 14 digits!').required('CNIC is required!'),
+        last_name: Yup.string().required('Surname is required!'),
+        cnic_no: Yup.number().min(1111111111111, 'CNIC No. must contain only 13 digits!').required('CNIC is required!'),
         email: Yup.string().required('Email is required!'),
         password: Yup.string().min(8, 'Password is too short!').required('Password is required!'),
         password_confirmation: Yup.string().required('Password Confirmation is required!').oneOf([Yup.ref('password'), null], 'Passwords must match!'),
@@ -70,10 +70,10 @@ function Signup() {
                         <div className="form-group">
                             <div className="row">
                                 <div className="col-6">
-                                    <FormControl control='input' type="text" name="first_name" label="First Name" required={true} />
+                                    <FormControl control='input' type="text" name="first_name" label="Fullname" required={true} />
                                 </div>
                                 <div className="col-6">
-                                    <FormControl control='input' type="text" name="last_name" label="Last Name" required={true} />
+                                    <FormControl control='input' type="text" name="last_name" label="Surname" required={true} />
                                 </div>
                             </div>
                         </div>

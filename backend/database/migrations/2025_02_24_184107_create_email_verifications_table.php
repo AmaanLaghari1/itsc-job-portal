@@ -12,10 +12,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('email_verifications', function (Blueprint $table) {
-            $table->id();
-            $table->string('email')->unique();
-            $table->string('token');
-            $table->json('data'); // Store user registration data temporarily
+            $table->id('ID');
+            $table->string('EMAIL')->unique();
+            $table->string('TOKEN');
+            $table->json('DATA'); // Store user registration data temporarily
             $table->timestamps();
         });
     }

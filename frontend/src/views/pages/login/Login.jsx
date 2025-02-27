@@ -65,9 +65,14 @@ function Login() {
                     <button disabled={loading} type='submit' className="btn btn-primary w-100">
                       { loading ? 'Logging in...' : 'Login' }
                     </button>
-                    <p className='small'>Don't have an account? 
-                      <Link to='/register' className='text-decoration-none'>Register</Link>
-                    </p>
+                    <div className="d-flex justify-content-between flex-wrap">
+                        <p className='small'>Don't have an account? 
+                            <Link to='/register' className='text-decoration-none'>Register</Link>
+                        </p>
+                        <p className="small">
+                            <Link to='/forgot-password' className='text-decoration-none'>Forgot Password?</Link>
+                        </p>
+                    </div>
                 </div>
             </Form>
             

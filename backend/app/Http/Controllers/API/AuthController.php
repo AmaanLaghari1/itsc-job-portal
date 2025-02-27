@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\EmailVerification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -43,15 +46,15 @@ class AuthController extends Controller
         $verificationToken = rand(100000, 999999);
 
         // Check if OTP exists and delete if expired (after 5 minutes)
-        EmailVerification::where('email', $request->email)
+        EmailVerification::where('EMAIL', $request->email)
             ->where('created_at', '<', Carbon::now()->subMinutes(5))
             ->delete();
 
 //        if(true){
         if($this->sendOtpCode($request->email, $verificationToken)){
             EmailVerification::updateOrCreate(
-                ['email' => $request->email],
-                ['token' => $verificationToken, 'data' => json_encode($requestData), 'created_at' => now()]
+                ['EMAIL' => $request->email],
+                ['TOKEN' => $verificationToken, 'DATA' => json_encode($requestData), 'created_at' => now()]
             );
 
             return response()->json(
@@ -125,11 +128,50 @@ class AuthController extends Controller
     }
 
 
-    public function changePassword(){
+    public function changePassword(Request $request){
+        $validation = Validator::make(
+            $request->all(),
+            [
+                "cnic_no" => "required|digits:13|exists:users_reg,cnic_no",
+                "password" => "required|min:6|confirmed",
+                "password_confirmation" => "required|min:6",
+            ]
+        );
 
+        if($validation->stopOnFirstFailure()->fails()){
+            return response()->json(
+                [
+                    "status" => false,
+                    "message" => "Validation failed.",
+                    "error_message" => $validation->errors()->first()
+                ],
+                401
+            );
+        }
+
+        $data = User::updateOrCreate(
+            ['CNIC_NO' => $request->cnic_no],
+            ['PASSWORD' => $request->password]
+        );
+
+        if($data){
+            return response()->json(
+                [
+                    "status" => true,
+                    "message" => "Password changed successfully."
+                ], 200
+            );
+        }
+
+        return response()->json(
+            [
+                "status" => false,
+                "message" => "Failed to change password."
+            ], 500
+        );
     }
 
-    private function postRequest($url, $params, $method = "POST")
+    private function postMailRequest($url, $params, $method = "POST")
     {
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
@@ -154,7 +196,7 @@ class AuthController extends Controller
             'reply_to' => 'info@usindh.edu.pk'
         ];
 
-        $response = $this->postRequest('https://itsc.usindh.edu.pk/sac/api/send_email_message', $param);
+        $response = $this->postMailRequest(env('MAIL_API_URL'), $param);
         if($response['response_code'] == 200){
             return true;
         }
@@ -167,7 +209,7 @@ class AuthController extends Controller
             'email' => 'required|email|exists:email_verifications,email'
         ]);
 
-        $existingOtp = EmailVerification::where('email', $request->email)->first();
+        $existingOtp = EmailVerification::where('EMAIL', $request->email)->first();
 
         $expiry = Carbon::parse($existingOtp->created_at)->diffInMinutes(now());
 
@@ -184,9 +226,10 @@ class AuthController extends Controller
 //        if(true){
         if($this->sendOtpCode($request->email, $verificationToken)){
             EmailVerification::updateOrCreate(
-                ['email' => $request->email],
-                ['token' => $verificationToken, 'created_at' => now()]
+                ['EMAIL' => $request->email],
+                ['TOKEN' => $verificationToken, 'created_at' => now()]
             );
+
 
             return response()->json([
                 "status" => true,
@@ -223,8 +266,8 @@ class AuthController extends Controller
             );
         }
 
-        $verification = EmailVerification::where('email', $request->email)
-            ->where('token', $request->token)
+        $verification = EmailVerification::where('EMAIL', $request->email)
+            ->where('TOKEN', $request->token)
             ->first();
 
         if (!$verification) {
@@ -240,12 +283,8 @@ class AuthController extends Controller
             return response()->json(["status" => false, "message" => "OTP expired. Please request a new one"], 401);
         }
 
-//        if($expiry > 5){
-//            return response()->json(["status" => false, "message" => "OTP expired. Please request a new one"], 401);
-//        }
-
         // Convert stored JSON data into array
-        $userData = json_decode($verification->data, true);
+        $userData = json_decode($verification->DATA, true);
 
         // Create user account
         $user = User::create($userData);
@@ -260,6 +299,97 @@ class AuthController extends Controller
             "token" => $token,
             "token_type" => "bearer",
             "user" => $user
+        ], 200);
+    }
+
+    public function sendPasswordResetLink(Request $request)
+    {
+        // Validate CNIC
+        $validation = Validator::make(
+            $request->all(),
+            [
+                "cnic_no" => "required|digits:13|exists:users_reg,cnic_no",
+            ]
+        );
+
+        if ($validation->fails()) {
+            return response()->json([
+                "status" => false,
+                "message" => "Validation failed.",
+                "errors" => $validation->errors()
+            ], 401);
+        }
+
+        // Find user
+        $user = DB::table('users_reg')->where('CNIC_NO', $request->cnic_no)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "CNIC No. does'nt exist."
+            ], 404);
+        }
+
+        // Generate Reset Token
+        $token = Str::random(64);
+        $expiry = Carbon::now()->addMinutes(30); // Token expires in 30 minutes
+
+        // Store Reset Token in Database
+        DB::table('users_reg')->updateOrInsert(
+            ['CNIC_NO' => $request->cnic_no],
+            [
+                'FORGET_PASSWORD' => $token,
+                'FORGET_DATE_TIME' => Carbon::now(),
+            ]
+        );
+
+        // Generate Password Reset Link
+        $resetLink = env('APP_URL') .'/reset-password?token=' . $token . '&cnic_no=' . $request->cnic_no;
+
+        $param = [
+            'to' => $user->EMAIL,
+            'subject' => 'Reset Password',
+            'email_body' => 'Follow this link to reset your password.'. "<br/>" . $resetLink,
+            'sender_id' => 1,
+            'reply_to' => 'info@usindh.edu.pk'
+        ];
+
+        if($this->postMailRequest(env('MAIL_API_URL'), $param)){
+            return response()->json([
+                "status" => true,
+                "message" => "Password reset link generated successfully.",
+                "reset_link" => $resetLink
+            ], 200);
+        }
+
+        return response()->json([
+            "status" => true,
+            "message" => "Unable to reset the password.",
+        ], 500);
+    }
+
+    public function verifyPasswordToken($token){
+        if(is_null($token)){
+            return response()->json([
+                "status" => false,
+                "message" => "Invalid Token."
+            ], 401);
+        }
+
+//        $token = Hash::make($token);
+
+        $user = DB::table('users_reg')->where('FORGET_PASSWORD', $token)->first();
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "Token expired."
+            ], 401);
+        }
+
+        return response()->json([
+            "status" => true,
+            "message" => "Token verified successfully.",
         ], 200);
     }
 }
