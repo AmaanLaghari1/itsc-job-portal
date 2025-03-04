@@ -1,6 +1,7 @@
 import { legacy_createStore as createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import {thunk} from 'redux-thunk'; // ✅ Fix import
 import authReducer from './reducers/authReducer';
+import UserReducer from './reducers/UserReducer';
 import storage from 'redux-persist/lib/storage'; // ✅ Use localStorage for persistence
 import { persistStore, persistReducer } from 'redux-persist';
 
@@ -25,8 +26,14 @@ const authPersistConfig = {
   storage, // Stores auth data in localStorage
 };
 
+const userPersistConfig = {
+  key: 'user',
+  storage, // Stores auth data in localStorage
+};
+
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer), // Persisted auth state
+  user: persistReducer(userPersistConfig, authReducer), // Persisted user state
   ui: changeState, // UI-related state (not persisted)
 });
 

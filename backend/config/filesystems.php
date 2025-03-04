@@ -56,6 +56,11 @@ return [
             'throw' => false,
         ],
 
+        'uploads' => [
+            'driver' => 'local',
+            'root'   => public_path(""),
+        ],
+
     ],
 
     /*
@@ -71,6 +76,11 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+    ],
+
+    'uploads' => [
+        'driver' => 'local',
+        'root'   => public_path("/img"),
     ],
 
 ];

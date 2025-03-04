@@ -1,7 +1,8 @@
 import React from 'react'
 import { Field, ErrorMessage } from 'formik'
-// import DateView from 'react-datepicker'
-// import "react-datepicker/dist/react-datepicker.css";
+import DateView from 'react-datepicker'
+import "react-datepicker/dist/react-datepicker.css";
+import { CFormCheck } from '@coreui/react';
 
 function FormControl(props) {
     const {control, ...rest} = props
@@ -43,33 +44,39 @@ const Textarea = (props) => {
 }
 
 const Radio = (props) => {
-    const {label, name, options, required, ...rest} = props
+    const { label, name, options, required, ...rest } = props;
+    
     return (
         <div>
-            <label className='form-check-label' htmlFor={name}>{label}{required ? <span className='text-danger fw-bold'>*</span>: ''}</label>
+            <label className='form-check-label' htmlFor={name}>
+                {label}{required ? <span className='text-danger fw-bold'>*</span> : ''}
+            </label>
             <div className="d-flex justify-content-between col-6">
-            <Field className='form-control' id={name} name={name} {...rest}>
-                {
-                    ({field}) => {
-                        {/* console.log(field) */}
+                <Field name={name} {...rest}>
+                    {({ field }) => {
                         return options.map(opt => {
                             return (
-                                <div className='mx-2 w-100' key={opt.key}>
-                                    <input className='form-check-input' type="radio" id={opt.key} {...field} value={opt.key} checked={field.value === opt.key} />
-                                    <label className='form-check-label' htmlFor={opt.key}>{opt.value}</label>
+                                <div className='mx-2 w-100 my-2' key={opt.key}>
+                                    <CFormCheck 
+                                        type="radio" 
+                                        id={opt.key} 
+                                        label={opt.value} 
+                                        {...field} 
+                                        value={opt.key} // ✅ Ensure correct value
+                                        checked={field.value == opt.key} // ✅ Ensure correct selection
+                                    />
                                 </div>
-                            )
-                        })
-                    }
-                }
-            </Field>
+                            );
+                        });
+                    }}
+                </Field>
             </div>
             <div className="text-danger small">
                 <ErrorMessage name={name} />
             </div>
         </div>
-    )
-}
+    );
+};
 
 const Select = props => {
     const {label, name, options, required, ...rest} = props
@@ -128,7 +135,7 @@ const DateInput = props => {
                         const {setFieldValue} = form
                         return (
                             <div>
-                                <DateView id={name} value={field.value} {...rest} {...field} selected={field.value} onChange={val =>  setFieldValue(name, val)} shouldCloseOnSelect={false} showTimeInput={false} showYearDropdown />
+                                <DateView className='form-control w-100' id={name} value={field.value} {...rest} {...field} selected={field.value} onChange={val =>  setFieldValue(name, val)} shouldCloseOnSelect={true} showTimeInput={false} showYearDropdown />
                             </div>
                         )
                     }

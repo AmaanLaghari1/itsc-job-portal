@@ -31,6 +31,10 @@ Route::prefix('auth')->group(function(){
     Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
 });
 
+Route::get('districts', [UserController::class, 'getDistricts']);
+Route::get('cities', [UserController::class, 'getCities']);
+Route::get('provinces', [UserController::class, 'getProvinces']);
+Route::get('countries', [UserController::class, 'getCountries']);
 
 Route::prefix('user')->group(function() {
     Route::get('get', [UserController::class, 'index']);
@@ -38,4 +42,5 @@ Route::prefix('user')->group(function() {
     Route::post('post', [UserController::class, 'store']);
     Route::put('put/{id}', [UserController::class, 'update']);
     Route::delete('delete/{id}', [UserController::class, 'destroy']);
+    Route::post('upload-img', [UserController::class, 'uploadImg']);
 });

@@ -30,7 +30,7 @@ function Login() {
       setLoading(true)
       const response = await dispatch(login(values))
       if(response.success){
-          Alert({status: true, text: response.data.message || 'logged in'})
+        //   Alert({status: true, text: response.data.message || 'logged in'})
       }
       else {
           Alert({status: false, text: response.error.error_message || 'login failed'})

@@ -23,7 +23,7 @@ const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const storedTheme = useSelector((state) => state.theme)
 
-  const auth = useSelector((state) => state.auth?.authData)
+  const auth = useSelector((state) => state.auth)
   let token = null || auth?.token
 
   useEffect(() => {

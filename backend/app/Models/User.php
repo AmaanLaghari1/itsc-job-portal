@@ -94,7 +94,7 @@ class User extends Authenticatable
     public function setAttribute($key, $value)
     {
         if (is_string($value)) {
-            if($key !== 'EMAIL' && $key !== 'PASSWORD'){
+            if($key !== 'EMAIL' && $key !== 'PASSWORD' && $key !== 'PROFILE_IMAGE'){
                 $value = strtoupper($value); // Convert the value to uppercase
             }
         }

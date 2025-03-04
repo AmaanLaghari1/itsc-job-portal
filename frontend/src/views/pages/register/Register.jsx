@@ -23,7 +23,7 @@ function Signup() {
         password: '',
         password_confirmation: '',
         cnic_no: '',
-        phone: ''
+        mobile_no: ''
     }
 
     const validations = Yup.object({
@@ -96,7 +96,7 @@ function Signup() {
                                     <FormControl control='input' type="text" name="email" label="Email" required={true} />
                                 </div>
                                 <div className="col-6">
-                                    <FormControl control='input' type="tel" name="phone" label="Mobile No." 
+                                    <FormControl control='input' type="tel" name="mobile_no" label="Mobile No." 
                                     onInput={(e) => {
                                         e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
                                     }}

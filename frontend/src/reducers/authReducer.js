@@ -3,23 +3,33 @@ const initialData = {
     loading: false,
     error: false,
     updLoading: true,
-}
+    token: null
+};
 
 const authReducer = (state = initialData, action) => {
-    switch(action.type){
+    switch(action.type) {
         case 'AUTH_START':
-            return {...state, loading: true, error: false}
+            return { ...state, loading: true, error: false };
+
         case 'AUTH_SUCCESS':
-            return {...state, authData: action.payload, loading: false, error: false}
+            return { 
+                ...state, 
+                authData: typeof action.payload === 'string' ? JSON.parse(action.payload) : action.payload, 
+                token: action.payload.token, 
+                loading: false, 
+                error: false 
+            };
+
         case 'AUTH_FAILED':
-            return {...state, authData: action.payload, loading: false, error: true}
+            return { ...state, authData: null, loading: false, error: true };
+
         case 'LOGOUT':
-            localStorage.removeItem('persist:auth')
-            return {...state, authData: null, loading: false, error: false}
+            localStorage.removeItem('persist:auth');
+            return { ...state, authData: null, token: null, loading: false, error: false };
 
         default:
-            return state
+            return state;
     }
-}
+};
 
-export default authReducer
+export default authReducer;
