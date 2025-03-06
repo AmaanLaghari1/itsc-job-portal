@@ -65,8 +65,8 @@ export const resetPassword = (formdata) => {
     })
 }
 
-export const verifyPasswordToken = (token, cnic) => {
-    return API.get("verify-password-token/"+token+"/"+cnic, {
+export const verifyPasswordToken = (token) => {
+    return API.get("verify-password-token/"+token, {
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json"

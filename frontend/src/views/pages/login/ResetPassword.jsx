@@ -2,44 +2,59 @@ import React from 'react'
 import './Login_2.css'
 import reset_thumbnail from '../../../assets/images/login/gaurd.png'
 import logo from '../../../assets/images/logos/usindh-logo.png'
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from 'formik'
-import { useDispatch, useSelector } from 'react-redux'
-import { login } from '../../../actions/AuthAction.js'
-import Alert from '../../../components/Alert.js'
-import { useState } from 'react'
+import { setPassword, verifyPasswordToken } from '../../../api/AuthRequest.js'
 import * as Yup from 'yup'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import Alert from "../../../components/Alert.js";
+import { useEffect, useState } from "react";
 
 const ResetPassword = () => {
-    const auth = useSelector(state => state.auth)
-    const dispatch = useDispatch()
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate()
+    const token = searchParams.get('token')
+    // const cnic = searchParams.get('cnic_no')
     const [loading, setLoading] = useState(false)
 
-    const initialValues = {
-        cnic_no: '',
-        password: '',
-    }
+    useEffect(() => {
+        async function verifyToken(token){
+            try {
+                const response = await verifyPasswordToken(token)
+                // console.log(response)
+            } catch (error) {
+                Alert({status: false, text: error?.data?.message || "Token invalid or expired."})
+                navigate('/login');
+            }
+        }
+        verifyToken(token)
+    }, [])
 
-    const validations = Yup.object({
-        cnic_no: Yup.string().required('CNIC No. is required!'),
-        password: Yup.string().required('Password is required!'),
-    })
 
-    const handleSubmit = async (values, {setSubmitting, resetForm, setFieldError}) => {
+    // Redirect if email is missing
+    // useEffect(() => {
+    //     if (!cnic) {
+    //         navigate('/login');
+    //     }
+    // }, [cnic, navigate]);
+    
+
+    const handleSubmit = async (values, {setSubmitting}) => {
         setSubmitting(false)
         setLoading(true)
-        const response = await dispatch(login(values))
-        if(response.success){
-            //   Alert({status: true, text: response.data.message || 'logged in'})
+
+        const response = await setPassword(values)
+
+        if(response.status === 200){
+            Alert({status: true, text: response.data.message || "Password changed."})
+            navigate('/login')
         }
         else {
-            Alert({status: false, text: response.error.error_message || 'login failed'})
+            Alert({status: false, text: response.data.error_message || "Password changing failed."})
         }
-        resetForm({values: values})
         setLoading(false)
-    }
+    };
 
-  return (
+    return (
     <div>
         <div style={{minHeight: '100vh', zIndex: 1}} className="d-flex align-items-center position-relative w-100 p-2">
             <div className="col-12 col-sm-5 position-absolute top-0 h-100 d-none d-lg-block p-2">
@@ -56,8 +71,11 @@ const ResetPassword = () => {
                             <img src={logo} width='200' className='mt-3' alt="Usindh Logo" />
                             <h3 className='fw-bold mt-5 mb-4'>Reset Your Password</h3>
                             <Formik
-                            initialValues={initialValues}
-                            validationSchema={validations}
+                            initialValues={{forget_password: token || '', password: '', password_confirmation: ''}}
+                            validationSchema={Yup.object({
+                                password: Yup.string().required('New password required!'),
+                                password_confirmation: Yup.string().required('Confirm password required!').oneOf([Yup.ref('password'), null], 'Passwords must match!')
+                            })}
                             onSubmit={handleSubmit}
                             >
                                 <Form>
@@ -65,9 +83,7 @@ const ResetPassword = () => {
                                         <label className='form-label' htmlFor="cnic_no">
                                             New Password<span className="text-danger fw-bold">*</span>
                                         </label>
-                                        <Field type="password" className="form-control border-0 border-bottom border-3 rounded-0" placeholder='********' name='password' id='password' 
-                                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13)}
-                                        />
+                                        <Field type="password" className="form-control border-0 border-bottom border-3 rounded-0" placeholder='********' name='password' id='password' />
                                         <div className="small text-danger">
                                             <ErrorMessage name='password' />
                                         </div>
@@ -76,8 +92,7 @@ const ResetPassword = () => {
                                         <label className='form-label' htmlFor="cnic_no">
                                             Confirm Password<span className="text-danger fw-bold">*</span>
                                         </label>
-                                        <Field type="password" className="form-control border-0 border-bottom border-3 rounded-0" placeholder='********' name='password_confirmation' id='password_confirmation' 
-                                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13)}
+                                        <Field type="password" className="form-control border-0 border-bottom border-3 rounded-0" placeholder='********' name='password_confirmation' id='password_confirmation'
                                         />
                                         <div className="small text-danger">
                                             <ErrorMessage name='password_confirmation' />

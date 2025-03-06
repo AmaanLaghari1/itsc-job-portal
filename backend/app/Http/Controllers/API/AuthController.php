@@ -132,7 +132,7 @@ class AuthController extends Controller
         $validation = Validator::make(
             $request->all(),
             [
-                "cnic_no" => "required|digits:13|exists:users_reg,cnic_no",
+                "forget_password" => "required|exists:users_reg,FORGET_PASSWORD",
                 "password" => "required|min:6|confirmed",
                 "password_confirmation" => "required|min:6",
             ]
@@ -150,7 +150,7 @@ class AuthController extends Controller
         }
 
         $data = User::updateOrCreate(
-            ['CNIC_NO' => $request->cnic_no],
+            ['FORGET_PASSWORD' => $request->forget_password],
             ['PASSWORD' => $request->password]
         );
 
@@ -341,7 +341,7 @@ class AuthController extends Controller
         );
 
         // Generate Password Reset Link
-        $resetLink = env('APP_URL') .'/reset-password?token=' . $token . '&cnic_no=' . $request->cnic_no;
+        $resetLink = env('APP_URL') .'/reset-password?token=' . $token;
 
         $param = [
             'to' => $user->EMAIL,
@@ -365,8 +365,8 @@ class AuthController extends Controller
         ], 500);
     }
 
-    public function verifyPasswordToken($token, $cnic){
-        if(is_null($token) || is_null($cnic)){
+    public function verifyPasswordToken($token){
+        if(is_null($token)){
             return response()->json([
                 "status" => false,
                 "message" => "Invalid Token."
@@ -375,7 +375,6 @@ class AuthController extends Controller
 
         $user = DB::table('users_reg')
             ->where('FORGET_PASSWORD', $token)
-            ->where('CNIC_NO', $cnic)
             ->first();
 
 
