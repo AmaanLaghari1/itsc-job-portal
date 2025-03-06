@@ -1,0 +1,33 @@
+
+.montserrat-font {
+    font-family: "Montserrat", sans-serif;
+    /* font-optical-sizing: auto; */
+    font-weight: 400;
+    font-style: normal;
+}
+
+.bg-primary {
+    background-color: #0B63F8 !important;
+    border-color: #0B63F8 !important;
+}
+
+.bg-secondary {
+    background-color: #F0EFEB !important;
+}
+
+button:hover {
+    cursor: pointer !important;
+}
+
+input {
+    outline: none !important;
+}
+
+.form-control:focus {
+    box-shadow: none !important;
+    border-color: #ccc !important; /* Optional: Change border color */
+    outline: none !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}

@@ -110,7 +110,7 @@ function Signup() {
                                     <FormControl control='input' type="password" name="password" label="Password" required={true} />
                                 </div>
                                 <div className="col-6">
-                                    <FormControl control='input' type="password" name="password_confirmation" label="Confirm Password" />
+                                    <FormControl control='input' type="password" name="password_confirmation" label="Confirm Password" required={true} />
                                 </div>
                             </div>
                         

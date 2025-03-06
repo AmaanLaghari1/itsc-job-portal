@@ -1,79 +1,97 @@
-import { Form, Formik } from "formik"
-import FormControl from '../../../components/FormControl.jsx'
-import * as Yup from 'yup'
-import { Link, useNavigate } from 'react-router-dom'
-import { resetPassword } from "../../../api/AuthRequest.js"
-import Alert from "../../../components/Alert.js"
-import { useState } from "react"
+import React from 'react'
+import './Login_2.css'
+import lock_thumbnail from '../../../assets/images/login/password-lock.png'
 import logo from '../../../assets/images/logos/usindh-logo.png'
-import './Login.css'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { useDispatch, useSelector } from 'react-redux'
+import { login } from '../../../actions/AuthAction.js'
+import Alert from '../../../components/Alert.js'
+import { useState } from 'react'
+import * as Yup from 'yup'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 
 const ForgotPassword = () => {
-    const navigate = useNavigate()
-    const [linkSent, setLinkSent] = useState(false)
+    const auth = useSelector(state => state.auth)
+    const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
 
-    const handleSubmit = async (values, {setSubmitting}) => {
+    const initialValues = {
+        cnic_no: '',
+        password: '',
+    }
+
+    const validations = Yup.object({
+        cnic_no: Yup.string().required('CNIC No. is required!'),
+        password: Yup.string().required('Password is required!'),
+    })
+
+    const handleSubmit = async (values, {setSubmitting, resetForm, setFieldError}) => {
         setSubmitting(false)
         setLoading(true)
-        try {
-            const response = await resetPassword(values)
-            // console.log(response)
-            if(response.status === 200){
-                setLinkSent(true)
-            }
-        } catch (error) {
-            Alert({status: false, text: "CNIC No. does'nt exist"})
+        const response = await dispatch(login(values))
+        if(response.success){
+            //   Alert({status: true, text: response.data.message || 'logged in'})
         }
+        else {
+            Alert({status: false, text: response.error.error_message || 'login failed'})
+        }
+        resetForm({values: values})
         setLoading(false)
     }
-    return (
-        <div className="bg-primary min-vh-100 d-flex align-items-center">
-            <div className="auth col-10 col-md-5 align-content-center m-auto p-2 bg-white rounded-5" style={{ height: "auto" }}>
-                { !linkSent ? 
-                    <Formik
-                    initialValues={{cnic_no: ''}}
-                    validationSchema={Yup.object({cnic_no: Yup.number().required('CNIC No. required!').min(1111111111111, 'Must contain only 13 digits!')})}
-                    onSubmit={handleSubmit}
-                    >
-                        <Form className="p-2" method="POST">
-                            <div className="navbar-brand">
-                                <Link to='login'>
-                                    <img src={logo} style={{width: "14rem"}} alt="" />
-                                </Link>
-                            </div>
-                            <h4 className="text-center my-3">Enter your CNIC No. to reset your password</h4>
-                            <div className="form-group my-2">
-                                <FormControl control='input' type='text' name='cnic_no' label='CNIC No. (without dashes)'
-                                onInput={(e) => {
-                                    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
-                                }}
-                                />
-                            </div>
 
-                            <div className="form-group text-center">
-                                <button disabled={loading} type="submit" className="btn btn-primary">
-                                    { loading ? 'Submitting...' : 'Submit'}
-                                </button>
-                            </div>
-                        <a href="" className="btn-link text-decoration-none">Try something else</a>
-                        </Form>
-                    </Formik>
-                    :
-                    <div>
-                        <div className="navbar-brand">
-                                <Link to='login'>
-                                    <img src={logo} style={{width: "14rem"}} alt="" />
-                                </Link>
-                            </div>
-                    <p align='justify' className="lead fw-bolder fst-italic px-4 my-3">
-                        We have sent you a link to reset your password. Kindly check your email address.
-                    </p>
+  return (
+    <div>
+        <div style={{minHeight: '100vh', zIndex: 1}} className="d-flex align-items-center position-relative w-100 p-2">
+            <div className="col-12 col-sm-5 position-absolute top-0 h-100 d-none d-lg-block p-2">
+                <div className="bg-secondary h-100 rounded-5 d-block m-auto"></div>
+            </div>
+
+            <div className="container position-relative z-1">
+                <div className="row">
+                    <div className="col-7 d-none d-lg-flex justify-content-end">
+                        <img src={lock_thumbnail} alt="" className="w-75 d-block ms-auto" />
                     </div>
-                }
+                    <div className="col-12 col-lg-5">
+                        <div className="col-10 mx-auto">
+                            <img src={logo} width='200' className='mt-3' alt="Usindh Logo" />
+                            <h3 className='fw-bold mt-5 mb-4'>Forgot Your Password?</h3>
+                            <Formik
+                            initialValues={initialValues}
+                            validationSchema={validations}
+                            onSubmit={handleSubmit}
+                            >
+                                <Form>
+                                    <div className="form-group my-2">
+                                        <label className='form-label' htmlFor="cnic_no">
+                                            Enter CNIC No.<span className="text-danger fw-bold">*</span>
+                                        </label>
+                                        <Field type="text" className="form-control border-0 border-bottom border-3 rounded-0" placeholder='41304******' name='cnic_no' id='cnic_no' 
+                                        onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13)}
+                                        />
+                                        <div className="small text-danger">
+                                            <ErrorMessage name='cnic_no' />
+                                        </div>
+                                    </div>
+                                    <button className="btn btn-primary btn-sm bg-primary shadow shadow-sm rounded-pill p-3 px-5 mt-4" type='submit' disabled={loading}>
+                                        { loading ? 'Submitting...' : 'Submit' }
+                                    </button>
+                                    <div className="d-flex justify-content-between flex-wrap mt-3 py-2">
+                                        <p className='small'>Remembered? &nbsp;  
+                                            <Link to='/login' className='text-decoration-none'>Back to Login</Link>
+                                        </p>
+                                        <p className="small">
+                                            <Link to='/forgot-password' className='text-decoration-none'>Try something else</Link>
+                                        </p>
+                                    </div>
+                                </Form>
+                            </Formik>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    )
+    </div>
+  )
 }
 
 export default ForgotPassword

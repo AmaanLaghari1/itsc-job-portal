@@ -365,17 +365,19 @@ class AuthController extends Controller
         ], 500);
     }
 
-    public function verifyPasswordToken($token){
-        if(is_null($token)){
+    public function verifyPasswordToken($token, $cnic){
+        if(is_null($token) || is_null($cnic)){
             return response()->json([
                 "status" => false,
                 "message" => "Invalid Token."
             ], 401);
         }
 
-//        $token = Hash::make($token);
+        $user = DB::table('users_reg')
+            ->where('FORGET_PASSWORD', $token)
+            ->where('CNIC_NO', $cnic)
+            ->first();
 
-        $user = DB::table('users_reg')->where('FORGET_PASSWORD', $token)->first();
 
         if (!$user) {
             return response()->json([

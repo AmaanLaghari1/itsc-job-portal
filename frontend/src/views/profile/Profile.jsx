@@ -70,7 +70,7 @@ const Profile = () => {
         phone: auth.user.PHONE || '',
         home_address: auth.user.HOME_ADDRESS || '',
         permanent_address: auth.user.PERMANENT_ADDRESS || '',
-        date_of_birth: new Date(auth.user.DATE_OF_BIRTH) || '',
+        date_of_birth: auth.user.DATE_OF_BIRTH ? new Date(auth.user.DATE_OF_BIRTH) : '',
         place_of_birth: auth.user.PLACE_OF_BIRTH || '',
         city_id: auth.user.CITY_ID || '',
         district_id: auth.user.DISTRICT_ID || '',
@@ -138,7 +138,7 @@ const Profile = () => {
         <div className="d-flex gap-2 align-items-center flex-wrap">
             <div className="profile-img position-relative">
                 <img
-                    src={preview || (auth.user.PROFILE_IMAGE !== null ? import.meta.env.VITE_BACKEND_URL+auth.user.PROFILE_IMAGE : dummyPic)} // 
+                    src={preview || (auth.user.PROFILE_IMAGE ? import.meta.env.VITE_BACKEND_URL+auth.user.PROFILE_IMAGE : dummyPic)} // 
                     width={150}
                     height={150}
                     className="rounded-circle border border-2 cursor-pointer"
@@ -150,7 +150,7 @@ const Profile = () => {
                 >Change Picture</CButton> */}
             </div>
             <div className="basic-info">
-                <h1>{`${auth.user.FIRST_NAME || ''}  ${auth.user.LAST_NAME || ''}`}</h1>
+                <h1>{`${auth.user.FIRST_NAME || ''}`}</h1>
                 <p className="lead">
                     {auth.user.EMAIL || ''}
                 </p>
