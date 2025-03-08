@@ -31,10 +31,15 @@ const userPersistConfig = {
   storage, // Stores auth data in localStorage
 };
 
+const uiPersistConfig = {
+  key: 'ui',
+  storage, // Stores auth data in localStorage
+};
+
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer), // Persisted auth state
-  user: persistReducer(userPersistConfig, authReducer), // Persisted user state
-  ui: changeState, // UI-related state (not persisted)
+  user: persistReducer(userPersistConfig, UserReducer), // Persisted user state
+  ui: persistReducer(uiPersistConfig, changeState) // UI-related state (not persisted)
 });
 
 // Enable Redux DevTools

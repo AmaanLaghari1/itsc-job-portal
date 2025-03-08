@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { use, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import avatar1 from '../assets/images/logos/usindh-logo-white.png'
+import logoWhite from '../assets/images/logos/usindh-logo-white.png'
+import logo from '../assets/images/logos/usindh-logo.png'
 
 import {
   CCloseButton,
@@ -9,6 +10,7 @@ import {
   CSidebarFooter,
   CSidebarHeader,
   CSidebarToggler,
+  useColorModes,
 } from '@coreui/react'
 
 import { AppSidebarNav } from './AppSidebarNav'
@@ -17,14 +19,14 @@ import { AppSidebarNav } from './AppSidebarNav'
 import navigation from '../_nav.jsx'
 
 const AppSidebar = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch()  
   const unfoldable = useSelector((state) => state.ui.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.ui.sidebarShow)
-
+  const theme = useSelector((state) => state.ui.theme)
   return (
     <CSidebar
       className="border-end"
-      colorScheme="dark"
+      // colorScheme="dark"
       position="fixed"
       unfoldable={unfoldable}
       visible={sidebarShow}
@@ -34,8 +36,8 @@ const AppSidebar = () => {
     >
       <CSidebarHeader className="border-botto border-light">
         <CSidebarBrand to="/">
-          <img className="sidebar-brand-full" src={avatar1} height={52} />
-          <img className="sidebar-brand-narrow" src={avatar1} height={52} />
+          <img className="sidebar-brand-full" src={theme === 'dark' ? logoWhite : logo} height={52} />
+          <img className="sidebar-brand-narrow" src={theme === 'dark' ? logoWhite : logo} height={52} />
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"

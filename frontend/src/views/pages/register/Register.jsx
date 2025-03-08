@@ -1,16 +1,16 @@
-import { Formik, Form } from 'formik'
-import FormControl from '../../../components/FormControl.jsx'
-import * as Yup from 'yup'
-import { Link, useNavigate } from 'react-router-dom'
-import AuthLayout from '../../../layout/AuthLayout.jsx'
+import React from 'react'
+import "../login/Login_2.css"
+import login_thumbnail from '../../../assets/images/login/register_thumbnail.PNG'
 import logo from '../../../assets/images/logos/usindh-logo.png'
-import "../login/Login.css"
-import Alert from '../../../components/Alert.js'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { useDispatch } from 'react-redux'
+import Alert from '../../../components/Alert.js'
 import { register } from '../../../actions/AuthAction.js'
 import { useState } from 'react'
+import * as Yup from 'yup'
+import { Link, useNavigate } from 'react-router-dom'
 
-function Signup() {
+const Register = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)    
@@ -42,7 +42,7 @@ function Signup() {
         const response = await dispatch(register(values))
         if(response.success){
             navigate('/verify-email', { state: { email: values.email } });
-            Alert({status: true, text: response.data.message})
+            // Alert({status: true, text: response.data.message})
         }
         else {
             Alert({status: false, text: response.error.error_message || 'Some error occured.'})
@@ -52,82 +52,145 @@ function Signup() {
     }
 
   return (
-    <AuthLayout>
-        <Formik className="container-fluid"
-        initialValues={initialValues}
-        validationSchema={validations}
-        onSubmit={handleSubmit}>
-            <div className="auth col-md-6 align-content-center min-vh-100 p-2 bg-white rounded-5" style={{height: "auto"}}>
-                <div className="form-group">
-                    <div className="navbar-brand">
-                        <img src={logo} style={{width: "14rem"}} alt="" />
+    <div>
+        <div style={{minHeight: '100vh', zIndex: 1}} className="d-flex align-items-center position-relative w-100 p-2">
+            <div className="col-12 col-sm-5 position-absolute top-0 h-100 d-none d-lg-block p-2">
+                <div className="bg-secondary h-100 rounded-5 d-block m-auto"></div>
+            </div>
+
+            <div className="container position-relative z-1">
+                <div className="row">
+                    <div className="col-6 d-none d-lg-block align-content-center">
+                        <img src={login_thumbnail} alt="" className="w-100 h-75" />
                     </div>
-                    <h5 className="my-3">Create Account</h5>
+                    <div className="col-12 col-lg-6">
+                        <div className="col-12 mx-auto">
+                            <img src={logo} width='200' className='mt-2' alt="Usindh Logo" />
+                            <h3 className='fw-bold mt-4 mb-3'>Create Account</h3>
+                            <Formik
+                            initialValues={initialValues}
+                            validationSchema={validations}
+                            onSubmit={handleSubmit}
+                            >
+                                <Form>
+                                    <div className="row">
+                                        <div className="col-12 col-md-6">
+                                            <div className="form-group my-2">
+                                                <label className='form-label' htmlFor="first_name">
+                                                    Fullname
+                                                </label>
+                                                <span className="text-danger fw-bold">*</span>
+                                                <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='' name='first_name' id='first_name' />
+                                                <div className="small text-danger">
+                                                    <ErrorMessage name='first_name' />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 col-md-6">
+                                            <div className="form-group my-2">
+                                                <label className='form-label' htmlFor="last_name">
+                                                    Surname
+                                                </label>
+                                                <span className="text-danger fw-bold">*</span>
+                                                <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='' name='last_name' id='last_name' />
+                                                <div className="small text-danger">
+                                                    <ErrorMessage name='last_name' />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 col-md-6">
+                                            <div className="form-group my-2">
+                                                <label className='form-label' htmlFor="fname">
+                                                    Father's Name
+                                                </label>
+                                                <span className="text-danger fw-bold">*</span>
+                                                <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='' name='fname' id='fname' />
+                                                <div className="small text-danger">
+                                                    <ErrorMessage name='fname' />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 col-md-6">
+                                            <div className="form-group my-2">
+                                                <label className='form-label' htmlFor="cnic_no">
+                                                    CNIC No. (without dashes)
+                                                </label>
+                                                <span className="text-danger fw-bold">*</span>
+                                                <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='41304******' name='cnic_no' id='cnic_no' 
+                                                onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13)}
+                                                />
+                                                <div className="small text-danger">
+                                                    <ErrorMessage name='cnic_no' />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 col-md-6">
+                                            <div className="form-group my-2">
+                                                <label className='form-label' htmlFor="email">
+                                                    Email
+                                                </label>
+                                                <span className="text-danger fw-bold">*</span>
+                                                <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='***@gmail.com' name='email' id='email' />
+                                                <div className="small text-danger">
+                                                    <ErrorMessage name='email' />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 col-md-6">
+                                            <div className="form-group my-2">
+                                                <label className='form-label' htmlFor="mobile_no">
+                                                    Mobile No. (non-zero digits)
+                                                </label>
+                                                <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='333241****' name='mobile_no' id='mobile_no' 
+                                                onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10)}                                                
+                                                />
+                                                <div className="small text-danger">
+                                                    <ErrorMessage name='mobile_no' />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 col-md-6">
+                                            <div className="form-group my-2">
+                                                <label className='form-label' htmlFor="password">
+                                                    Password
+                                                </label>
+                                                <span className="text-danger fw-bold">*</span>
+                                                <Field type="password" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='********' name='password' id='password' />
+                                                <div className="small text-danger">
+                                                    <ErrorMessage name='password' />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-12 col-md-6">
+                                            <div className="form-group my-2">
+                                                <label className='form-label' htmlFor="password_confirmation">
+                                                    Confirm Password
+                                                </label>
+                                                <span className="text-danger fw-bold">*</span>
+                                                <Field type="password" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='********' name='password_confirmation' id='password_confirmation' />
+                                                <div className="small text-danger">
+                                                    <ErrorMessage name='password_confirmation' />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex justify-content-between align-items-center flex-wrap mt-2 py-2">
+                                        <button className="btn btn-primary btn-sm bg-primary shadow shadow-sm rounded-pill p-3 px-5" type='submit' disabled={loading}>
+                                            { loading ? 'Registering...' : 'Register' }
+                                        </button>
+                                        <p className='small mt-auto'>Already have an account? &nbsp;  
+                                            <Link to='/login' className='text-decoration-none'>Login</Link>
+                                        </p>
+                                    </div>
+                                </Form>
+                            </Formik>
+                        </div>
+                    </div>
                 </div>
-
-                    <Form className="" method='POST' autoComplete='off'>
-                        <div className="form-group">
-                            <div className="row">
-                                <div className="col-6">
-                                    <FormControl control='input' type="text" name="first_name" label="Fullname" required={true} />
-                                </div>
-                                <div className="col-6">
-                                    <FormControl control='input' type="text" name="last_name" label="Surname" required={true} />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <div className="row">
-                                <div className="col-6">
-                                    <FormControl control='input' type="text" name="fname" label="Father's Name" required={true} />
-                                </div>
-                                <div className="col-6">
-                                    <FormControl control='input' type="text" name="cnic_no" label="CNIC No." required={true}
-                                    onInput={(e) => {
-                                        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13);
-                                    }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <div className="row">
-                                <div className="col-6">
-                                    <FormControl control='input' type="text" name="email" label="Email" required={true} />
-                                </div>
-                                <div className="col-6">
-                                    <FormControl control='input' type="tel" name="mobile_no" label="Mobile No." 
-                                    onInput={(e) => {
-                                        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                    }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <div className="row">
-                                <div className="col-6">
-                                    <FormControl control='input' type="password" name="password" label="Password" required={true} />
-                                </div>
-                                <div className="col-6">
-                                    <FormControl control='input' type="password" name="password_confirmation" label="Confirm Password" required={true} />
-                                </div>
-                            </div>
-                        
-                        </div>
-
-                        <div className="form-group">
-                            <button disabled={loading} type='submit' className="btn btn-primary w-100 my-2">
-                                {loading ? 'Registering...' : 'Register'}
-                            </button>
-                            <p className='small'>Already have an account? <Link to='/login' className='text-decoration-none'>Login</Link></p>
-                        </div>
-                    </Form>
-                    
-                </div>
-        </Formik>
-    </AuthLayout>
+            </div>
+        </div>
+    </div>
   )
 }
 
-export default Signup
+export default Register

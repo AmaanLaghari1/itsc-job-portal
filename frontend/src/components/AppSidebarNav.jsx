@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
 
-import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
+import { CBadge, CNavLink, CSidebarNav, useColorModes } from '@coreui/react'
 
 export const AppSidebarNav = ({ items }) => {
   const navLink = (name, icon, badge, indent = false) => {
@@ -15,7 +15,7 @@ export const AppSidebarNav = ({ items }) => {
           ? icon
           : indent && (
               <span className="nav-icon">
-                <span className="nav-icon-bullet"></span>
+                <span className="nav-icon-bullet text-black"></span>
               </span>
             )}
         {name && name}

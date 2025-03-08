@@ -9,6 +9,7 @@ import { updateUser, uploadImage } from '../../actions/UserAction'
 import axios from 'axios'
 import CustomSelect from '../../components/CustomSelect'
 import './Profile.css'
+import { CButton } from '@coreui/react'
 
 const Profile = () => {
     const auth = useSelector(state => state.auth.authData)
@@ -16,7 +17,7 @@ const Profile = () => {
     const [loading, setLoading] = useState(false)
     const [preview, setPreview] = useState(null); // Image preview state
     const [data, setData] = useState({
-        cities: [],
+        // cities: [],
         countries: [],
         districts: [],
         provinces: []
@@ -30,18 +31,18 @@ const Profile = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const [citiesRes, countriesRes, districtsRes, provincesRes] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL}cities`),
+                const [countriesRes, districtsRes, provincesRes] = await Promise.all([
+                    // axios.get(`${import.meta.env.VITE_API_URL}cities`),
                     axios.get(`${import.meta.env.VITE_API_URL}countries`),
-                    axios.get(`${import.meta.env.VITE_API_URL}districts`),
-                    axios.get(`${import.meta.env.VITE_API_URL}provinces`)
+                    auth.user.PROVINCE_ID && axios.get(`${import.meta.env.VITE_API_URL}districts/${auth.user.PROVINCE_ID}`),
+                    (auth.user.COUNTRY_ID || 160) && axios.get(`${import.meta.env.VITE_API_URL}provinces/${auth.user.COUNTRY_ID || 160}`)
                 ]);
 
                 setData({
-                    cities: citiesRes.data?.options || [],
+                    // cities: citiesRes.data?.options || [],
                     countries: countriesRes.data?.options || [],
-                    districts: districtsRes.data?.options || [],
-                    provinces: provincesRes.data?.options || []
+                    districts: districtsRes?.data?.options || [],
+                    provinces: provincesRes?.data?.options || []
                 });
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -51,11 +52,45 @@ const Profile = () => {
         fetchData();
     }, []);
 
+    const handleCountryChange = async (countryId) => {
+        if (!countryId) {
+            setData((prevData) => ({ ...prevData, provinces: [] }));
+            return;
+        }
+    
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}provinces/${countryId}`);
+            setData((prevData) => ({
+                ...prevData,
+                provinces: response.data?.options || [],
+            }));
+        } catch (error) {
+            console.error("Error fetching provinces:", error);
+        }
+    };
+
+    const handleProvinceChange = async (provinceId) => {
+        if (!provinceId) {
+            setData((prevData) => ({ ...prevData, provinces: [] }));
+            return;
+        }
+    
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}districts/${provinceId}`);
+            setData((prevData) => ({
+                ...prevData,
+                districts: response.data?.options || [],
+            }));
+        } catch (error) {
+            console.error("Error fetching districts:", error);
+        }
+    };
+
     // Generic function to map options
     const mapOptions = (items, idKey, nameKey) =>
         items.map(item => ({ key: item[idKey], value: item[nameKey] }));
 
-    const cityOptions = mapOptions(data.cities, "CITY_ID", "CITY_NAME");
+    // const cityOptions = mapOptions(data.cities, "CITY_ID", "CITY_NAME");
     const districtOptions = mapOptions(data.districts, "DISTRICT_ID", "DISTRICT_NAME");
     const provinceOptions = mapOptions(data.provinces, "PROVINCE_ID", "PROVINCE_NAME");
     const countryOptions = mapOptions(data.countries, "COUNTRY_ID", "COUNTRY_NAME");
@@ -72,16 +107,16 @@ const Profile = () => {
         permanent_address: auth.user.PERMANENT_ADDRESS || '',
         date_of_birth: auth.user.DATE_OF_BIRTH ? new Date(auth.user.DATE_OF_BIRTH) : '',
         place_of_birth: auth.user.PLACE_OF_BIRTH || '',
-        city_id: auth.user.CITY_ID || '',
+        // city_id: auth.user.CITY_ID || '',
         district_id: auth.user.DISTRICT_ID || '',
         province_id: auth.user.PROVINCE_ID || '',
-        country_id: auth.user.COUNTRY_ID || '',
+        country_id: auth.user.COUNTRY_ID || 160,
         religion: auth.user.RELIGION || '',
-        nationality: auth.user.NATIONALITY || '',
+        nationality: auth.user.COUNTRY_ID || '',
         gender: auth.user.GENDER || '',
         marital_status: auth.user.MARITAL_STATUS || '',
-        domicile_province: auth.user.DOMICILE_PROVINCE || '',
-        district: auth.user.DISTRICT || '',
+        domicile_province: auth.user.PROVINCE_ID || '',
+        // district: auth.user.DISTRICT || '',
         profile_image: null,
     }
 // console.log(auth.user.DOMICILE_PROVINCE);
@@ -144,16 +179,18 @@ const Profile = () => {
                     className="rounded-circle border border-2 cursor-pointer"
                     alt="Profile"
                     style={{ objectFit: "cover" }}
-                    onClick={handleChangePic}
-                />
-                {/* <CButton variant='dark' className='change-pic-btn btn btn-light btn-sm position-absolute top-50 start-50 translate-middle cursor-pointer mt-2'
-                >Change Picture</CButton> */}
+                    />
             </div>
             <div className="basic-info">
                 <h1>{`${auth.user.FIRST_NAME || ''}`}</h1>
                 <p className="lead">
                     {auth.user.EMAIL || ''}
                 </p>
+                <CButton variant='warning' className='btn btn-warning btn-sm'
+                onClick={handleChangePic}
+                >
+                    Upload Picture
+                </CButton>
             </div>
         </div>
         <Formik
@@ -213,17 +250,19 @@ const Profile = () => {
                                     />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='input' type='text' label='Permanent Address' name='permanent_address' />
+                                    <FormControl control='input' as='textarea' label='Present Address' name='home_address' />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='input' type='text' label='Present Address' name='home_address' />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <FormControl control='radio' label='Gender' name='gender' 
-                                    options={[
-                                        {key: 'M', value: 'Male'},
-                                        {key: 'F', value: 'Female'},
-                                    ]} />
+                                    <CustomSelect
+                                        className='form-control mt-2'
+                                        options={countryOptions}
+                                        label='Country'
+                                        name='country_id'
+                                        onChange={(selectedOption) => {
+                                            setFieldValue('country_id', selectedOption?.key || '');
+                                            handleCountryChange(selectedOption?.key); // Fetch provinces dynamically
+                                        }}
+                                    />
                                 </div>
                                 <div className="col-sm-3 my-2">
                                     <FormControl control='date' type='date' label='Date of Birth' name='date_of_birth' />
@@ -232,28 +271,14 @@ const Profile = () => {
                                     <FormControl className='form-control mt-2' control='input' type='text' label='Place of Birth' name='place_of_birth' />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <CustomSelect className='form-control mt-2' options={cityOptions} label='City' name='city_id' />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <CustomSelect className='form-control mt-2' options={districtOptions} label='District' name='district_id' />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <CustomSelect className='form-control mt-2' options={provinceOptions} label='Province' name='province_id' />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <CustomSelect className='form-control mt-2' options={countryOptions} label='Country' name='country_id' />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <FormControl control='input' className='form-control mt-2' label='Domicile District' name='district' />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <FormControl control='input' className='form-control mt-2' label='Domicile Province' name='domicile_province' />
-                                </div>
-                                <div className="col-sm-6 my-2">
                                     <FormControl className='form-control mt-2' control='input' type='text' label='Religion' name='religion' />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl className='form-control mt-2' control='input' type='text' label='Nationality' name='nationality' />
+                                    <FormControl control='radio' label='Gender' name='gender' 
+                                    options={[
+                                        {key: 'M', value: 'Male'},
+                                        {key: 'F', value: 'Female'},
+                                    ]} />
                                 </div>
                                 <div className="col-sm-6 my-2">
                                     <FormControl control='radio' label='Marital Status' name='marital_status' 
@@ -263,10 +288,33 @@ const Profile = () => {
                                         {key: 3, value: 'Widowed'}
                                     ]} />
                                 </div>
+                                <div className="col-sm-6 my-2">
+                                    <CustomSelect 
+                                    className='form-control mt-2' 
+                                    options={provinceOptions} 
+                                    label='Domicile Province' 
+                                    name='province_id' 
+                                    onChange={(selectedOption) => {
+                                        setFieldValue('province_id', selectedOption?.key || '');
+                                        handleProvinceChange(selectedOption?.key); // Fetch provinces dynamically
+                                    }}
+                                    />
+                                </div>
+                                <div className="col-sm-6 my-2">
+                                    <CustomSelect 
+                                    className='form-control mt-2' 
+                                    options={districtOptions} 
+                                    label='Domicile District' 
+                                    name='district_id' 
+                                    />
+                                </div>
+                                <div className="col-sm-6 my-2">
+                                    <FormControl control='input' as='textarea' label='Permanent Address' name='permanent_address' />
+                                </div>
                             </div>
                         </div>
                         <div className="form-group text-center">
-                            <button className="btn btn-primary btn-lg my-2 rounded-0 px-3" type='submit' disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
+                            <button className="btn btn-primary bg-primary rounded-pill my-2 p-2 px-4" type='submit' disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
                         </div>
                     </Form>
                 )

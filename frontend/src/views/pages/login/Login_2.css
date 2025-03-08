@@ -1,9 +1,13 @@
 
-.montserrat-font {
+* {
     font-family: "Montserrat", sans-serif;
     /* font-optical-sizing: auto; */
-    font-weight: 400;
+    font-weight: 500;
     font-style: normal;
+}
+
+::-webkit-scrollbar {
+    display: none !important;
 }
 
 .bg-primary {

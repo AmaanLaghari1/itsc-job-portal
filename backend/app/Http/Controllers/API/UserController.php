@@ -275,7 +275,12 @@ class UserController extends Controller
         }
 
         // Update user details
-        $user->update(formatRequestData($request->all()));
+        if(is_null($request->profile_image)){
+            $user->update(formatRequestData($request->except(['PROFILE_IMAGE'])));
+        }
+        else {
+            $user->update(formatRequestData($request->all()));
+        }
 
         return response()->json([
             'status' => true,
@@ -307,10 +312,14 @@ class UserController extends Controller
         }
     }
 
-    public function getDistricts(){
+    public function getDistricts($provinceId=null){
         try {
-            $options = DB::table('districts')->get();
-
+            if($provinceId){
+                $options = DB::table('districts')->where('PROVINCE_ID', $provinceId)->get();
+            }
+            else {
+                $options = DB::table('districts')->get();
+            }
             return response()->json([
                 'options' => $options,
                 'status' => true
@@ -340,9 +349,14 @@ class UserController extends Controller
         }
     }
 
-    public function getProvinces(){
+    public function getProvinces($countryId=null){
         try {
-            $options = DB::table('provinces')->get();
+            if($countryId){
+                $options = DB::table('provinces')->where('COUNTRY_ID', $countryId)->get();
+            }
+            else {
+                $options = DB::table('provinces')->get();
+            }
 
             return response()->json([
                 'options' => $options,

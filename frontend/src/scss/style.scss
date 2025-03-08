@@ -4,17 +4,33 @@
 @use "@coreui/chartjs/scss/coreui-chartjs";
 @use "vendors/simplebar";
 
+* {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
 :root {
-  --dark-bg: #034078;
+  --dark-bg: #000;
 }
 
 body {
   background-color: var(--cui-body-bg);
 }
 
-.sidebar-dark, .sidebar {
-  background-color: var(--dark-bg) !important;
-}
+// .sidebar-dark, .sidebar {
+//   background-color: #fff !important;
+//   color: #000 !important;
+// }
+
+// .simplebar-content .nav-link:not(.nav-link.active) {
+//   color: #000 !important;
+// }
+
+// .simplebar-content .nav-link:not(.nav-link.active):hover {
+//   color: #fff !important;
+// }
 
 .wrapper {
   width: 100%;
@@ -72,4 +88,12 @@ body {
   .footer {
     --cui-footer-bg: var(--cui-body-bg);
   }
+
+  // .sidebar-dark, .sidebar {
+  //   background-color: var(--dark-bg) !important;
+  // }
+
+  // .simplebar-content .nav-link:not(.nav-link.active) {
+  //   color: #fff !important;
+  // }
 }

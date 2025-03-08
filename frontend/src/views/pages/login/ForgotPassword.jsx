@@ -1,7 +1,7 @@
 import React from 'react'
 import './Login_2.css'
 import lock_thumbnail from '../../../assets/images/login/password-lock.png'
-import guard_thumbnail from '../../../assets/images/login/gaurd.png'
+import chat_thumbnail from '../../../assets/images/login/chat_thumbnail.png'
 import logo from '../../../assets/images/logos/usindh-logo.png'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
@@ -40,7 +40,7 @@ const ForgotPassword = () => {
             <div className="container position-relative z-1">
                 <div className="row">
                     <div className="col-7 d-none d-lg-flex justify-content-end">
-                        <img src={linkSent ? guard_thumbnail : lock_thumbnail} alt="" className="w-75 d-block ms-auto" />
+                        <img src={linkSent ? chat_thumbnail : lock_thumbnail} alt="" className="w-75 d-block ms-auto" />
                     </div>
                     <div className="col-12 col-lg-5">
                         <div className="col-10 mx-auto">
@@ -48,7 +48,7 @@ const ForgotPassword = () => {
                             <h3 className='fw-bold mt-5 mb-4'>{!linkSent ? 'Forgot Your Password?' : 'Email Sent!' }</h3>
                             {
                                 linkSent ? 
-                                <div className="alert alert-success">
+                                <div className="alert p-0">
                                     <p className='small fw-bold'>Password reset link has been sent to your email.</p>
                                     <p className='small'>Please check your email and follow the instructions. 
                                         If you don't receive an email, please check your spam folder.
