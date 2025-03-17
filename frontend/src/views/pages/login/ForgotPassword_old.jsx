@@ -6,10 +6,10 @@ import { resetPassword } from "../../../api/AuthRequest.js"
 import Alert from "../../../components/Alert.js"
 import { useState } from "react"
 import logo from '../../../assets/images/logos/usindh-logo.png'
+import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
 import './Login.css'
 
 const ForgotPassword = () => {
-    const navigate = useNavigate()
     const [linkSent, setLinkSent] = useState(false)
     const [loading, setLoading] = useState(false)
 

@@ -1,13 +1,22 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import PropTypes from 'prop-types'
-
 import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
 
-import { CBadge, CNavLink, CSidebarNav, useColorModes } from '@coreui/react'
+import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
 
 export const AppSidebarNav = ({ items }) => {
+  const location = useLocation()
+
+  const isActive = (to) => {
+    if (!to) return false
+    let normalizedTo = to.replace(/\/$/, '') // Remove trailing slash if any
+    normalizedTo = normalizedTo.replace(/s$/, '') // ✅ Remove trailing "s" if it exists
+    const regex = new RegExp(`^${normalizedTo}(|$)`) // Match exact segment (e.g., `/qualifications/anything`)
+    return regex.test(location.pathname)
+  }
+
   const navLink = (name, icon, badge, indent = false) => {
     return (
       <>
@@ -29,14 +38,17 @@ export const AppSidebarNav = ({ items }) => {
   }
 
   const navItem = (item, index, indent = false) => {
-    const { component, name, badge, icon, ...rest } = item
+    const { component, name, badge, icon, to, href, ...rest } = item
     const Component = component
+
     return (
       <Component as="div" key={index}>
-        {rest.to || rest.href ? (
+        {to || href ? (
           <CNavLink
-            {...(rest.to && { as: NavLink })}
-            {...(rest.href && { target: '_blank', rel: 'noopener noreferrer' })}
+            as={NavLink}
+            to={to}
+            className={isActive(to) ? 'active nav-link' : 'nav-link'} // ✅ Apply active class
+            {...(href && { target: '_blank', rel: 'noopener noreferrer' })}
             {...rest}
           >
             {navLink(name, icon, badge, indent)}
@@ -49,12 +61,12 @@ export const AppSidebarNav = ({ items }) => {
   }
 
   const navGroup = (item, index) => {
-    const { component, name, icon, items, to, ...rest } = item
+    const { component, name, icon, items, ...rest } = item
     const Component = component
     return (
       <Component compact as="div" key={index} toggler={navLink(name, icon)} {...rest}>
-        {items?.map((item, index) =>
-          item.items ? navGroup(item, index) : navItem(item, index, true),
+        {items?.map((subItem, subIndex) =>
+          subItem.items ? navGroup(subItem, subIndex) : navItem(subItem, subIndex, true),
         )}
       </Component>
     )

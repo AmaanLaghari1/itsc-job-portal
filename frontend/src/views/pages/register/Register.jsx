@@ -3,14 +3,16 @@ import "../login/Login_2.css"
 import login_thumbnail from '../../../assets/images/login/register_thumbnail.PNG'
 import logo from '../../../assets/images/logos/usindh-logo.png'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Alert from '../../../components/Alert.js'
 import { register } from '../../../actions/AuthAction.js'
 import { useState } from 'react'
 import * as Yup from 'yup'
 import { Link, useNavigate } from 'react-router-dom'
+import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
 
 const Register = () => {
+    const theme = useSelector(state => state.ui.theme)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)    
@@ -65,7 +67,7 @@ const Register = () => {
                     </div>
                     <div className="col-12 col-lg-6">
                         <div className="col-12 mx-auto">
-                            <img src={logo} width='200' className='mt-2' alt="Usindh Logo" />
+                            <img src={theme == 'dark' ? logoWhite : logo} width='200' className='mt-2' alt="Usindh Logo" />
                             <h3 className='fw-bold mt-4 mb-3'>Create Account</h3>
                             <Formik
                             initialValues={initialValues}

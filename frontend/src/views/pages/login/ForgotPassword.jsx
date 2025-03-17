@@ -9,9 +9,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { resetPassword } from "../../../api/AuthRequest.js"
 import Alert from "../../../components/Alert.js"
 import { useState } from "react"
+import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
+import { useSelector } from 'react-redux'
 
 const ForgotPassword = () => {
-    const navigate = useNavigate()
+    const theme = useSelector(state => state.ui.theme)
     const [linkSent, setLinkSent] = useState(false)
     const [loading, setLoading] = useState(false)
 
@@ -44,7 +46,7 @@ const ForgotPassword = () => {
                     </div>
                     <div className="col-12 col-lg-5">
                         <div className="col-10 mx-auto">
-                            <img src={logo} width='200' className='mt-3' alt="Usindh Logo" />
+                            <img src={theme == 'dark' ? logoWhite : logo} width='200' className='mt-3' alt="Usindh Logo" />
                             <h3 className='fw-bold mt-5 mb-4'>{!linkSent ? 'Forgot Your Password?' : 'Email Sent!' }</h3>
                             {
                                 linkSent ? 

@@ -10,10 +10,12 @@ import { verifyEmail } from '../../../actions/AuthAction.js';
 import { useEffect, useState } from 'react';
 import { resendOtp } from '../../../api/AuthRequest.js';
 import gaurd from '../../../assets/images/login/gaurd.PNG'
+import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
 
 const TIMER_STORAGE_KEY = "otp_timer";
 
 const VerifyEmail = () => {
+    const theme = useSelector(state => state.ui.theme)
     const dispatch = useDispatch();
     const location = useLocation();
     const navigate = useNavigate();
@@ -95,7 +97,7 @@ const VerifyEmail = () => {
                     </div>
                     <div className="col-12 col-lg-5">
                         <div className="col-10 mx-auto">
-                            <img src={logo} width='200' className='mt-3' alt="Usindh Logo" />
+                            <img src={theme == 'dark' ? logoWhite : logo} width='200' className='mt-3' alt="Usindh Logo" />
                             <Formik
                             initialValues={{
                                 email: email,

@@ -9,9 +9,11 @@ import Alert from '../../../components/Alert.js'
 import { useState } from 'react'
 import * as Yup from 'yup'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
+import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
 
 const Login = () => {
     const auth = useSelector(state => state.auth)
+    const theme = useSelector(state => state.ui.theme)
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
 
@@ -53,7 +55,7 @@ const Login = () => {
                     </div>
                     <div className="col-12 col-lg-6">
                         <div className="col-10 mx-auto">
-                            <img src={logo} width='200' className='mt-3' alt="Usindh Logo" />
+                            <img src={theme == 'dark' ? logoWhite : logo} width='200' className='mt-3' alt="Usindh Logo" />
                             <h3 className='fw-bold mt-5 mb-4'>Login</h3>
                             <Formik
                             initialValues={initialValues}

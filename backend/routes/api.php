@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\QualificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,4 +44,13 @@ Route::prefix('user')->group(function() {
     Route::put('put/{id}', [UserController::class, 'update']);
     Route::delete('delete/{id}', [UserController::class, 'destroy']);
     Route::post('upload-img', [UserController::class, 'uploadImg']);
+});
+
+Route::prefix('qualification')->group(function() {
+    Route::post('post', [QualificationController::class, 'create']);
+    Route::get('get/{userId?}', [QualificationController::class, 'getByUserId']);
+    Route::get('discipline/{programId?}', [QualificationController::class, 'getDisciplines']);
+    Route::get('program/{programId?}', [QualificationController::class, 'getPrograms']);
+    Route::get('organization/{organizationId?}', [QualificationController::class, 'getOrganizations']);
+    Route::get('institute/{instituteId?}', [QualificationController::class, 'getInstitutes']);
 });

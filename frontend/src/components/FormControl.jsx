@@ -126,6 +126,8 @@ const Checkbox = props => {
 
 const DateInput = props => {
     const {label, name, required, ...rest} = props
+    const maxDate = new Date(); // Current date
+
     return (
         <div>
             <label className='form-label' htmlFor={name}>{label}{required ? <span className='text-danger fw-bold'>*</span>: ''}</label>
@@ -135,7 +137,23 @@ const DateInput = props => {
                         const {setFieldValue} = form
                         return (
                             <div>
-                                <DateView className='form-control w-100' id={name} value={field.value} {...rest} {...field} selected={field.value} onChange={val =>  setFieldValue(name, val)} shouldCloseOnSelect={true} showTimeInput={false} showYearDropdown />
+                                <DateView 
+                                className='form-control w-100' 
+                                id={name} 
+                                value={field.value} 
+                                {...rest} 
+                                {...field} 
+                                selected={field.value} 
+                                onChange={val =>  setFieldValue(name, val)} 
+                                shouldCloseOnSelect={true} 
+                                showTimeInput={false} 
+                                showYearDropdown
+                                yearDropdownItemNumber={50}
+                                scrollableYearDropdown
+                                maxDate={maxDate}
+                                minDate={new Date("01/01/1900")}
+                                dateFormat="yyyy/MM/dd"    
+                                />
                             </div>
                         )
                     }

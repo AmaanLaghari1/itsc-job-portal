@@ -1,4 +1,4 @@
-import React, { use, useEffect } from 'react'
+import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import logoWhite from '../assets/images/logos/usindh-logo-white.png'
 import logo from '../assets/images/logos/usindh-logo.png'
@@ -10,7 +10,6 @@ import {
   CSidebarFooter,
   CSidebarHeader,
   CSidebarToggler,
-  useColorModes,
 } from '@coreui/react'
 
 import { AppSidebarNav } from './AppSidebarNav'
@@ -26,7 +25,7 @@ const AppSidebar = () => {
   return (
     <CSidebar
       className="border-end"
-      // colorScheme="dark"
+      colorScheme="light"
       position="fixed"
       unfoldable={unfoldable}
       visible={sidebarShow}

@@ -8,8 +8,11 @@ import { setPassword, verifyPasswordToken } from '../../../api/AuthRequest.js'
 import * as Yup from 'yup'
 import Alert from "../../../components/Alert.js";
 import { useEffect, useState } from "react";
+import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
+import { useSelector } from 'react-redux';
 
 const ResetPassword = () => {
+    const theme = useSelector(state => state.ui.theme)
     const [searchParams] = useSearchParams();
     const navigate = useNavigate()
     const token = searchParams.get('token')
@@ -68,7 +71,7 @@ const ResetPassword = () => {
                     </div>
                     <div className="col-12 col-lg-5">
                         <div className="col-10 mx-auto">
-                            <img src={logo} width='200' className='mt-3' alt="Usindh Logo" />
+                            <img src={theme == 'dark' ? logoWhite : logo} width='200' className='mt-3' alt="Usindh Logo" />
                             <h3 className='fw-bold mt-5 mb-4'>Reset Your Password</h3>
                             <Formik
                             initialValues={{forget_password: token || '', password: '', password_confirmation: ''}}

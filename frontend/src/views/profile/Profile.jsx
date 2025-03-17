@@ -10,6 +10,7 @@ import axios from 'axios'
 import CustomSelect from '../../components/CustomSelect'
 import './Profile.css'
 import { CButton } from '@coreui/react'
+import { mapOptions } from '../../helper.js'
 
 const Profile = () => {
     const auth = useSelector(state => state.auth.authData)
@@ -17,7 +18,6 @@ const Profile = () => {
     const [loading, setLoading] = useState(false)
     const [preview, setPreview] = useState(null); // Image preview state
     const [data, setData] = useState({
-        // cities: [],
         countries: [],
         districts: [],
         provinces: []
@@ -32,14 +32,12 @@ const Profile = () => {
         async function fetchData() {
             try {
                 const [countriesRes, districtsRes, provincesRes] = await Promise.all([
-                    // axios.get(`${import.meta.env.VITE_API_URL}cities`),
                     axios.get(`${import.meta.env.VITE_API_URL}countries`),
                     auth.user.PROVINCE_ID && axios.get(`${import.meta.env.VITE_API_URL}districts/${auth.user.PROVINCE_ID}`),
                     (auth.user.COUNTRY_ID || 160) && axios.get(`${import.meta.env.VITE_API_URL}provinces/${auth.user.COUNTRY_ID || 160}`)
                 ]);
 
                 setData({
-                    // cities: citiesRes.data?.options || [],
                     countries: countriesRes.data?.options || [],
                     districts: districtsRes?.data?.options || [],
                     provinces: provincesRes?.data?.options || []
@@ -86,11 +84,6 @@ const Profile = () => {
         }
     };
 
-    // Generic function to map options
-    const mapOptions = (items, idKey, nameKey) =>
-        items.map(item => ({ key: item[idKey], value: item[nameKey] }));
-
-    // const cityOptions = mapOptions(data.cities, "CITY_ID", "CITY_NAME");
     const districtOptions = mapOptions(data.districts, "DISTRICT_ID", "DISTRICT_NAME");
     const provinceOptions = mapOptions(data.provinces, "PROVINCE_ID", "PROVINCE_NAME");
     const countryOptions = mapOptions(data.countries, "COUNTRY_ID", "COUNTRY_NAME");
@@ -102,12 +95,10 @@ const Profile = () => {
         cnic_no: auth.user.CNIC_NO || '',
         email: auth.user.EMAIL || '',
         mobile_no: auth.user.MOBILE_NO || '',
-        phone: auth.user.PHONE || '',
         home_address: auth.user.HOME_ADDRESS || '',
         permanent_address: auth.user.PERMANENT_ADDRESS || '',
         date_of_birth: auth.user.DATE_OF_BIRTH ? new Date(auth.user.DATE_OF_BIRTH) : '',
         place_of_birth: auth.user.PLACE_OF_BIRTH || '',
-        // city_id: auth.user.CITY_ID || '',
         district_id: auth.user.DISTRICT_ID || '',
         province_id: auth.user.PROVINCE_ID || '',
         country_id: auth.user.COUNTRY_ID || 160,
@@ -116,10 +107,9 @@ const Profile = () => {
         gender: auth.user.GENDER || '',
         marital_status: auth.user.MARITAL_STATUS || '',
         domicile_province: auth.user.PROVINCE_ID || '',
-        // district: auth.user.DISTRICT || '',
         profile_image: null,
     }
-// console.log(auth.user.DOMICILE_PROVINCE);
+
     const validations = Yup.object({
         first_name: Yup.string().required('Name is required!'),
         last_name: Yup.string().required('Surname is required!'),
@@ -127,14 +117,13 @@ const Profile = () => {
         .matches(/^\d{13}$/, 'CNIC No. invalid!')
         .required('CNIC is required!'),
         mobile_no: Yup.string().matches(/^[1-9]\d{9}$/, {message: "Please enter valid number.", excludeEmptyString: false}),
-        phone: Yup.string().matches(/^[1-9]\d{9}$/, {message: "Please enter valid number.", excludeEmptyString: false}),
         email: Yup.string().email('Invalid email format').required('Email is required!'),
     });
 
     const submitHandler = async (values, { setFieldValue, resetForm }) => {
         setLoading(true);
         
-        if(values.profile_image){
+        if(values.profile_image !== null){
             const data = new FormData()
             const filename = Date.now() + values.profile_image.name
             data.append("profile_image", filename)
@@ -145,7 +134,7 @@ const Profile = () => {
                 console.log(response)
                 values.profile_image = response.path
             } catch (error) {
-                console.log(error)
+                console.log(error.response.data.error_message)
             }
         }
 
@@ -156,6 +145,7 @@ const Profile = () => {
     
             if (response?.success) {
                 Alert({ status: true, text: "Profile Saved." });
+                setFieldValue('profile_image', null)
             } else {
                 Alert({ status: false, text: "Failed to save profile." });
             }
@@ -212,12 +202,10 @@ const Profile = () => {
                                 setFieldValue('profile_image', file); // Store file instead of base64
                                 setPreview(URL.createObjectURL(file)); // Show image preview
                             }
-                        }}
-                        
+                        }}                
                         ref={changePicRef}
                     />
                         <div className="form-group">
-                            {/* <FormControl ref={changePicRef} className='d-none' control='input' type="file" name='profile_image' onChange={handleFileInput} /> */}
                             <div className="row">
                                 <div className="col-sm-6 my-2">
                                     <FormControl control='input' type='text' label='Name' name='first_name' />
@@ -236,42 +224,22 @@ const Profile = () => {
                                     />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='input' type='text' label='Mobile No. (non-zero digits)' name='mobile_no'
+                                    <FormControl control='input' type='text' label='Mobile No. (without leading zero)' name='mobile_no'
                                     onInput={(e) => {
                                         e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
                                     }}
                                     />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <FormControl control='input' type='text' label='Telephone No. (non-zero digits)' name='phone'
-                                    onInput={(e) => {
-                                        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
-                                    }}
-                                    />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <FormControl control='input' as='textarea' label='Present Address' name='home_address' />
                                 </div>
                                 <div className="col-sm-6 my-2">
                                     <CustomSelect
-                                        className='form-control mt-2'
-                                        options={countryOptions}
-                                        label='Country'
-                                        name='country_id'
-                                        onChange={(selectedOption) => {
-                                            setFieldValue('country_id', selectedOption?.key || '');
-                                            handleCountryChange(selectedOption?.key); // Fetch provinces dynamically
-                                        }}
+                                    className='form-control mt-2' 
+                                    options={[]} 
+                                    label='Religion' 
+                                    name='religion' 
+                                    onChange={(selectedOption) => {
+                                        setFieldValue('religion', selectedOption?.key || '');
+                                    }}
                                     />
-                                </div>
-                                <div className="col-sm-3 my-2">
-                                    <FormControl control='date' type='date' label='Date of Birth' name='date_of_birth' />
-                                </div>
-                                <div className="col-sm-3 my-2">
-                                    <FormControl className='form-control mt-2' control='input' type='text' label='Place of Birth' name='place_of_birth' />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <FormControl className='form-control mt-2' control='input' type='text' label='Religion' name='religion' />
                                 </div>
                                 <div className="col-sm-6 my-2">
                                     <FormControl control='radio' label='Gender' name='gender' 
@@ -285,32 +253,59 @@ const Profile = () => {
                                     options={[
                                         {key: 1, value: 'Single'},
                                         {key: 2, value: 'Married'},
-                                        {key: 3, value: 'Widowed'}
+                                        {key: 3, value: 'Widowed'},
+                                        {key: 4, value: 'Divorced'}
                                     ]} />
+                                </div>                                
+                                <div className="col-sm-3 my-2">
+                                    <FormControl control='date' type='date' label='Date of Birth' name='date_of_birth' />
+                                </div>
+                                <div className="col-sm-3 my-2">
+                                    <FormControl className='form-control mt-2' control='input' type='text' label='Place of Birth' name='place_of_birth' />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <CustomSelect 
-                                    className='form-control mt-2' 
-                                    options={provinceOptions} 
-                                    label='Domicile Province' 
-                                    name='province_id' 
-                                    onChange={(selectedOption) => {
-                                        setFieldValue('province_id', selectedOption?.key || '');
-                                        handleProvinceChange(selectedOption?.key); // Fetch provinces dynamically
-                                    }}
-                                    />
+                                    <FormControl control='input' as='textarea' label='Present Address' name='home_address' />
                                 </div>
-                                <div className="col-sm-6 my-2">
-                                    <CustomSelect 
-                                    className='form-control mt-2' 
-                                    options={districtOptions} 
-                                    label='Domicile District' 
-                                    name='district_id' 
-                                    />
-                                </div>
-                                <div className="col-sm-6 my-2">
-                                    <FormControl control='input' as='textarea' label='Permanent Address' name='permanent_address' />
-                                </div>
+                                <fieldset className='border border-2 p-2'>
+                                    <legend className='fw-bold'>Domicile Details</legend>
+                                    <div className="row">
+                                        <div className="col-sm-6 my-2">
+                                            <CustomSelect
+                                                className='form-control mt-2'
+                                                options={countryOptions}
+                                                label='Country'
+                                                name='country_id'
+                                                onChange={(selectedOption) => {
+                                                    setFieldValue('country_id', selectedOption?.key || '');
+                                                    handleCountryChange(selectedOption?.key); // Fetch provinces dynamically
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="col-sm-6 my-2">
+                                            <CustomSelect 
+                                            className='form-control mt-2' 
+                                            options={provinceOptions} 
+                                            label='Domicile Province' 
+                                            name='province_id' 
+                                            onChange={(selectedOption) => {
+                                                setFieldValue('province_id', selectedOption?.key || '');
+                                                handleProvinceChange(selectedOption?.key); // Fetch provinces dynamically
+                                            }}
+                                            />
+                                        </div>
+                                        <div className="col-sm-6 my-2">
+                                            <CustomSelect 
+                                            className='form-control mt-2' 
+                                            options={districtOptions} 
+                                            label='Domicile District' 
+                                            name='district_id' 
+                                            />
+                                        </div>
+                                        <div className="col-sm-6 my-2">
+                                            <FormControl control='input' as='textarea' label='Permanent Address' name='permanent_address' />
+                                        </div>
+                                    </div>
+                                </fieldset>
                             </div>
                         </div>
                         <div className="form-group text-center">

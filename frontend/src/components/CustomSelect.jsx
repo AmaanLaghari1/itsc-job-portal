@@ -1,40 +1,52 @@
 import Select from "react-select";
 import { Field, ErrorMessage } from "formik";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const CustomSelect = ({
   label,
   name,
   options,
-  required = false,
+  required=false,
   className = "",
   defaultValue = null, // Allow setting default value dynamically
+  onSearchChange,
   ...rest
 }) => {
+  const theme = useSelector((state) => state.ui.theme); // Get theme from Redux store
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      background: "#212631",
-      color: "#000",
+      background: theme == 'dark' ? "#212631" : "#fff",
+      color: theme == 'dark' ? "#fff" : "#000",
       border: "1px solid #ced4da",
       borderRadius: "4px",
       padding: "2px",
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: "#fff", // Ensures text remains white
+      color: theme == 'dark' ? "#fff" : "#000", // Ensures text remains white
     }),
     menu: (provided) => ({
         ...provided,
-        background: "#1a1d21", // Change dropdown background color
-    }),
-    option: (provided, { isSelected, isFocused }) => ({
+        background: theme == 'dark' ? "#1a1d21" : "#fff", // Change dropdown background color
+      }),
+      option: (provided, { isSelected, isFocused }) => ({
         ...provided,
-        background: isSelected ? "#3a3f44" : isFocused ? "#2a2f34" : "#1a1d21", // Change hover & selected color
-        color: "#fff", // Change text color
+        // background: theme == 'dark' ? "#1a1d21" : "#fff", // Change dropdown background color
+        // background: isSelected ? "#3a3f44" : isFocused ? "#2a2f34" :  theme == 'dark' ? "#1a1d21" : "#fff", // Change hover & selected color
+        background: isSelected 
+        ? "#f9b115"
+        : isFocused 
+          ? "#c8b222"
+          : (theme === 'dark' ? "#1a1d21" : "#fff"),
+        color: theme == 'dark' ? "#fff" : "#000", // Change text color
         padding: "10px",
         cursor: "pointer",
     }),
   };
+
+  const [inputValue, setInputValue] = useState(""); // State to track search input
 
   return (
     <div className={className}>
@@ -49,6 +61,7 @@ const CustomSelect = ({
 
           return (
             <Select
+              cacheOptions
               id={name}
               name={name}
               options={options}
@@ -59,6 +72,13 @@ const CustomSelect = ({
               onChange={(selectedOption) =>
                 form.setFieldValue(name, selectedOption?.key || "")
               }
+              onInputChange={(newValue, { action }) => {
+                setInputValue(newValue);
+                if (action === "input-change" && onSearchChange) {
+                  onSearchChange(newValue); // Fetch search results
+                }
+              }}
+              inputValue={inputValue}
               styles={customStyles}
               isSearchable
               classNamePrefix="custom-select" // Enables custom styles
