@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\QualificationController;
+use App\Http\Controllers\API\ExperienceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,4 +54,9 @@ Route::prefix('qualification')->group(function() {
     Route::get('program/{programId?}', [QualificationController::class, 'getPrograms']);
     Route::get('organization/{organizationId?}', [QualificationController::class, 'getOrganizations']);
     Route::get('institute/{instituteId?}', [QualificationController::class, 'getInstitutes']);
+});
+
+Route::prefix('experience')->group(function() {
+    Route::post('post', [ExperienceController::class, 'create']);
+    Route::get('get/{userId?}', [ExperienceController::class, 'getByUserId']);
 });

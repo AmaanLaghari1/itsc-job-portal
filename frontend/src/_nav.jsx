@@ -35,6 +35,16 @@ const _nav = [
         text: '20%',
       },
     },
+    {
+      component: CNavItem,
+      name: 'Experience',
+      to: '/experience',
+      icon: <CIcon icon={cilEducation} customClassName="nav-icon" />,
+      badge: {
+        color: 'warning',
+        text: '20%',
+      },
+    },
     // {
     //   component: CNavItem,
     //   name: 'Users',

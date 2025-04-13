@@ -1,5 +1,5 @@
 import { legacy_createStore as createStore, combineReducers, compose, applyMiddleware } from 'redux';
-import {thunk} from 'redux-thunk'; // ✅ Fix import
+import { thunk } from 'redux-thunk'; // ✅ Fix import
 import authReducer from './reducers/authReducer';
 import UserReducer from './reducers/UserReducer';
 import storage from 'redux-persist/lib/storage'; // ✅ Use localStorage for persistence
@@ -7,7 +7,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 
 const initialState = {
   sidebarShow: true,
-  theme: 'light',
+  theme: 'light', // ✅ Ensure light mode is the default
 };
 
 // UI reducer
@@ -20,26 +20,16 @@ const changeState = (state = initialState, { type, ...rest }) => {
   }
 };
 
-// Configure Redux Persist for auth
-const authPersistConfig = {
-  key: 'auth',
-  storage, // Stores auth data in localStorage
-};
-
-const userPersistConfig = {
-  key: 'user',
-  storage, // Stores auth data in localStorage
-};
-
+// ✅ Persist UI state (including theme)
 const uiPersistConfig = {
   key: 'ui',
-  storage, // Stores auth data in localStorage
+  storage, // Saves UI state (including theme) in localStorage
 };
 
 const rootReducer = combineReducers({
-  auth: persistReducer(authPersistConfig, authReducer), // Persisted auth state
-  user: persistReducer(userPersistConfig, UserReducer), // Persisted user state
-  ui: persistReducer(uiPersistConfig, changeState) // UI-related state (not persisted)
+  auth: persistReducer({ key: 'auth', storage }, authReducer), // Persisted auth state
+  user: persistReducer({ key: 'user', storage }, UserReducer), // Persisted user state
+  ui: persistReducer(uiPersistConfig, changeState), // ✅ Persist UI state (fixes theme issue)
 });
 
 // Enable Redux DevTools

@@ -5,7 +5,7 @@ import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 
 // We use those styles to show code examples, you should remove them in your application.
-import './scss/examples.scss'
+// import './scss/examples.scss'
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -21,7 +21,7 @@ const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
-  const storedTheme = useSelector((state) => state.theme)
+  const storedTheme = useSelector((state) => state.ui.theme)
 
   const auth = useSelector((state) => state.auth)
   let token = null || auth?.token
@@ -32,12 +32,16 @@ const App = () => {
     if (theme) {
       setColorMode(theme)
     }
-
-    if (isColorModeSet()) {
-      return
+    else {
+      setColorMode(storedTheme || 'light')
     }
-
-    setColorMode(storedTheme)
+    // else {
+    //   setColorMode(storedTheme || 'light')
+    // }
+    // if (isColorModeSet()) {
+    //   return
+    // }
+    
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

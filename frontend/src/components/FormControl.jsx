@@ -130,7 +130,7 @@ const DateInput = props => {
 
     return (
         <div>
-            <label className='form-label' htmlFor={name}>{label}{required ? <span className='text-danger fw-bold'>*</span>: ''}</label>
+            <label className='form-label mb-0' htmlFor={name}>{label}{required ? <span className='text-danger fw-bold'>*</span>: ''}</label>
             <Field className='form-control' name={name}>
                 {
                     ({form, field}) => {

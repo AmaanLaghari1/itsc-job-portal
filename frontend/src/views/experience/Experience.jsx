@@ -1,21 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import CIcon from '@coreui/icons-react'
 import { cilPlus } from '@coreui/icons'
-import { useSelector } from 'react-redux'
-import QualificationCard from './QualificationCard.jsx'
-import * as API from '../../api/QualificationRequest.js'
+import CIcon from '@coreui/icons-react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import ExperienceCard from './ExperienceCard'
+import * as API from '../../api/QualificationRequest.js'
+import { useSelector } from 'react-redux'
 
-const Qualification = () => {
+const Experience = () => {
     const auth = useSelector(state => state.auth.authData)
 
-    const [qualification, setQualification] = React.useState([]);
+    const [experience, setExperience] = React.useState([]);
     
     // Fetch data from API
     async function fetchQualData(){
         const response = await API.getQualification(auth.user.USER_ID);
         console.log(response.data.data);
-        setQualification(response.data.data);
+        setExperience(response.data.data);
       }
       
       useEffect(() => {
@@ -26,19 +26,18 @@ const Qualification = () => {
 
   return (
     <div>
-        <h1>Qualifications</h1>
-        <Link to={import.meta.env.VITE_BASE_URL+'qualification-add'}>
+        <h1>Experience</h1>
+        <Link to={import.meta.env.VITE_BASE_URL+'experience-add'}>
             <button className='btn btn-warning'>
                 Add New <CIcon icon={cilPlus} />
             </button>
         </Link>
         <hr />
         <div className="d-flex justify-content-center align-items-center flex-column flex-wrap">
-
             {
-                <QualificationCard qualification={qualification} /> ||
+                // <ExperienceCard qualification={experience} /> ||
                 <p className="text-center fst-italic my-5">
-                    No qualifications added yet!
+                    No experience added yet!
                 </p>
             }
         </div>
@@ -46,4 +45,4 @@ const Qualification = () => {
   )
 }
 
-export default Qualification
+export default Experience

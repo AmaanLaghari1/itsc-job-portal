@@ -6,10 +6,10 @@ export const register = (formdata) => {
         
         try {
             const response = await API.register(formdata);
-            console.log("Full API Response:", response);
+            // console.log("Full API Response:", response);
             
             if (response.data?.status) { // Use response.data.status instead of response.success
-                console.log("Response Data:", response.data);
+                // console.log("Response Data:", response.data);
                 const auth = response.data;
                 
                 if (auth) {
@@ -38,10 +38,10 @@ export const login = (formdata) => {
         dispatch({ type: "AUTH_START" });
         try {
             const response = await API.login(formdata);
-            console.log("Full API Response:", response);
+            // console.log("Full API Response:", response);
             
             if (response?.data?.status) { // Use response.data.status instead of response.success
-                console.log("Response Data:", response.data);
+                // console.log("Response Data:", response.data);
                 const auth = response.data;
                 
                 if (auth) {

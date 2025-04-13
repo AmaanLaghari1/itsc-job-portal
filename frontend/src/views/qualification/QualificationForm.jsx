@@ -179,7 +179,7 @@ const QualificationForm = ({handleSubmit, loading}) => {
                 <div className="form-group my-2">
                 <CustomSelect
                 className="form-control"
-                label="University"
+                label="University/Board"
                 name="organization_id"
                 options={orgOptions} // Options should be dynamically loaded if using async
                 onChange={(selectedOption) => {

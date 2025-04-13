@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { CCardHeader, CCol, CRow } from '@coreui/react'
-import { getQualification } from '../../api/QualificationRequest';
 import { useSelector } from 'react-redux';
 
-const QualificationCard = ({qualification}) => {
+const ExperienceCard = ({qualification}) => {
   const auth = useSelector((state) => state.auth.authData);
 
   // console.log(qualification);
@@ -78,4 +77,4 @@ const QualificationCard = ({qualification}) => {
   )
 }
 
-export default QualificationCard
+export default ExperienceCard

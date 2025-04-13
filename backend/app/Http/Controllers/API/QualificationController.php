@@ -198,13 +198,19 @@ class QualificationController extends Controller
                     $qualification->institute = DB::table('institute')
                         ->where('INSTITUTE_ID', $qualification->INSTITUTE_ID)
                         ->first();
+                    $qualification->organization = DB::table('institute')
+                        ->where('INSTITUTE_ID', $qualification->ORGANIZATION_ID)
+                        ->first();
                     $qualification->discipline = DB::table('discipline')
                         ->where('DISCIPLINE_ID', $qualification->DISCIPLINE_ID)
+                        ->first();
+                    $qualification->degree = DB::table('degree_program')
+                        ->where('DEGREE_ID', $qualification->discipline->DISCIPLINE_ID)
                         ->first();
                 }
             }
             else {
-                $options = DB::table('qualifications')->get();
+                $data = DB::table('qualifications')->get();
             }
             return response()->json([
                 'data' => $data,
