@@ -113,11 +113,6 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        \Log::info('Logout Attempt', [
-            'token' => $request->header('Authorization'),
-            'user' => $request->user()
-        ]);
-
         if (!$request->user()) {
             return response()->json(['status' => false, 'message' => 'User not authenticated'], 401);
         }
@@ -375,6 +370,32 @@ class AuthController extends Controller
 
         $user = DB::table('users_reg')
             ->where('FORGET_PASSWORD', $token)
+            ->first();
+
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "Token expired."
+            ], 401);
+        }
+
+        return response()->json([
+            "status" => true,
+            "message" => "Token verified successfully.",
+        ], 200);
+    }
+
+    public function checkLoggedIn($token){
+        if(is_null($token)){
+            return response()->json([
+                "status" => false,
+                "message" => "Invalid Token."
+            ], 401);
+        }
+
+        $user = DB::table('personal_access_tokens')
+            ->where('tokenable_id', $token)
             ->first();
 
 

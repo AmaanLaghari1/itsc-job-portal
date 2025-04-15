@@ -3,7 +3,7 @@ import CIcon from '@coreui/icons-react'
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ExperienceCard from './ExperienceCard'
-import * as API from '../../api/QualificationRequest.js'
+import * as API from '../../api/ExperienceRequest.js'
 import { useSelector } from 'react-redux'
 
 const Experience = () => {
@@ -12,17 +12,20 @@ const Experience = () => {
     const [experience, setExperience] = React.useState([]);
     
     // Fetch data from API
-    async function fetchQualData(){
-        const response = await API.getQualification(auth.user.USER_ID);
+    async function fetchData(){
+        const response = await API.getExperience(auth.user.USER_ID);
         console.log(response.data.data);
         setExperience(response.data.data);
       }
+
+      // Delete handler to update state
+    const handleDelete = (id) => {
+        setExperience(prev => prev.filter(exp => exp.EXPERIANCE_ID !== id));
+    }
       
-      useEffect(() => {
-        
-    
-        fetchQualData()
-      }, [])
+    useEffect(() => {
+    fetchData()
+    }, [])
 
   return (
     <div>
@@ -35,7 +38,7 @@ const Experience = () => {
         <hr />
         <div className="d-flex justify-content-center align-items-center flex-column flex-wrap">
             {
-                // <ExperienceCard qualification={experience} /> ||
+                <ExperienceCard experience={experience} onDelete={handleDelete} /> ||
                 <p className="text-center fst-italic my-5">
                     No experience added yet!
                 </p>

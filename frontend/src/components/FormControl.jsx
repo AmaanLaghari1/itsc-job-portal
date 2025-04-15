@@ -102,7 +102,7 @@ const Checkbox = props => {
     const {label, name, options, required, ...rest} = props
     return (
         <div>
-            <label className='form-check-label' htmlFor={name}>{label}{required ? <span className='text-danger fw-bold'>*</span>: ''}</label>
+            {label != '' && <label className='form-check-label' htmlFor={name}>{label}{required ? <span className='text-danger fw-bold'>*</span>: ''}</label>}
             <div className="d-flex justify-content-between">
                 <Field className='form-check-input' id={name} name={name} {...rest}>
                     {
@@ -110,7 +110,7 @@ const Checkbox = props => {
                             return options.map(opt => {
                                 return (<div key={opt.key}>
                                     <input type="checkbox" className='form-check-input' id={opt.key} {...field} value={opt.value} checked={field.value.includes(opt.value)} />
-                                    <label className='form-check-label' htmlFor={opt.key}>{opt.value}</label>
+                                    <label className='form-check-label mx-1' htmlFor={opt.key}> {opt.value}</label>
                                 </div>)
                             })
                         }

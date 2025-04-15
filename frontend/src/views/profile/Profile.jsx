@@ -233,7 +233,14 @@ const Profile = () => {
                                 <div className="col-sm-6 my-2">
                                     <CustomSelect
                                     className='form-control mt-2' 
-                                    options={[]} 
+                                    options={[
+                                        {key: 'islam', value: 'Islam'},
+                                        {key: 'christianity', value: 'Christianity'},
+                                        {key: 'hinduism', value: 'Hinduism'},
+                                        {key: 'sikhism', value: 'Sikhism'},
+                                        {key: 'buddhism', value: 'Buddhism'},
+                                        {key: 'judaism', value: 'Judaism'}
+                                    ]} 
                                     label='Religion' 
                                     name='religion' 
                                     onChange={(selectedOption) => {

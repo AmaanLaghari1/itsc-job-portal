@@ -32,7 +32,7 @@ class ExperienceController extends Controller
                 'address' => 'required',
                 'contact_no' => 'required',
                 'start_date' => 'required',
-                'is_job_continue' => 'required'
+//                'is_job_continue' => 'required'
             ]);
 
             if($validation->stopOnFirstFailure()->fails()){
@@ -60,7 +60,8 @@ class ExperienceController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Something went wrong',
-                'error_message' => $e->getMessage()
+                'error_message' => $e->getMessage(),
+                'data' => $data
             ], 500);
         }
     }
@@ -103,6 +104,20 @@ class ExperienceController extends Controller
     public function destroy(string $id)
     {
         //
+        $record = Experience::find($id);
+
+        if($record->delete()){
+            return response()->json([
+                'status' => true,
+                'message' => 'Experience deleted successfully.',
+            ] , 200);
+        }
+        else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to delete the experience.',
+            ] , 500);
+        }
     }
 
     public function getByUserId($userId=null){

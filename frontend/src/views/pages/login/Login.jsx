@@ -1,6 +1,6 @@
 import React from 'react'
 import './Login_2.css'
-import login_thumbnail from '../../../assets/images/login/login_thumbnail.PNG'
+import login_thumbnail from '../../../assets/images/login/login_thumbnail.png'
 import logo from '../../../assets/images/logos/usindh-logo.png'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { useDispatch, useSelector } from 'react-redux'

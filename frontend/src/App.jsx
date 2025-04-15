@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { useSelector } from 'react-redux'
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
+import { checkLoggedIn } from './api/AuthRequest'
 
 // We use those styles to show code examples, you should remove them in your application.
 // import './scss/examples.scss'
@@ -43,7 +44,6 @@ const App = () => {
     // }
     
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
   return (
     <Router>
       <Suspense
@@ -62,7 +62,7 @@ const App = () => {
           <Route exact path="/404" name="Page 404" element={<Page404 />} />
           <Route exact path="/500" name="Page 500" element={<Page500 />} />
           <Route path="/*" name="Dashboard" element={token != null ? <DefaultLayout /> : <Navigate to='/login' />} />
-          {/* <Route path="*" name="Home" element={<Page404 />} /> */}
+          <Route path="*" name="Home" element={<Page404 />} />
         </Routes>
       </Suspense>
     </Router>

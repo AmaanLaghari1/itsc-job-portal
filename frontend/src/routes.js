@@ -6,6 +6,7 @@ const Qualification = React.lazy(() => import('./views/qualification/Qualificati
 const QualificationAdd = React.lazy(() => import('./views/qualification/QualificationAdd'))
 const Experience = React.lazy(() => import('./views/experience/Experience'))
 const ExperienceAdd = React.lazy(() => import('./views/experience/ExperienceAdd'))
+const ExperienceEdit = React.lazy(() => import('./views/experience/ExperienceEdit'))
 const Users = React.lazy(() => import('./views/users/Users'))
 
 const routes = [
@@ -16,6 +17,7 @@ const routes = [
   { path: '/qualification-add', name: 'Add Qualification', element: QualificationAdd },
   { path: '/experience', name: 'Experience', element: Experience },
   { path: '/experience-add', name: 'Add Experience', element: ExperienceAdd },
+  { path: '/experience-edit', name: 'Edit Experience', element: ExperienceEdit },
   { path: '/users', name: 'Users', element: Users },
 ]
 

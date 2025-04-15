@@ -12,7 +12,7 @@ class Experience extends Model
     use HasFactory;
 
     public $table = 'experiances';
-    private $primarykey = 'EXPERIANCE_ID';
+    protected $primaryKey = 'EXPERIANCE_ID';
     public $timestamps = false;
     protected $fillable = [
         'USER_ID',

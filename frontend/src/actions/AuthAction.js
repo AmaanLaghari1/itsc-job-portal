@@ -65,6 +65,18 @@ export const login = (formdata) => {
     }
 }
 
+export const loggedInCheck = (token) => {
+    return async (dispatch) => {
+        try {
+            const response = await API.checkLoggedIn(token)
+            console.log(response)
+        } catch (error) {
+            console.log(error || 'some error occured')
+        }
+    }
+}
+
+
 export const logOut = (token) => {
     return async dispatch => {
         try {

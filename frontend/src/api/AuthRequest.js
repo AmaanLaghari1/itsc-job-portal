@@ -29,6 +29,15 @@ export const logout = (token) => {
     })
 }
 
+export const checkLoggedIn = (token) => {
+    return API.get(import.meta.env.VITE_API_URL+"login-check/"+token, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
 export const verifyEmail = (formdata) => {
     return API.post("verify-email", formdata, {
         headers: {

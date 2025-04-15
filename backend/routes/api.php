@@ -33,6 +33,9 @@ Route::prefix('auth')->group(function(){
     Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
 });
 
+Route::get('login-check/{token}', [AuthController::class, 'checkLoggedIn']);
+
+
 Route::get('districts/{provinceId?}', [UserController::class, 'getDistricts']);
 Route::get('cities', [UserController::class, 'getCities']);
 Route::get('provinces/{countryId?}', [UserController::class, 'getProvinces']);
@@ -59,4 +62,5 @@ Route::prefix('qualification')->group(function() {
 Route::prefix('experience')->group(function() {
     Route::post('post', [ExperienceController::class, 'create']);
     Route::get('get/{userId?}', [ExperienceController::class, 'getByUserId']);
+    Route::delete('delete/{id}', [ExperienceController::class, 'destroy']);
 });

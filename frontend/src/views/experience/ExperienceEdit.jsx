@@ -1,28 +1,30 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import Alert from '../../components/Alert'
 import * as API from '../../api/ExperienceRequest.js'
 import * as Yup from 'yup'
 import ExperienceForm from './ExperienceForm.jsx'
 
-const ExperienceAdd = () => {
+const ExperienceEdit = () => {
     const auth = useSelector(state => state.auth.authData)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const location = useLocation()
+    const { prevExp } = location.state || {}
 
     const initialValues = {
-        user_id: auth.user.USER_ID,
-        organization_name: '',
-        job_description: '',
-        start_date: '',
-        end_date: '',
-        is_job_continue: '',
-        emp_type: '',
-        salary: '',
-        reason_for_leaving: '',
-        contact_no: '',
-        address: ''
+        user_id: prevExp.USER_ID || auth.user.USER_ID,
+        organization_name: prevExp.ORGANIZATION_NAME || '',
+        job_description: prevExp.JOB_DESCRIPTION || '',
+        start_date: prevExp.START_DATE || '',
+        end_date: prevExp.END_DATE || '',
+        is_job_continue: prevExp.IS_JOB_CONTINUE || '',
+        emp_type: prevExp.EMP_TYPE || '',
+        salary: prevExp.SALARY || '',
+        reason_for_leaving: prevExp.REASON_FOR_LEAVING || '',
+        contact_no: prevExp.CONTACT_NO || '',
+        address: prevExp.ADDRESS || ''
     }
 
     const validationRules = Yup.object({
@@ -69,4 +71,4 @@ const ExperienceAdd = () => {
   )
 }
 
-export default ExperienceAdd
+export default ExperienceEdit
