@@ -32,7 +32,6 @@ class ExperienceController extends Controller
                 'address' => 'required',
                 'contact_no' => 'required',
                 'start_date' => 'required',
-//                'is_job_continue' => 'required'
             ]);
 
             if($validation->stopOnFirstFailure()->fails()){
@@ -96,6 +95,58 @@ class ExperienceController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        try {
+            $experience = Experience::find($id);
+
+            if (empty($experience)){
+                return response()->json(
+                    [
+                        "status" => false,
+                        "message" => "User Experience not found"
+                    ], 404
+                );
+            }
+
+            $validation = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'emp_type' => 'required',
+                'organization_name' => 'required',
+                'address' => 'required',
+                'contact_no' => 'required',
+                'start_date' => 'required',
+            ]);
+
+            if($validation->stopOnFirstFailure()->fails()){
+                return response()->json(
+                    [
+                        "status" => false,
+                        "message" => "Validation failed",
+                        "error_message" => $validation->errors()->first()
+                    ], 422);
+            }
+
+            $data = formatRequestData($request->all());
+
+            $newExperience = $experience->update($data);
+
+            if($newExperience){
+                return response()->json(
+                    [
+                        "status" => true,
+                        "message" => "Experience updated",
+                        "data" => $experience
+                    ]
+                , 200);
+            }
+
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error_message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

@@ -3,12 +3,10 @@ import { Formik, Form, Field } from 'formik'
 import FormControl from '../../components/FormControl'
 import { CButton } from '@coreui/react'
 import { useSelector } from 'react-redux'
+import CustomSelect from '../../components/CustomSelect'
 
 const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading}) => {
     const auth = useSelector(state => state.auth.authData)
-    const options = [
-        {key: 'Y', value: 'Currently Employed'},
-    ]
 
   return (
         <Formik
@@ -17,7 +15,7 @@ const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading})
         onSubmit={handleSubmit}
         >
             {
-                ({ setFieldValue }) => {
+                ({ setFieldValue, values }) => {
                     return (
                         <Form>
                             <div className="row">
@@ -34,11 +32,24 @@ const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading})
                                 </div>
                                 <div className="col-md-6">
                                     <div className="form-group my-2">
-                                        <FormControl
-                                        control='input'
-                                        type='text'
-                                        label='Employment Type'
-                                        name='emp_type'
+                                        <CustomSelect
+                                        className="form-control"
+                                        label="Employment Type"
+                                        placeholder="Select Employment Type"
+                                        name="emp_type"
+                                        options={[
+                                            { key: 'Internship', value: 'Internship' },
+                                            { key: 'Part Time', value: 'Part Time' },
+                                            { key: 'Full Time', value: 'Full Time' },
+                                            { key: 'Freelance', value: 'Freelance' },
+                                            { key: 'Contract', value: 'Contract' },
+                                            { key: 'Temporary', value: 'Temporary' },
+                                            { key: 'Volunteer', value: 'Volunteer' },
+                                            { key: 'Apprenticeship', value: 'Apprenticeship' },
+                                        ]}
+                                        onChange={(selectedOption) => {
+                                            setFieldValue('emp_type', selectedOption?.key || '')
+                                        }}
                                         required={true}
                                         />
                                     </div>
@@ -108,6 +119,8 @@ const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading})
                                             (e) => {
                                                 if (e.target.checked) {
                                                     setFieldValue('is_job_continue', 'Y')
+                                                    setFieldValue('end_date', '')
+                                                    setFieldValue('reason_for_leaving', '')
                                                 } else {
                                                     setFieldValue('is_job_continue', '')
                                                 }
@@ -123,7 +136,9 @@ const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading})
                                         control='date' 
                                         type='date' 
                                         label='End Date' 
-                                        name='end_date' 
+                                        name='end_date'
+                                        disabled={values.is_job_continue === 'Y' ? true : false}
+                                        min={initialValues.start_date ? initialValues.start_date : ''}
                                         />
                                     </div>
                                 </div>
@@ -134,6 +149,7 @@ const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading})
                                         type='text'
                                         label='Reason for Leaving' 
                                         name='reason_for_leaving'
+                                        disabled={values.is_job_continue === 'Y' ? true : false}
                                         />
                                     </div>
                                 </div>

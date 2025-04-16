@@ -102,6 +102,41 @@ class User extends Authenticatable
         parent::setAttribute($key, $value);
     }
 
+    public function getProfileCompletenessAttribute()
+    {
+        // List of important profile fields you want to check
+        $fields = [
+            'EMAIL',
+            'FIRST_NAME',
+            'LAST_NAME',
+            'CNIC_NO',
+            'MOBILE_NO',
+            'HOME_ADDRESS',
+            'DATE_OF_BIRTH',
+            'GENDER',
+            'PROFILE_IMAGE',
+            'NATIONALITY',
+            'RELIGION',
+            'CITY_ID',
+            'DISTRICT_ID',
+            'PROVINCE_ID',
+        ];
+
+        $filled = 0;
+
+        foreach ($fields as $field) {
+            if (!empty($this->$field)) {
+                $filled++;
+            }
+        }
+
+        $total = count($fields);
+        $percentage = ($filled / $total) * 100;
+
+        return round($percentage); // Return whole number
+    }
+
+
     protected $hidden = [
         'PASSWORD',
         'PASSWORD_TOKEN',

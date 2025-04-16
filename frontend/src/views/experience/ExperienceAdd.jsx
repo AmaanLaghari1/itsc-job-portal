@@ -30,7 +30,11 @@ const ExperienceAdd = () => {
         emp_type: Yup.string().required('Employment type required'),
         contact_no: Yup.string().required('Contact No. required'),
         address: Yup.string().required('Address required'),
-        start_date: Yup.string().required('Start date required'),
+        start_date: Yup.date().required('Start date required'),
+        end_date: Yup.date().min(
+            Yup.ref('start_date'),
+            "end date can't be before start date"
+        )
     })
 
     const handleSubmit = async (values, {setSubmitting, resetForm}) => {

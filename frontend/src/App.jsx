@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { useSelector } from 'react-redux'
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
-import { checkLoggedIn } from './api/AuthRequest'
 
 // We use those styles to show code examples, you should remove them in your application.
 // import './scss/examples.scss'
@@ -26,6 +25,7 @@ const App = () => {
 
   const auth = useSelector((state) => state.auth)
   let token = null || auth?.token
+  console.log(auth);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.href.split('?')[1])

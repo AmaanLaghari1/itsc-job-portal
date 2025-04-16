@@ -32,7 +32,11 @@ const ExperienceEdit = () => {
         emp_type: Yup.string().required('Employment type required'),
         contact_no: Yup.string().required('Contact No. required'),
         address: Yup.string().required('Address required'),
-        start_date: Yup.string().required('Start date required'),
+        start_date: Yup.date().required('Start date required'),
+        end_date: Yup.date().min(
+            Yup.ref('start_date'),
+            "end date can't be before start date"
+        )
     })
 
     const handleSubmit = async (values, {setSubmitting, resetForm}) => {
@@ -45,15 +49,13 @@ const ExperienceEdit = () => {
         };
 
         try {
-            const response = await API.createExperience(formattedValues)
-            // console.log(response)
-            Alert({status: true, text: response?.data?.message || 'Experience added successfully'})
+            const response = await API.updateExperience(formattedValues, prevExp.EXPERIANCE_ID)
+            Alert({status: true, text: response?.data?.message || 'Experience updated successfully'})
             navigate('/experience')
 
         }
         catch (error) {
             Alert({status: false, text: error.response?.data?.error_message || 'Some error occured'})
-            console.log(error)
         }
         setLoading(false)
     }

@@ -61,6 +61,7 @@ Route::prefix('qualification')->group(function() {
 
 Route::prefix('experience')->group(function() {
     Route::post('post', [ExperienceController::class, 'create']);
+    Route::put('put/{id}', [ExperienceController::class, 'update']);
     Route::get('get/{userId?}', [ExperienceController::class, 'getByUserId']);
     Route::delete('delete/{id}', [ExperienceController::class, 'destroy']);
 });

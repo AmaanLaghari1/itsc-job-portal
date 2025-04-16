@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { use } from 'react'
 import CIcon from '@coreui/icons-react'
 import {
   cilEducation,
@@ -8,7 +8,7 @@ import {
 } from '@coreui/icons'
 import { CNavItem } from '@coreui/react'
 
-const _nav = [
+const _nav = auth => [
     {
       component: CNavItem,
       name: 'Dashboard',
@@ -21,8 +21,8 @@ const _nav = [
       to: '/user-profile',
       icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
       badge: {
-        color: 'warning',
-        text: '20%',
+        color: auth.authData.profile_completeness > 80 ? 'success' :'danger',
+        text: auth.authData.profile_completeness+'%',
       },
     },
     {

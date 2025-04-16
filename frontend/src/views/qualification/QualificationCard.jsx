@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react'
 import { CCardHeader, CCol, CRow } from '@coreui/react'
-import { getQualification } from '../../api/QualificationRequest';
 import { useSelector } from 'react-redux';
 
 const QualificationCard = ({qualification}) => {
   const auth = useSelector((state) => state.auth.authData);
 
-  // console.log(qualification);
   return (
     qualification.length > 0 ? qualification.map((qual) => (
       <div className="card w-100 p-0 my-2" key={qual.QUALIFICATION_ID}>

@@ -1,6 +1,6 @@
 import React from 'react'
 import "../login/Login_2.css"
-import login_thumbnail from '../../../assets/images/login/register_thumbnail.PNG'
+import thumbnail from '../../../assets/images/login/register_thumbnail.png'
 import logo from '../../../assets/images/logos/usindh-logo.png'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { useDispatch, useSelector } from 'react-redux'
@@ -63,7 +63,7 @@ const Register = () => {
             <div className="container position-relative z-1">
                 <div className="row">
                     <div className="col-6 d-none d-lg-block align-content-center">
-                        <img src={login_thumbnail} alt="" className="w-100 h-75" />
+                        <img src={thumbnail} alt="" className="w-100 h-75" />
                     </div>
                     <div className="col-12 col-lg-6">
                         <div className="col-12 mx-auto">
@@ -78,7 +78,7 @@ const Register = () => {
                                     <div className="row">
                                         <div className="col-12 col-md-6">
                                             <div className="form-group my-2">
-                                                <label className='form-label' htmlFor="first_name">
+                                                <label className='form-label small' htmlFor="first_name">
                                                     Fullname
                                                 </label>
                                                 <span className="text-danger fw-bold">*</span>
@@ -90,7 +90,7 @@ const Register = () => {
                                         </div>
                                         <div className="col-12 col-md-6">
                                             <div className="form-group my-2">
-                                                <label className='form-label' htmlFor="last_name">
+                                                <label className='form-label small' htmlFor="last_name">
                                                     Surname
                                                 </label>
                                                 <span className="text-danger fw-bold">*</span>
@@ -102,7 +102,7 @@ const Register = () => {
                                         </div>
                                         <div className="col-12 col-md-6">
                                             <div className="form-group my-2">
-                                                <label className='form-label' htmlFor="fname">
+                                                <label className='form-label small' htmlFor="fname">
                                                     Father's Name
                                                 </label>
                                                 <span className="text-danger fw-bold">*</span>
@@ -114,7 +114,7 @@ const Register = () => {
                                         </div>
                                         <div className="col-12 col-md-6">
                                             <div className="form-group my-2">
-                                                <label className='form-label' htmlFor="cnic_no">
+                                                <label className='form-label small' htmlFor="cnic_no">
                                                     CNIC No. (without dashes)
                                                 </label>
                                                 <span className="text-danger fw-bold">*</span>
@@ -128,7 +128,7 @@ const Register = () => {
                                         </div>
                                         <div className="col-12 col-md-6">
                                             <div className="form-group my-2">
-                                                <label className='form-label' htmlFor="email">
+                                                <label className='form-label small' htmlFor="email">
                                                     Email
                                                 </label>
                                                 <span className="text-danger fw-bold">*</span>
@@ -140,8 +140,8 @@ const Register = () => {
                                         </div>
                                         <div className="col-12 col-md-6">
                                             <div className="form-group my-2">
-                                                <label className='form-label' htmlFor="mobile_no">
-                                                    Mobile No. (non-zero digits)
+                                                <label className='form-label small' htmlFor="mobile_no">
+                                                    Mobile No. (without leading zero)
                                                 </label>
                                                 <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='333241****' name='mobile_no' id='mobile_no' 
                                                 onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10)}                                                
@@ -153,7 +153,7 @@ const Register = () => {
                                         </div>
                                         <div className="col-12 col-md-6">
                                             <div className="form-group my-2">
-                                                <label className='form-label' htmlFor="password">
+                                                <label className='form-label small' htmlFor="password">
                                                     Password
                                                 </label>
                                                 <span className="text-danger fw-bold">*</span>
@@ -165,7 +165,7 @@ const Register = () => {
                                         </div>
                                         <div className="col-12 col-md-6">
                                             <div className="form-group my-2">
-                                                <label className='form-label' htmlFor="password_confirmation">
+                                                <label className='form-label small' htmlFor="password_confirmation">
                                                     Confirm Password
                                                 </label>
                                                 <span className="text-danger fw-bold">*</span>

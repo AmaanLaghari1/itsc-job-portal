@@ -104,7 +104,8 @@ class AuthController extends Controller
                 "message" => "You've logged in successfully.",
                 "token" => $user->createToken("Auth Token")->plainTextToken,
                 "token_type" => "bearer",
-                "user" => $user
+                "user" => $user,
+                "profile_completeness" => $user->profile_completeness
             ], 200);
         }
 

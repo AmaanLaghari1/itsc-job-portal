@@ -5,6 +5,8 @@ import { cilTrash, cilPen } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { useNavigate } from 'react-router-dom';
 import * as API from '../../api/ExperienceRequest.js'
+import AlertConfirm from '../../components/AlertConfirm.js';
+import Alert from '../../components/Alert.js';
 
 const ExperienceCard = ({experience, onDelete}) => {
   const auth = useSelector((state) => state.auth.authData);
@@ -16,7 +18,7 @@ const ExperienceCard = ({experience, onDelete}) => {
         <CCardHeader className='fw-bolder d-flex'>
           {exp.ORGANIZATION_NAME} 
           <div className="ms-auto">
-            <CButton variant='success' color='success' className='btn btn-success btn-sm mx-1'
+            <CButton variant='success' color='success' className='btn btn-outline-success btn-sm mx-1'
             onClick={() => {
                 navigate('/experience-edit', {
                   state: {
@@ -28,17 +30,20 @@ const ExperienceCard = ({experience, onDelete}) => {
             >
               <CIcon icon={cilPen} size="md" />
             </CButton>
-            <CButton variant='danger' color='danger' className='btn btn-danger btn-sm mx-1'
+            <CButton variant='danger' color='danger' className='btn btn-outline-danger btn-sm mx-1'
             onClick={async () => {
-                const confirmDelete = window.confirm('Are you sure you want to delete this experience?');
-                if (confirmDelete) {
-                  // Call the delete API here
-                  const response = await API.deleteExperience(exp.EXPERIANCE_ID)
-                  onDelete(exp.EXPERIANCE_ID)
-                  console.log('Experience deleted:', response);
-                }
+                const confirmed = await AlertConfirm({
+                  title: 'Delete item?',
+                  text: 'This action cannot be undone.',
+                });
+                
+                if (confirmed) {
+                    const response = await API.deleteExperience(exp.EXPERIANCE_ID)
+                    onDelete(exp.EXPERIANCE_ID)
+                    Alert({status: true, text: response?.data?.message || 'Experience deleted successfully'})
               }
             }
+          }
             >
               <CIcon icon={cilTrash} size="md" />
             </CButton>
@@ -56,6 +61,22 @@ const ExperienceCard = ({experience, onDelete}) => {
           </CRow>
           <CRow className='border-top'>
             <CCol sm={3} className="fw-bold">
+              Job Description
+            </CCol>
+            <CCol sm={9}>
+              {exp.JOB_DESCRIPTION}
+            </CCol>
+          </CRow>
+          <CRow className='border-top'>
+            <CCol sm={3} className="fw-bold">
+              Salary
+            </CCol>
+            <CCol sm={9}>
+              {exp.SALARY}
+            </CCol>
+          </CRow>
+          <CRow className='border-top'>
+            <CCol sm={3} className="fw-bold">
               Employer Contact No.
             </CCol>
             <CCol sm={9}>
@@ -68,6 +89,29 @@ const ExperienceCard = ({experience, onDelete}) => {
             <CCol sm={3}>{exp.START_DATE || '-'}</CCol>
             <CCol sm={3} className="fw-bold">End Date</CCol>
             <CCol sm={3}>{exp.END_DATE || '-'}</CCol>
+          </CRow>
+
+          <CRow className='border-top'>
+            <CCol sm={3} className="fw-bold">Currently Working</CCol>
+            <CCol sm={3}>{exp.IS_JOB_CONTINUE === 'Y' ? 'Yes' : 'No' || '-'}</CCol>
+          </CRow>
+
+        {
+          exp.IS_JOB_CONTINUE !== 'Y' &&
+          <CRow className='border-top'>
+            <CCol sm={3} className="fw-bold">Reason for leaving</CCol>
+
+            <CCol sm={9}>
+              {exp.REASON_FOR_LEAVING || '-'}
+            </CCol>
+          </CRow>
+        }
+          <CRow className='border-top'>
+            <CCol sm={3} className="fw-bold">Address</CCol>
+
+            <CCol sm={9}>
+              {exp.ADDRESS || '-'}
+            </CCol>
           </CRow>
 
         </div>
