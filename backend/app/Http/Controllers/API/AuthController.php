@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Experience;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\EmailVerification;
@@ -96,6 +97,7 @@ class AuthController extends Controller
         }
 
         $user = User::where('CNIC_NO', $request->cnic_no)->first();
+        $userExperience = Experience::where('USER_ID', $user->USER_ID)->first();
 
         if ($user && Hash::check($request->password, $user->PASSWORD)) {
             Auth::login($user); // Manually log in the user
@@ -105,7 +107,8 @@ class AuthController extends Controller
                 "token" => $user->createToken("Auth Token")->plainTextToken,
                 "token_type" => "bearer",
                 "user" => $user,
-                "profile_completeness" => $user->profile_completeness
+                "profile_completeness" => $user->profile_completeness,
+                "experience_completeness" => $userExperience->experience_completeness
             ], 200);
         }
 
@@ -291,7 +294,8 @@ class AuthController extends Controller
             "message" => "Email verified. Registration successful.",
             "token" => $token,
             "token_type" => "bearer",
-            "user" => $user
+            "user" => $user,
+            "profile_completeness" => $user->profile_completeness
         ], 200);
     }
 

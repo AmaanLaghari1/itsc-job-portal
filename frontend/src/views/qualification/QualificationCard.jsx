@@ -1,15 +1,51 @@
-import React, { useEffect } from 'react'
-import { CCardHeader, CCol, CRow } from '@coreui/react'
+import React from 'react'
+import { CCardHeader, CCol, CRow, CButton } from '@coreui/react'
 import { useSelector } from 'react-redux';
+import CIcon from '@coreui/icons-react';
+import { cilPen, cilTrash } from '@coreui/icons';
+import AlertConfirm from '../../components/AlertConfirm.js';
+import { useNavigate } from 'react-router-dom';
 
 const QualificationCard = ({qualification}) => {
   const auth = useSelector((state) => state.auth.authData);
+  const navigate = useNavigate()
 
   return (
     qualification.length > 0 ? qualification.map((qual) => (
       <div className="card w-100 p-0 my-2" key={qual.QUALIFICATION_ID}>
-        <CCardHeader className='fw-bolder'>
+        <CCardHeader className='fw-bolder d-flex'>
           {qual.degree.DEGREE_TITLE}
+          <div className="ms-auto">
+          <CButton variant='success' color='success' className='btn btn-outline-success btn-sm mx-1'
+            onClick={() => {
+                navigate('/qualification-edit', {
+                  state: {
+                    prevQual: qual,
+                  }
+                })
+              }
+            }
+            >
+              <CIcon icon={cilPen} size="md" />
+            </CButton>
+            <CButton variant='danger' color='danger' className='btn btn-outline-danger btn-sm mx-1'
+            onClick={async () => {
+                const confirmed = await AlertConfirm({
+                  title: 'Delete item?',
+                  text: 'This action cannot be undone.',
+                });
+                
+                if (confirmed) {
+                    const response = await API.deleteExperience(qual.QUALIFICATION_ID)
+                    onDelete(qual.QUALIFICATION_ID)
+                    Alert({status: true, text: response?.data?.message || 'Experience deleted successfully'})
+              }
+            }
+          }
+            >
+              <CIcon icon={cilTrash} size="md" />
+            </CButton>
+          </div>
         </CCardHeader>
 
         <div className="d-flex flex-column gap-2 p-3">

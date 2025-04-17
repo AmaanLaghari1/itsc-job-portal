@@ -3,13 +3,17 @@ import Alert from '../../components/Alert'
 import { useSelector } from 'react-redux'
 import QualificationForm from './QualificationForm.jsx'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 
-const QualificationAdd = () => {
+const QualificationEdit = () => {
     const auth = useSelector(state => state.auth.authData)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const location = useLocation()
+    const {prevQaul} = location.state || {}
+    console.log(prevQaul);
+
 
     const handleSubmit = async (values, {setSubmitting, resetForm}) => {
         setSubmitting(false)
@@ -23,10 +27,8 @@ const QualificationAdd = () => {
 
         try {
             const response = await API.createQualification(formattedValues)
-            // console.log(response)
             Alert({status: true, text: response?.data?.message || 'Qualification added successfully'})
             navigate('/qualifications')
-
         }
         catch (error) {
             Alert({status: false, text: error.response?.data?.error_message || 'Some error occured'})
@@ -37,11 +39,12 @@ const QualificationAdd = () => {
 
         const initialValues = {
             user_id: auth.user.USER_ID,
-            degree_program: '',
+            degree_program: prevQaul?.DEGREE_PROGRAM || '',
+            organization_id: prevQaul?.ORGANIZATION_id || '',
             organization_id: '',
             institute_id: '',
             discipline_id: '',
-            start_date: '',
+            start_date: prevQaul?.START_DATE || '',
             end_date: '',
             obtained_marks: '',
             total_marks: '',
@@ -80,4 +83,4 @@ const QualificationAdd = () => {
   )
 }
 
-export default QualificationAdd
+export default QualificationEdit

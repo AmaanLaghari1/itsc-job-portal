@@ -125,99 +125,6 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-//    public function update(Request $request, string $id)
-//    {
-//        // Find the user by ID
-//        $user = User::find($id); // Using find instead of findOrFail so we can handle it more gracefully
-//
-//        if (!$user) {
-//            return response()->json([
-//                'status' => false,
-//                'message' => 'User not found.',
-//            ], 404);
-//        }
-//
-//        if ($request->hasFile('profile_picture')) {
-//            $original_pic = $request->file('profile_picture');
-//
-//            $file_extension=$original_pic->getClientOriginalExtension();
-//            $filename = time() . '.' . $file_extension;
-//
-//            # upload original image
-//            Storage::put('ArticlesImages/' . $filename, (string) file_get_contents($original_pic), 'public');
-//
-//            # croped image from request.
-//            $image_parts = explode(";base64,", $request->input('article_image'));
-//            $image_base64 = base64_decode($image_parts[1]);
-//
-//            Storage::put('ArticlesImages/croped/' . $filename, (string) $image_base64, 'public');
-//
-//            # get image from s3 or local storage.
-//            $image_get = Storage::get('ArticlesImages/croped/' . $filename);
-//
-//            # resize 50 by 50 1x
-//            $image_50_50 = Image::make($image_get)
-//                ->resize(340, 227)
-//                ->encode($file_extension, 80);
-//
-//            Storage::put('ArticlesImages/1x/' . $filename, (string) $image_50_50, 'public');
-//
-//            $file_url = Storage::url('ArticlesImages/croped/' . $filename);
-//
-//            return response()->json(['success' => true, 'filename' => $filename, 'file_url' => $file_url], 200);
-//        }
-//
-//        // Validation
-//        $validation = Validator::make(
-//            $request->all(),
-//            [
-//                "first_name" => "required",
-//                "last_name" => "required",
-//                "fname" => "required",
-//                "cnic_no" => [
-//                    "required",
-//                    Rule::unique('users_reg', 'CNIC_NO')->ignore($id, 'USER_ID'), // Ensure 'USER_ID' is correctly referenced
-//                ],
-//                "email" => [
-//                    "required",
-//                    "email",
-//                    Rule::unique('users_reg', 'EMAIL')->ignore($id, 'USER_ID'),
-//                ],
-//            ]
-//        );
-//
-//        if ($validation->stopOnFirstFailure()->fails()) {
-//            return response()->json(
-//                [
-//                    "status" => false,
-//                    "message" => "Validation failed.",
-//                    "error_message" => $validation->errors()->first(),
-//                ],
-//                401
-//            );
-//        }
-//
-//        // Update user
-//        $result = $user->update(formatRequestData($request->all()));
-//
-//        if ($result) {
-//            $user = User::find($id);
-//
-//
-//            // Respond with success
-//            return response()->json([
-//                'status' => true,
-//                'message' => 'User updated successfully.',
-//                'data' => $user,
-//            ], 200);
-//        } else {
-//            // Respond with failure
-//            return response()->json([
-//                'status' => false,
-//                'message' => 'Failed to update the user.',
-//            ], 500);
-//        }
-//    }
 
     public function uploadImg(Request $request){
         $validation = Validator::make($request->all(), [
@@ -286,6 +193,7 @@ class UserController extends Controller
             'status' => true,
             'message' => 'User updated successfully.',
             'data' => $user,
+            'profile_completeness' => $user->profile_completeness
         ], 200);
     }
 

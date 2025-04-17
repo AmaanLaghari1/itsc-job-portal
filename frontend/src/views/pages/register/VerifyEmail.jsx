@@ -1,5 +1,4 @@
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import FormControl from '../../../components/FormControl.jsx';
 import * as Yup from 'yup';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../../assets/images/logos/usindh-logo.png';
@@ -9,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { verifyEmail } from '../../../actions/AuthAction.js';
 import { useEffect, useState } from 'react';
 import { resendOtp } from '../../../api/AuthRequest.js';
-import gaurd from '../../../assets/images/login/gaurd.PNG'
+import gaurd from '../../../assets/images/login/gaurd.png'
 import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
 
 const TIMER_STORAGE_KEY = "otp_timer";

@@ -109,17 +109,21 @@ class User extends Authenticatable
             'EMAIL',
             'FIRST_NAME',
             'LAST_NAME',
+            'FNAME',
             'CNIC_NO',
             'MOBILE_NO',
             'HOME_ADDRESS',
+            'PERMANENT_ADDRESS',
             'DATE_OF_BIRTH',
+            'PLACE_OF_BIRTH',
             'GENDER',
             'PROFILE_IMAGE',
             'NATIONALITY',
             'RELIGION',
-            'CITY_ID',
+            'COUNTRY_ID',
             'DISTRICT_ID',
             'PROVINCE_ID',
+            'MARITAL_STATUS'
         ];
 
         $filled = 0;
@@ -127,7 +131,18 @@ class User extends Authenticatable
         foreach ($fields as $field) {
             if (!empty($this->$field)) {
                 $filled++;
+            }else {
+                if(
+                    $field === 'PROFILE_IMAGE'
+                    || $field === 'COUNTRY_ID'
+                    || $field === 'PROVINCE_ID'
+                    || $field === 'DISTRICT_ID'
+                    || $field === 'PERMANENT_ADDRESS'
+                ) {
+                    $filled -= 5;
+                }
             }
+
         }
 
         $total = count($fields);
@@ -135,7 +150,6 @@ class User extends Authenticatable
 
         return round($percentage); // Return whole number
     }
-
 
     protected $hidden = [
         'PASSWORD',

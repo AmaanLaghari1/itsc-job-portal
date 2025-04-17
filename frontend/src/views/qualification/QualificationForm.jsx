@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { Formik, Form } from 'formik'
-import * as Yup from 'yup'
+import { Formik, Form, Field } from 'formik'
 import FormControl from '../../components/FormControl'
 import { CButton } from '@coreui/react'
 import axios from 'axios'
@@ -8,7 +7,7 @@ import { mapOptions } from '../../helper.js'
 import CustomSelect from '../../components/CustomSelect.jsx'
 import { useSelector } from 'react-redux'
 
-const QualificationForm = ({handleSubmit, loading}) => {
+const QualificationForm = ({initialValues, validationRules, handleSubmit, loading}) => {
     const auth = useSelector(state => state.auth.authData)
 
     const [dropdownData, setDropdownData] = useState({
@@ -101,38 +100,6 @@ const QualificationForm = ({handleSubmit, loading}) => {
         }
     }
 
-    const initialValues = {
-        user_id: auth.user.USER_ID,
-        degree_program: '',
-        organization_id: '',
-        institute_id: '',
-        discipline_id: '',
-        start_date: '',
-        end_date: '',
-        obtained_marks: '',
-        total_marks: '',
-        major: '',
-        passing_year: '',
-        roll_no: '',
-        is_result_declare: '',
-        grading_as: '',
-        result_date: '',
-        grade: '',
-        cgpa: '',
-        out_of: '',
-    }
-
-    const validationRules = Yup.object({
-        institute_id: Yup.string().required('Institute required'),
-        discipline_id: Yup.string().required('Discipline required'),
-        organization_id: Yup.string().required('Organization required'),
-        start_date: Yup.string().required('Start date required'),
-        end_date: Yup.string().required('End date required'),
-        obtained_marks: Yup.string().required('Obtained marks required'),
-        total_marks: Yup.string().required('Obtained marks required'),
-        roll_no: Yup.string().required('Roll No./Seat No. required'),
-    })
-
   return (
     <Formik
     initialValues={initialValues}
@@ -140,7 +107,7 @@ const QualificationForm = ({handleSubmit, loading}) => {
     onSubmit={handleSubmit}
     >
     {
-    ({setFieldValue}) => {
+    ({setFieldValue, values}) => {
     return <Form>
         <div className="row">
             
@@ -295,7 +262,7 @@ const QualificationForm = ({handleSubmit, loading}) => {
 
             <div className="col-md-6">
                 <div className="form-group my-2">
-                    <CustomSelect
+                    {/* <CustomSelect
                     className="form-control"
                     label="Is Result Declared?"
                     name="is_result_declare"
@@ -306,13 +273,28 @@ const QualificationForm = ({handleSubmit, loading}) => {
                     onChange={(selectedOption) => {
                         setFieldValue('is_result_declare', selectedOption?.key || '')
                     }}
-                    />
+                    /> */}
+                    <label htmlFor="is_result_decare">Is Result Declared?</label>
+                    <Field
+                    as='select'
+                    id='is_result_decare'
+                    name='is_result_declare'
+                    className='form-control'
+                    onChange={(e) => {
+                        setFieldValue('is_result_declare', e.target.value)
+                    }
+                    }
+                    >
+                        <option value=''>Select...</option>
+                        <option value='Y'>Yes</option>
+                        <option value='N'>No</option>
+                    </Field>
                 </div>
             </div>
-            <div className="col-md-6">
+            <div className="col-md-3">
                 <div className="form-group my-2">
-                    <CustomSelect
-                    className="form-control"
+                    {/* <CustomSelect
+                    className={"form-control"}
                     label="Grading As"
                     name="grading_as"
                     options={[
@@ -322,7 +304,24 @@ const QualificationForm = ({handleSubmit, loading}) => {
                     onChange={(selectedOption) => {
                         setFieldValue('grading_as', selectedOption?.key || '')
                     }}
-                    />
+                    /> */}
+
+                    <label htmlFor="grading_as">Grading As</label>
+                    <Field
+                    as='select'
+                    id='grading_as'
+                    name='grading_as'
+                    className='form-control'
+                    onChange={(e) => {
+                        setFieldValue('grading_as', e.target.value)
+                    }
+                    }
+                    disabled={values.is_result_declare !== 'Y' ? true : false}
+                    >
+                        <option value=''>Select...</option>
+                        <option value='C'>CGPA</option>
+                        <option value='G'>GRADE</option>
+                    </Field>
                 </div>
             </div>
             <div className="col-6 col-md-3">
@@ -332,6 +331,7 @@ const QualificationForm = ({handleSubmit, loading}) => {
                     type='date' 
                     label='Result Date' 
                     name='result_date' 
+                    disabled={values.is_result_declare !== 'Y' ? true : false}
                     />
                 </div>
             </div>
@@ -342,6 +342,7 @@ const QualificationForm = ({handleSubmit, loading}) => {
                     type='text' 
                     label='Grade' 
                     name='grade' 
+                    disabled={values.is_result_declare !== 'Y' ? true : false}
                     />
                 </div>
             </div>
@@ -352,6 +353,7 @@ const QualificationForm = ({handleSubmit, loading}) => {
                     type='text' 
                     label='CGPA' 
                     name='cgpa' 
+                    disabled={values.is_result_declare !== 'Y' ? true : false}
                     />
                 </div>
             </div>

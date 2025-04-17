@@ -16,6 +16,7 @@ export const updateUser = (formData, id) => {
 
                 const updatedAuthData = { 
                     ...currentAuthData,  // Keep existing auth data
+                    profile_completeness: response.data.profile_completeness,
                     user: { ...currentAuthData.user, ...response.data.data }, // Update user data only
                     token: auth.token // Ensure token remains unchanged
                 };

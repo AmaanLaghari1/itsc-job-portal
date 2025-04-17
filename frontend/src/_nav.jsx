@@ -41,8 +41,8 @@ const _nav = auth => [
       to: '/experience',
       icon: <CIcon icon={cilEducation} customClassName="nav-icon" />,
       badge: {
-        color: 'warning',
-        text: '20%',
+        color: auth.authData.experience_completeness >= 60 ? 'success' :'danger',
+        text: auth.authData.experience_completeness+'%',
       },
     },
     // {

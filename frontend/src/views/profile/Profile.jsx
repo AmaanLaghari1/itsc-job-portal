@@ -107,7 +107,7 @@ const Profile = () => {
         gender: auth.user.GENDER || '',
         marital_status: auth.user.MARITAL_STATUS || '',
         domicile_province: auth.user.PROVINCE_ID || '',
-        profile_image: null,
+        profile_image: auth.user.PROFILE_IMAGE || null,
     }
 
     const validations = Yup.object({
@@ -123,7 +123,11 @@ const Profile = () => {
     const submitHandler = async (values, { setFieldValue, resetForm }) => {
         setLoading(true);
         
-        if(values.profile_image !== null){
+        if(values.profile_image &&
+            typeof values.profile_image === 'object' &&
+            values.profile_image.name !== undefined &&
+            values.profile_image !== auth.user.PROFILE_IMAGE
+        ) {
             const data = new FormData()
             const filename = Date.now() + values.profile_image.name
             data.append("profile_image", filename)
