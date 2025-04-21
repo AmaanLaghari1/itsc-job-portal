@@ -3,10 +3,12 @@ import { CCardHeader, CCol, CRow, CButton } from '@coreui/react'
 import { useSelector } from 'react-redux';
 import CIcon from '@coreui/icons-react';
 import { cilPen, cilTrash } from '@coreui/icons';
+import Alert from '../../components/Alert.js';
 import AlertConfirm from '../../components/AlertConfirm.js';
 import { useNavigate } from 'react-router-dom';
+import * as API from '../../api/QualificationRequest.js'
 
-const QualificationCard = ({qualification}) => {
+const QualificationCard = ({qualification, onDelete}) => {
   const auth = useSelector((state) => state.auth.authData);
   const navigate = useNavigate()
 
@@ -36,9 +38,9 @@ const QualificationCard = ({qualification}) => {
                 });
                 
                 if (confirmed) {
-                    const response = await API.deleteExperience(qual.QUALIFICATION_ID)
+                    const response = await API.deleteQualification(qual.QUALIFICATION_ID)
                     onDelete(qual.QUALIFICATION_ID)
-                    Alert({status: true, text: response?.data?.message || 'Experience deleted successfully'})
+                    Alert({status: true, text: response?.data?.message || 'Qualification deleted successfully'})
               }
             }
           }

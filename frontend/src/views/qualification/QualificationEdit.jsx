@@ -11,9 +11,7 @@ const QualificationEdit = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const location = useLocation()
-    const {prevQaul} = location.state || {}
-    console.log(prevQaul);
-
+    const {prevQual} = location.state || {}
 
     const handleSubmit = async (values, {setSubmitting, resetForm}) => {
         setSubmitting(false)
@@ -22,12 +20,12 @@ const QualificationEdit = () => {
             ...values,
             start_date: values.start_date ? new Date(values.start_date).toISOString().split('T')[0] : '',
             end_date: values.end_date ? new Date(values.end_date).toISOString().split('T')[0] : '',
-            result_date: values.result_date??values.end_date ? new Date(values.result_date).toISOString().split('T')[0] : '',
+            result_date: values.result_date ? new Date(values.result_date).toISOString().split('T')[0] : '',
         };
 
         try {
-            const response = await API.createQualification(formattedValues)
-            Alert({status: true, text: response?.data?.message || 'Qualification added successfully'})
+            const response = await API.updateQualification(formattedValues, prevQual.QUALIFICATION_ID)
+            Alert({status: true, text: response?.data?.message || 'Qualification updated successfully'})
             navigate('/qualifications')
         }
         catch (error) {
@@ -39,25 +37,26 @@ const QualificationEdit = () => {
 
         const initialValues = {
             user_id: auth.user.USER_ID,
-            degree_program: prevQaul?.DEGREE_PROGRAM || '',
-            organization_id: prevQaul?.ORGANIZATION_id || '',
-            organization_id: '',
-            institute_id: '',
-            discipline_id: '',
-            start_date: prevQaul?.START_DATE || '',
-            end_date: '',
-            obtained_marks: '',
-            total_marks: '',
-            major: '',
-            passing_year: '',
-            roll_no: '',
-            is_result_declare: '',
-            grading_as: '',
-            result_date: '',
-            grade: '',
-            cgpa: '',
-            out_of: '',
+            degree_program: prevQual?.degree.DEGREE_ID || '',
+            organization_id: prevQual?.ORGANIZATION_ID || '',
+            institute_id: prevQual?.INSTITUTE_ID || '',
+            discipline_id: prevQual?.DISCIPLINE_ID || '',
+            start_date: prevQual?.START_DATE || '',
+            end_date: prevQual?.END_DATE || '',
+            obtained_marks: prevQual?.OBTAINED_MARKS || '',
+            total_marks: prevQual.TOTAL_MARKS || '',
+            major: prevQual.MAJOR || '',
+            passing_year: prevQual.PASSING_YEAR || '',
+            roll_no: prevQual.ROLL_NO || '',
+            is_result_declare: prevQual.IS_RESULT_DECLARE || '',
+            grading_as: prevQual.GRADING_AS || '',
+            result_date: prevQual.RESULT_DATE || '',
+            grade: prevQual.GRADE || '',
+            cgpa: prevQual.CGPA || '',
+            out_of: prevQual.OUT_OF || '',
         }
+
+        console.log(initialValues)
     
         const validationRules = Yup.object({
             institute_id: Yup.string().required('Institute required'),

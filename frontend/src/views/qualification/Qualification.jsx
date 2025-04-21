@@ -24,9 +24,14 @@ const Qualification = () => {
         fetchQualData()
       }, [])
 
+      const handleDelete = (qualId) => {
+        setQualification((prev) => prev.filter((qual) => qual.QUALIFICATION_ID !== qualId));
+      }
+
   return (
     <div>
         <h1>Qualifications</h1>
+        <small className='d-block fst-italic'>(Please add your recent qualification first)</small>
         <Link to={import.meta.env.VITE_BASE_URL+'qualification-add'}>
             <button className='btn btn-warning'>
                 Add New <CIcon icon={cilPlus} />
@@ -36,7 +41,7 @@ const Qualification = () => {
         <div className="d-flex justify-content-center align-items-center flex-column flex-wrap">
 
             {
-                <QualificationCard qualification={qualification} /> ||
+                <QualificationCard onDelete={handleDelete} qualification={qualification} /> ||
                 <p className="text-center fst-italic my-5">
                     No qualifications added yet!
                 </p>

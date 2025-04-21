@@ -18,17 +18,29 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
 
     async function fetchData(){
         try {
+            let institueFetch = null
             const [programFetchResponse, instituteFetchResponse, disciplineFetchResponse] = await Promise.all([
                 axios.get(`${import.meta.env.VITE_API_URL}qualification/program`),
                 axios.get(`${import.meta.env.VITE_API_URL}qualification/institute`),
-                // axios.get(`${import.meta.env.VITE_API_URL}qualification/discipline`)
+                axios.get(`${import.meta.env.VITE_API_URL}qualification/discipline`)
             ])
-
+            
             setDropdownData({
                 programs: programFetchResponse?.data.options || [],
                 institutes: instituteFetchResponse?.data.options || [],
                 disciplines: disciplineFetchResponse?.data.options || []
             })
+
+            if(initialValues.institute_id !== '') {
+                institueFetch = await axios.get(`${import.meta.env.VITE_API_URL}qualification/institute/${initialValues.institute_id}`)
+                instituteFetchResponse?.data.options.unshift(institueFetch?.data.options[0])
+                setDropdownData((prev) => {
+                    return {
+                        ...prev,
+                        institutes: instituteFetchResponse?.data.options || []
+                    }
+                })
+            }
         } catch (error) {
             console.log(error)
         }
@@ -44,6 +56,7 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
         }
     )})
     .filter((institute) => institute.IS_INST == 'Y')
+
 
     const institutes = useMemo(() => {
         return dropdownData.institutes.map((institute) => {
@@ -282,6 +295,12 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
                     className='form-control'
                     onChange={(e) => {
                         setFieldValue('is_result_declare', e.target.value)
+                        if(e.target.value !== 'Y') {
+                            setFieldValue('grading_as', '')
+                            setFieldValue('result_date', '')
+                            setFieldValue('grade', '')
+                            setFieldValue('cgpa', '')
+                        }
                     }
                     }
                     >
@@ -314,6 +333,16 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
                     className='form-control'
                     onChange={(e) => {
                         setFieldValue('grading_as', e.target.value)
+                        if(e.target.value === 'G') {
+                            setFieldValue('cgpa', '')
+                        }
+                        if(e.target.value === 'C') {
+                            setFieldValue('grade', '')
+                        }
+                        if(e.target.value === '') {
+                            setFieldValue('cgpa', '')
+                            setFieldValue('grade', '')
+                        }
                     }
                     }
                     disabled={values.is_result_declare !== 'Y' ? true : false}
@@ -342,7 +371,7 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
                     type='text' 
                     label='Grade' 
                     name='grade' 
-                    disabled={values.is_result_declare !== 'Y' ? true : false}
+                    disabled={values.grading_as !== 'G' ? true : false}
                     />
                 </div>
             </div>
@@ -353,7 +382,7 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
                     type='text' 
                     label='CGPA' 
                     name='cgpa' 
-                    disabled={values.is_result_declare !== 'Y' ? true : false}
+                    disabled={values.grading_as !== 'C' ? true : false}
                     />
                 </div>
             </div>

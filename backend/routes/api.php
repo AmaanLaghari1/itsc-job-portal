@@ -53,6 +53,8 @@ Route::prefix('user')->group(function() {
 Route::prefix('qualification')->group(function() {
     Route::post('post', [QualificationController::class, 'create']);
     Route::get('get/{userId?}', [QualificationController::class, 'getByUserId']);
+    Route::put('put/{id}', [QualificationController::class, 'update']);
+    Route::delete('delete/{id}', [QualificationController::class, 'destroy']);
     Route::get('discipline/{programId?}', [QualificationController::class, 'getDisciplines']);
     Route::get('program/{programId?}', [QualificationController::class, 'getPrograms']);
     Route::get('organization/{organizationId?}', [QualificationController::class, 'getOrganizations']);

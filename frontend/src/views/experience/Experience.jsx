@@ -30,6 +30,7 @@ const Experience = () => {
   return (
     <div>
         <h1>Experience</h1>
+        <small className='d-block fst-italic'>(Please add your recent experience first)</small>
         <Link to={import.meta.env.VITE_BASE_URL+'experience-add'}>
             <button className='btn btn-warning'>
                 Add New <CIcon icon={cilPlus} />

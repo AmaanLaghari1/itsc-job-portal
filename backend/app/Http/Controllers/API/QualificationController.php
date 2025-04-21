@@ -94,7 +94,45 @@ class QualificationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            if(is_null($id)){
+                return response()->json([
+                    "status" => false,
+                    "message" => "Qualification not found"
+                ], 404);
+            }
+
+            $qualification = Qualification::find($id);
+
+            if(is_null($qualification)){
+                return response()->json(
+                    [
+                        "status" => false,
+                        "message" => "Qualification not found"
+                    ], 404
+                );
+            }
+
+            $data = formatRequestData($request->all());
+
+            $newQualification = $qualification->update($data);
+
+            if($newQualification){
+                return response()->json(
+                    [
+                        "status" => true,
+                        "message" => "Qualification updated"
+                    ], 200
+                );
+            }
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error_message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -102,7 +140,39 @@ class QualificationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try{
+            if(is_null($id)){
+                return response()->json([
+                    "status" => false,
+                    "message" => "Qualification not found"
+                ], 404);
+            }
+
+            $record = Qualification::find($id);
+
+            if(is_null($record)){
+                return response()->json(
+                    [
+                        "status" => false,
+                        "message" => "Qualification not found"
+                    ], 404
+                );
+            }
+
+            if($record->delete()){
+                return response()->json([
+                    "status" => true,
+                    "message" => "Qualification deleted"
+                ], 200);
+            }
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong',
+                'error_message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function getPrograms($programId=null){
@@ -205,7 +275,7 @@ class QualificationController extends Controller
                         ->where('DISCIPLINE_ID', $qualification->DISCIPLINE_ID)
                         ->first();
                     $qualification->degree = DB::table('degree_program')
-                        ->where('DEGREE_ID', $qualification->discipline->DISCIPLINE_ID)
+                        ->where('DEGREE_ID', $qualification->discipline->DEGREE_ID)
                         ->first();
                 }
             }

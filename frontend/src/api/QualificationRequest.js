@@ -28,3 +28,12 @@ export const updateQualification = (formdata, id) => {
         }
     })
 }
+
+export const deleteQualification = (id) => {
+    return API.delete("delete/"+id, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}

@@ -12,7 +12,7 @@ class Qualification extends Model
     use HasFactory;
 
     public $table = 'qualifications';
-    private $primarykey = 'QUALIFICATION_ID';
+    protected $primaryKey = 'QUALIFICATION_ID';
     public $timestamps = false;
     protected $fillable = [
         'DISCIPLINE_ID',
