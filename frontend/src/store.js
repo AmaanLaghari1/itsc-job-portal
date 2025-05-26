@@ -2,6 +2,7 @@ import { legacy_createStore as createStore, combineReducers, compose, applyMiddl
 import { thunk } from 'redux-thunk'; // ✅ Fix import
 import authReducer from './reducers/authReducer';
 import UserReducer from './reducers/UserReducer';
+import profileReducer from './reducers/profileReducer';
 import storage from 'redux-persist/lib/storage'; // ✅ Use localStorage for persistence
 import { persistStore, persistReducer } from 'redux-persist';
 
@@ -29,6 +30,7 @@ const uiPersistConfig = {
 const rootReducer = combineReducers({
   auth: persistReducer({ key: 'auth', storage }, authReducer), // Persisted auth state
   user: persistReducer({ key: 'user', storage }, UserReducer), // Persisted user state
+  profile: persistReducer({ key: 'profile', storage }, profileReducer), // Persisted user state
   ui: persistReducer(uiPersistConfig, changeState), // ✅ Persist UI state (fixes theme issue)
 });
 

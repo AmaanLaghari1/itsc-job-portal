@@ -6,6 +6,8 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\QualificationController;
 use App\Http\Controllers\API\ExperienceController;
+use App\Http\Controllers\API\AnnouncementController;
+use App\Http\Controllers\API\ApplicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,4 +68,21 @@ Route::prefix('experience')->group(function() {
     Route::put('put/{id}', [ExperienceController::class, 'update']);
     Route::get('get/{userId?}', [ExperienceController::class, 'getByUserId']);
     Route::delete('delete/{id}', [ExperienceController::class, 'destroy']);
+});
+
+Route::prefix('announcement')->group(function() {
+    Route::get('get', [AnnouncementController::class, 'index']);
+    Route::post('post', [AnnouncementController::class, 'create']);
+    Route::put('put/{id}', [AnnouncementController::class, 'update']);
+    Route::get('get/{id}', [AnnouncementController::class, 'show']);
+    Route::delete('delete/{id}', [AnnouncementController::class, 'destroy']);
+});
+
+Route::prefix('application')->group(function() {
+    Route::get('get', [ApplicationController::class, 'index']);
+    Route::post('post', [ApplicationController::class, 'create']);
+    Route::put('put/{id}', [ApplicationController::class, 'update']);
+//    Route::get('get/{id}', [ApplicationController::class, 'show']);
+    Route::delete('delete/{id}', [ApplicationController::class, 'destroy']);
+    Route::get('get/{userId?}', [ApplicationController::class, 'getByUserId']);
 });

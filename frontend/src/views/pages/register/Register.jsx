@@ -1,4 +1,3 @@
-import React from 'react'
 import "../login/Login_2.css"
 import thumbnail from '../../../assets/images/login/register_thumbnail.png'
 import logo from '../../../assets/images/logos/usindh-logo.png'
@@ -79,7 +78,7 @@ const Register = () => {
                                         <div className="col-12 col-md-6">
                                             <div className="form-group my-2">
                                                 <label className='form-label small' htmlFor="first_name">
-                                                    Fullname
+                                                    Name
                                                 </label>
                                                 <span className="text-danger fw-bold">*</span>
                                                 <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='' name='first_name' id='first_name' />

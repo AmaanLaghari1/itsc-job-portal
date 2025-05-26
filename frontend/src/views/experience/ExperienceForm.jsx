@@ -69,7 +69,7 @@ const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading})
                                         <FormControl 
                                         control='input' 
                                         as='textarea' 
-                                        label='Company Address' 
+                                        label='Organization Address' 
                                         name='address' 
                                         required={true}
                                         />
@@ -80,12 +80,12 @@ const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading})
                                         <FormControl
                                         control='input'
                                         type='text'
-                                        label='Contact No. (without leading zero)'
+                                        label='Organization Contact No.'
                                         name='contact_no'
                                         onInput={(e) => {
                                             e.target.value = e.target.value.replace(/\D/g, '');
                                         }}
-                                        required={true}
+                                        // required={true}
                                         />
                                     </div>
                                 </div>
@@ -156,7 +156,7 @@ const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading})
                             </div>
 
                             <div className="d-flex justify-content-center gap-2 my-2">
-                                <CButton type='submit' color='primary' className='btn btn-primary bg-primary rounded-pill my-2 p-2 px-4'>
+                                <CButton type='submit' color='primary' className='btn btn-primary fs-5 rounded-pill my-2 p-2 px-4'>
                                     { loading ? 'Saving...' : 'Save' }
                                 </CButton>
                             </div>

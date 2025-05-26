@@ -7,16 +7,18 @@
 * {
   font-family: "Montserrat", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 500;
+  font-weight: 400;
+  font-size: small;
   font-style: normal;
 }
+
 
 :root {
   --dark-bg: #000;
 }
 
 body {
-  background-color: var(--cui-body-bg);
+  background-color: #FAF8FF;
 }
 
 // .sidebar-dark, .sidebar {

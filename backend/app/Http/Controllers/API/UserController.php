@@ -104,6 +104,7 @@ class UserController extends Controller
                 'status' => true,
                 'message' => 'User found successfully.',
                 'data' => $user,
+                'age' => $user->getAge('2025-05-26')
             ] , 200);
         }
         else {

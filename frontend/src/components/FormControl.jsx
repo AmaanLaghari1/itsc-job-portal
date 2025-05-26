@@ -23,7 +23,7 @@ const Input = (props) => {
         <div>
             <label htmlFor={name}>{label}{required ? <span className='text-danger fw-bold'>*</span>: ''}</label>
             <Field className='form-control' type={type} name={name} id={name} {...rest} />
-            <div className="small text-danger">
+            <div className="text-danger">
                 <ErrorMessage name={name} />
             </div>
         </div>
@@ -36,7 +36,7 @@ const Textarea = (props) => {
         <div>
             <label htmlFor={name}>{label}{required ? <span className='text-danger fw-bold'>*</span>: ''}</label>
             <Field className='form-control' as='textarea' name={name} id={name} {...rest} />
-            <div className="small text-danger">
+            <div className="text-danger">
                 <ErrorMessage name={name} />
             </div>
         </div>
@@ -71,7 +71,7 @@ const Radio = (props) => {
                     }}
                 </Field>
             </div>
-            <div className="text-danger small">
+            <div className="text-danger">
                 <ErrorMessage name={name} />
             </div>
         </div>
@@ -91,7 +91,7 @@ const Select = props => {
                     })    
                 }
             </Field>
-            <div className="text-danger small">
+            <div className="text-danger">
                 <ErrorMessage name={name} />
             </div>
         </div>
@@ -117,12 +117,16 @@ const Checkbox = props => {
                     }
                 </Field>
             </div>
-            <div className="text-danger small">
+            <div className="text-danger">
                 <ErrorMessage name={name} />
             </div>
         </div>
     )
 }
+
+const ReadOnlyInput = React.forwardRef((props, ref) => (
+  <input {...props} ref={ref} readOnly className='form-control w-100' />
+));
 
 const DateInput = props => {
     const {label, name, required, ...rest} = props
@@ -148,18 +152,20 @@ const DateInput = props => {
                                 shouldCloseOnSelect={true} 
                                 showTimeInput={false} 
                                 showYearDropdown
+                                showMonthDropdown
                                 yearDropdownItemNumber={50}
                                 scrollableYearDropdown
                                 maxDate={maxDate}
                                 minDate={new Date("01/01/1900")}
-                                dateFormat="yyyy/MM/dd"    
+                                dateFormat="dd/MM/yyyy"
+                                customInput={<ReadOnlyInput />}  
                                 />
                             </div>
                         )
                     }
                 }
             </Field>
-            <div className="text-danger small">
+            <div className="text-danger">
                 <ErrorMessage name={name} />
             </div>
         </div>

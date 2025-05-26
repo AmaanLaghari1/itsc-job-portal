@@ -4,11 +4,12 @@ import {
   cilEducation,
   cilSpeedometer,
   cilUser,
-  cilUserPlus,
+  cilSettings,
+  cilBullhorn
 } from '@coreui/icons'
 import { CNavItem } from '@coreui/react'
 
-const _nav = auth => [
+const _nav = data => [
     {
       component: CNavItem,
       name: 'Dashboard',
@@ -17,12 +18,18 @@ const _nav = auth => [
     },
     {
       component: CNavItem,
+      name: 'Announcements',
+      to: '/announcements',
+      icon: <CIcon icon={cilBullhorn} customClassName="nav-icon" />,
+    },
+    {
+      component: CNavItem,
       name: 'Basic Information',
       to: '/user-profile',
       icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
       badge: {
-        color: auth.authData.profile_completeness > 80 ? 'success' :'danger',
-        text: auth.authData.profile_completeness+'%',
+        color: data.completeness.profile > 80 ? 'success' :'danger',
+        text: data.completeness.profile+'%',
       },
     },
     {
@@ -31,18 +38,18 @@ const _nav = auth => [
       to: '/qualifications',
       icon: <CIcon icon={cilEducation} customClassName="nav-icon" />,
       badge: {
-        color: 'warning',
-        text: '20%',
+        color: data.completeness.qualification >= 60 ? 'success' :'danger',
+        text: data.completeness.qualification+'%',
       },
     },
     {
       component: CNavItem,
       name: 'Experience',
       to: '/experience',
-      icon: <CIcon icon={cilEducation} customClassName="nav-icon" />,
+      icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
       badge: {
-        color: auth.authData.experience_completeness >= 60 ? 'success' :'danger',
-        text: auth.authData.experience_completeness+'%',
+        color: data.completeness.experience >= 60 ? 'success' :'danger',
+        text: data.completeness.experience+'%',
       },
     },
     // {

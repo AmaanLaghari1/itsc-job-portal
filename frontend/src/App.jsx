@@ -25,7 +25,7 @@ const App = () => {
 
   const auth = useSelector((state) => state.auth)
   let token = null || auth?.token
-  console.log(auth);
+  // console.log(auth);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.href.split('?')[1])

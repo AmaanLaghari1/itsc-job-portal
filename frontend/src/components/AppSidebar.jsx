@@ -22,7 +22,7 @@ const AppSidebar = () => {
   const unfoldable = useSelector((state) => state.ui.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.ui.sidebarShow)
   const theme = useSelector((state) => state.ui.theme)
-  const auth = useSelector((state) => state.auth)
+  const profile = useSelector((state) => state.profile)
   return (
     <CSidebar
       className="border-end"
@@ -45,7 +45,7 @@ const AppSidebar = () => {
           onClick={() => dispatch({ type: 'set', sidebarShow: false })}
         />
       </CSidebarHeader>
-      <AppSidebarNav items={navigation(auth)} />
+      <AppSidebarNav items={navigation(profile)} />
       <CSidebarFooter className="border-to border-light d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}

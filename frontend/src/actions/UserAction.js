@@ -22,6 +22,7 @@ export const updateUser = (formData, id) => {
                 };
 
                 dispatch({ type: 'AUTH_SUCCESS', payload: updatedAuthData });
+                dispatch({ type: 'PROFILE_COMPLETENESS_SUCCESS', payload: response.data.profile_completeness });
                 
                 return { success: true, data: response.data };
             }

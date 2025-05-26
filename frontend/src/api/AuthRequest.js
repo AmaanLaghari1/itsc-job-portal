@@ -1,4 +1,5 @@
 import axios from 'axios'
+import getStoredState from 'redux-persist/es/getStoredState'
 
 const API = axios.create({baseURL: import.meta.env.VITE_API_URL+"auth/"})
 
@@ -20,8 +21,8 @@ export const login = (formdata) => {
     })
 }
 
-export const logout = (token) => {
-    return API.post("logout", {}, {
+export const logout = (token) => {   
+    return API.post("logout", null, {
         headers: { 
             Authorization: `Bearer ${token}`,
             Accept: "application/json"

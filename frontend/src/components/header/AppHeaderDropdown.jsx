@@ -25,6 +25,7 @@ import MyModal from '../MyModal'
 
 const AppHeaderDropdown = () => {
   const auth = useSelector((state) => state.auth?.authData)
+  const token = useSelector((state) => state.auth?.token)
   const dispatch = useDispatch()
   return (
     <CDropdown variant="nav-item">

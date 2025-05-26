@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Experience;
+use App\Models\Qualification;
 
 class User extends Authenticatable
 {
@@ -131,18 +133,7 @@ class User extends Authenticatable
         foreach ($fields as $field) {
             if (!empty($this->$field)) {
                 $filled++;
-            }else {
-                if(
-                    $field === 'PROFILE_IMAGE'
-                    || $field === 'COUNTRY_ID'
-                    || $field === 'PROVINCE_ID'
-                    || $field === 'DISTRICT_ID'
-                    || $field === 'PERMANENT_ADDRESS'
-                ) {
-                    $filled -= 5;
-                }
             }
-
         }
 
         $total = count($fields);
@@ -171,5 +162,113 @@ class User extends Authenticatable
     {
         return 'CNIC_NO'; // Set 'cnic_no' as the username column
     }
+
+    public function qualifications()
+    {
+       return $this->hasMany(Qualification::class, 'USER_ID');
+    }
+
+    public function getQualificationCompletenessAttribute()
+    {
+        $totalFields = 23; // Adjust based on the fields you consider
+        $qualifications = $this->qualifications;
+
+        $filled = 0;
+        $totalPossible = $qualifications->count() * $totalFields;
+
+        foreach ($qualifications as $qualification) {
+            foreach ($qualification->getAttributes() as $key => $value) {
+                if (in_array($key, $qualification->getFillable()) && !is_null($value) && $value !== '') {
+                    $filled++;
+                }
+            }
+        }
+
+        return $totalPossible > 0 ? round(($filled / $totalPossible) * 100, 2) : 0;
+    }
+
+    public function experiences()
+    {
+        return $this->hasMany(Experience::class, 'USER_ID');
+    }
+
+    public function getExperienceCompletenessAttribute()
+    {
+        $totalFields = 13; // Adjust based on the fields you consider
+        $experiences = $this->experiences;
+
+        $filled = 0;
+        $totalPossible = $experiences->count() * $totalFields;
+
+        foreach ($experiences as $experience) {
+            foreach ($experience->getAttributes() as $key => $value) {
+                if (in_array($key, $experience->getFillable()) && !is_null($value) && $value !== '') {
+                    $filled++;
+                }
+            }
+        }
+
+        return $totalPossible > 0 ? round(($filled / $totalPossible) * 100, 2) : 0;
+    }
+
+    public function getAge($date)
+    {
+        if (empty($this->DATE_OF_BIRTH)) {
+            return null;
+        }
+
+        try {
+            $dob = \Carbon\Carbon::parse($this->DATE_OF_BIRTH);
+            $referenceDate = \Carbon\Carbon::parse($date);
+            return $dob->diffInYears($referenceDate);
+        } catch (\Exception $e) {
+            return null; // or throw, or log, based on your app needs
+        }
+    }
+
+
+//    public function getQualificationCompletenessAttribute()
+//    {
+//        $qualifications = $this->qualifications()->get(); // assuming a hasMany relationship
+//
+//        if ($qualifications->isEmpty()) {
+//            return 0;
+//        }
+//
+//        $fields = [
+//            'DISCIPLINE_ID',
+//            'USER_ID',
+//            'ORGANIZATION_ID',
+//            'INSTITUTE_ID',
+//            'START_DATE',
+//            'END_DATE',
+//            'IS_RESULT_DECLARE',
+//            'RESULT_DATE',
+//            'MAJOR',
+//            'ROLL_NO',
+//            'TOTAL_MARKS',
+//            'OBTAINED_MARKS',
+//            'CGPA',
+//            'OUT_OF',
+//            'GRADE',
+//            'GRADING_AS',
+//        ];
+//
+//        $total = count($fields);
+//        $totalCompleteness = 0;
+//
+//        foreach ($qualifications as $qualification) {
+//            $filled = 0;
+//            foreach ($fields as $field) {
+//                if (!empty($qualification->$field)) {
+//                    $filled++;
+//                }
+//            }
+//            $totalCompleteness += ($filled / $total) * 100;
+//        }
+//
+//        // Return average percentage across all qualifications
+//        return round($totalCompleteness / $qualifications->count());
+//    }
 
 }

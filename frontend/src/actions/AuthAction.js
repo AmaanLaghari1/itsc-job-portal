@@ -11,9 +11,17 @@ export const register = (formdata) => {
             if (response.data?.status) { // Use response.data.status instead of response.success
                 // console.log("Response Data:", response.data);
                 const auth = response.data;
+                let completeness = {
+                    profile: response.data.profile_completeness??0,
+                    qualification: response.data.qualification_completeness??0,
+                    experience: response.data.experience_completeness??0,
+                }
                 
                 if (auth) {
                     dispatch({ type: "AUTH_SUCCESS", payload: auth });
+                    dispatch({ type: "PROFILE_COMPLETENESS_SUCCESS", payload: completeness });
+                    // dispatch({ type: "EXPERIENCE_COMPLETENESS_SUCCESS", payload: auth.experience_completeness });
+                    // dispatch({ type: "QUALIFICATION_COMPLETENESS_SUCCESS", payload: auth.qualification_completeness });
                     return { success: true, data: response.data };
                 } else {
                     console.error("User data is missing in response");
@@ -43,9 +51,15 @@ export const login = (formdata) => {
             if (response?.data?.status) { // Use response.data.status instead of response.success
                 // console.log("Response Data:", response.data);
                 const auth = response.data;
+                let completeness = {
+                    profile: response.data.profile_completeness??0,
+                    qualification: response.data.qualification_completeness??0,
+                    experience: response.data.experience_completeness??0,
+                }
                 
                 if (auth) {
                     dispatch({ type: "AUTH_SUCCESS", payload: auth });
+                    dispatch({ type: "GET_ALL_COMPLETENESS", payload: completeness });
                     return { success: true, data: response.data };
                 } else {
                     console.error("User data is missing in response");
@@ -93,8 +107,14 @@ export const verifyEmail = (formdata) => {
         try {
             const response = await API.verifyEmail(formdata)
             const auth = response.data
+            let completeness = {
+                profile: response.data.profile_completeness??0,
+                qualification: response.data.qualification_completeness??0,
+                experience: response.data.experience_completeness??0,
+            }
             if(auth){
                 dispatch({type: "AUTH_SUCCESS", payload: auth})
+                dispatch({ type: "GET_ALL_COMPLETENESS", payload: completeness });
                 return { success: true, data: response.data }
             }
             else {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,12 +45,15 @@ class ExperienceController extends Controller
             }
 
             $data = formatRequestData($request->all());
+            $newExperience = Experience::create($data);
 
-            if(Experience::create($data)){
+            if($newExperience){
+                $user = User::find($request->user_id);
                 return response()->json(
                     [
                         "status" => true,
-                        "message" => "Experience added"
+                        "message" => "Experience added",
+                        "experience_completeness" => $user->experience_completeness
                     ]
                     , 200
                 );
@@ -130,11 +134,13 @@ class ExperienceController extends Controller
             $newExperience = $experience->update($data);
 
             if($newExperience){
+                $user = User::find($request->get('user_id'));
                 return response()->json(
                     [
                         "status" => true,
                         "message" => "Experience updated",
-                        "data" => $experience
+                        "data" => $experience,
+                        "experience_completeness" => $user->experience_completeness
                     ]
                 , 200);
             }
@@ -158,9 +164,11 @@ class ExperienceController extends Controller
         $record = Experience::find($id);
 
         if($record->delete()){
+            $user = User::find($record->USER_ID);
             return response()->json([
                 'status' => true,
                 'message' => 'Experience deleted successfully.',
+                "experience_completeness" => $user->experience_completeness
             ] , 200);
         }
         else {

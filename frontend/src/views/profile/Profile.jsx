@@ -88,6 +88,8 @@ const Profile = () => {
     const provinceOptions = mapOptions(data.provinces, "PROVINCE_ID", "PROVINCE_NAME");
     const countryOptions = mapOptions(data.countries, "COUNTRY_ID", "COUNTRY_NAME");
 
+    console.log(auth.user);
+
     const initialValues = {
         first_name: auth.user.FIRST_NAME || '',
         last_name: auth.user.LAST_NAME || '',
@@ -99,14 +101,14 @@ const Profile = () => {
         permanent_address: auth.user.PERMANENT_ADDRESS || '',
         date_of_birth: auth.user.DATE_OF_BIRTH ? new Date(auth.user.DATE_OF_BIRTH) : '',
         place_of_birth: auth.user.PLACE_OF_BIRTH || '',
-        district_id: auth.user.DISTRICT_ID || '',
-        province_id: auth.user.PROVINCE_ID || '',
-        country_id: auth.user.COUNTRY_ID || 160,
-        religion: auth.user.RELIGION || '',
-        nationality: auth.user.COUNTRY_ID || '',
+        district_id: parseInt(auth.user.DISTRICT_ID) || 0,
+        province_id: parseInt(auth.user.PROVINCE_ID) || 0,
+        country_id: parseInt(auth.user.COUNTRY_ID) || 160,
+        religion: auth.user.RELIGION ? auth.user.RELIGION.toLowerCase() : '',
+        nationality: parseInt(auth.user.COUNTRY_ID) || '',
         gender: auth.user.GENDER || '',
-        marital_status: auth.user.MARITAL_STATUS || '',
-        domicile_province: auth.user.PROVINCE_ID || '',
+        marital_status: auth.user.MARITAL_STATUS || 0,
+        domicile_province: auth.user.PROVINCE_ID || 0,
         profile_image: auth.user.PROFILE_IMAGE || null,
     }
 
@@ -118,10 +120,19 @@ const Profile = () => {
         .required('CNIC is required!'),
         mobile_no: Yup.string().matches(/^[1-9]\d{9}$/, {message: "Please enter valid number.", excludeEmptyString: false}),
         email: Yup.string().email('Invalid email format').required('Email is required!'),
+        date_of_birth: Yup.string().required('Date of birth required'),
+        gender: Yup.string().required('Gender is required!'),
+        marital_status: Yup.string().required('Marital Status is required!'),
+        place_of_birth: Yup.string().required('Place of Birth is required!'),
+        religion: Yup.string().required('Religion is required!'),
+        country_id: Yup.string().required('Country is required!'),
+        province_id: Yup.string().required('Province is required!'),
+        district_id: Yup.string().required('District is required!')
     });
 
     const submitHandler = async (values, { setFieldValue, resetForm }) => {
         setLoading(true);
+        values.date_of_birth = values.date_of_birth ? new Date(values.date_of_birth).toISOString().split('T')[0] : null;
         
         if(values.profile_image &&
             typeof values.profile_image === 'object' &&
@@ -176,11 +187,11 @@ const Profile = () => {
                     />
             </div>
             <div className="basic-info">
-                <h1>{`${auth.user.FIRST_NAME || ''}`}</h1>
+                <h1>{`${auth.user.FIRST_NAME || ''} ${auth.user.LAST_NAME}`}</h1>
                 <p className="lead">
                     {auth.user.EMAIL || ''}
                 </p>
-                <CButton variant='warning' className='btn btn-warning btn-sm'
+                <CButton variant='light' className='btn btn-outline-success btn-sm'
                 onClick={handleChangePic}
                 >
                     Upload Picture
@@ -212,13 +223,13 @@ const Profile = () => {
                         <div className="form-group">
                             <div className="row">
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='input' type='text' label='Name' name='first_name' />
+                                    <FormControl control='input' type='text' label='Name' name='first_name' required={true} />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='input' type='text' label='Surname' name='last_name' />
+                                    <FormControl control='input' type='text' label='Surname' name='last_name' required={true} />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='input' type='text' label="Father's Name" name='fname' />
+                                    <FormControl control='input' type='text' label="Father's Name" name='fname' required={true} />
                                 </div>
                                 <div className="col-sm-6 my-2">
                                     <FormControl control='input' type='text' label='CNIC No.' name='cnic_no' disabled
@@ -228,7 +239,7 @@ const Profile = () => {
                                     />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='input' type='text' label='Mobile No. (without leading zero)' name='mobile_no'
+                                    <FormControl control='input' type='text' label='Mobile No.' name='mobile_no' required={true}
                                     onInput={(e) => {
                                         e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
                                     }}
@@ -241,26 +252,27 @@ const Profile = () => {
                                         {key: 'islam', value: 'Islam'},
                                         {key: 'christianity', value: 'Christianity'},
                                         {key: 'hinduism', value: 'Hinduism'},
-                                        {key: 'sikhism', value: 'Sikhism'},
-                                        {key: 'buddhism', value: 'Buddhism'},
-                                        {key: 'judaism', value: 'Judaism'}
+                                        {key: 'other', value: 'Other'},
+                                        // {key: 'buddhism', value: 'Buddhism'},
+                                        // {key: 'judaism', value: 'Judaism'}
                                     ]} 
                                     label='Religion' 
-                                    name='religion' 
+                                    name='religion'
+                                    id='religion'
                                     onChange={(selectedOption) => {
                                         setFieldValue('religion', selectedOption?.key || '');
                                     }}
                                     />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='radio' label='Gender' name='gender' 
+                                    <FormControl control='radio' label='Gender' name='gender' required={true}
                                     options={[
                                         {key: 'M', value: 'Male'},
                                         {key: 'F', value: 'Female'},
                                     ]} />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='radio' label='Marital Status' name='marital_status' 
+                                    <FormControl control='radio' label='Marital Status' name='marital_status' required={true}
                                     options={[
                                         {key: 1, value: 'Single'},
                                         {key: 2, value: 'Married'},
@@ -269,13 +281,13 @@ const Profile = () => {
                                     ]} />
                                 </div>                                
                                 <div className="col-sm-3 my-2">
-                                    <FormControl control='date' type='date' label='Date of Birth' name='date_of_birth' />
+                                    <FormControl className="form-control mt-2" control='date' type='date' label='Date of Birth' name='date_of_birth' required={true} />
                                 </div>
                                 <div className="col-sm-3 my-2">
-                                    <FormControl className='form-control mt-2' control='input' type='text' label='Place of Birth' name='place_of_birth' />
+                                    <FormControl className='form-control mt-2' control='input' type='text' label='Place of Birth' name='place_of_birth' required={true} />
                                 </div>
                                 <div className="col-sm-6 my-2">
-                                    <FormControl control='input' as='textarea' label='Present Address' name='home_address' />
+                                    <FormControl control='input' as='textarea' label='Present Address' name='home_address' required={true} />
                                 </div>
                                 <fieldset className='border border-2 p-2'>
                                     <legend className='fw-bold'>Domicile Details</legend>
@@ -290,6 +302,7 @@ const Profile = () => {
                                                     setFieldValue('country_id', selectedOption?.key || '');
                                                     handleCountryChange(selectedOption?.key); // Fetch provinces dynamically
                                                 }}
+                                                required={true}
                                             />
                                         </div>
                                         <div className="col-sm-6 my-2">
@@ -302,6 +315,7 @@ const Profile = () => {
                                                 setFieldValue('province_id', selectedOption?.key || '');
                                                 handleProvinceChange(selectedOption?.key); // Fetch provinces dynamically
                                             }}
+                                            required={true}
                                             />
                                         </div>
                                         <div className="col-sm-6 my-2">
@@ -309,18 +323,21 @@ const Profile = () => {
                                             className='form-control mt-2' 
                                             options={districtOptions} 
                                             label='Domicile District' 
-                                            name='district_id' 
+                                            name='district_id'
+                                            required={true} 
                                             />
                                         </div>
                                         <div className="col-sm-6 my-2">
-                                            <FormControl control='input' as='textarea' label='Permanent Address' name='permanent_address' />
+                                            <FormControl control='input' as='textarea' label='Permanent Address' name='permanent_address'
+                                            required={true}
+                                            />
                                         </div>
                                     </div>
                                 </fieldset>
                             </div>
                         </div>
                         <div className="form-group text-center">
-                            <button className="btn btn-primary bg-primary rounded-pill my-2 p-2 px-4" type='submit' disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
+                            <button className="btn btn-primary fs-5 rounded-pill my-2 p-2 px-4" type='submit' disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
                         </div>
                     </Form>
                 )

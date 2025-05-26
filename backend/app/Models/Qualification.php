@@ -14,6 +14,7 @@ class Qualification extends Model
     public $table = 'qualifications';
     protected $primaryKey = 'QUALIFICATION_ID';
     public $timestamps = false;
+
     protected $fillable = [
         'DISCIPLINE_ID',
         'USER_ID',
@@ -40,7 +41,8 @@ class Qualification extends Model
         'APPLICATION_ID'
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class, 'USER_ID');
     }
 
@@ -49,7 +51,8 @@ class Qualification extends Model
         return DB::table('institute')->where('INSTITUTE_ID', $this->INSTITUTE_ID)->first();
     }
 
-    public function discipline(){
-        return $this->belongsTo(User::class);
+    public function discipline()
+    {
+        return $this->belongsTo(Discipline::class, 'DISCIPLINE_ID');
     }
 }

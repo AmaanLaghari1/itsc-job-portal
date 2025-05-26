@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +17,6 @@ class QualificationController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -28,11 +29,11 @@ class QualificationController extends Controller
             $validation = Validator::make($request->all(), [
                 'discipline_id' => 'required',
                 'user_id' => 'required',
-                'institute_id' => 'required',
-                'start_date' => 'required',
-                'end_date' => 'required',
-                'obtained_marks' => 'required',
-                'total_marks' => 'required'
+//                'institute_id' => 'required',
+//                'start_date' => 'required',
+//                'end_date' => 'required',
+//                'obtained_marks' => 'required',
+//                'total_marks' => 'required'
             ]);
 
             if($validation->stopOnFirstFailure()->fails()){
@@ -45,12 +46,15 @@ class QualificationController extends Controller
             }
 
             $data = formatRequestData($request->all());
+            $newQualification = Qualification::create($data);
 
-            if(Qualification::create($data)){
+            if($newQualification){
+                $user = User::find($request->user_id);
                 return response()->json(
                     [
                         "status" => true,
-                        "message" => "Qualification added"
+                        "message" => "Qualification added",
+                        "qualification_completeness" => $user->qualification_completeness
                     ]
                     , 200
                 );
@@ -118,10 +122,12 @@ class QualificationController extends Controller
             $newQualification = $qualification->update($data);
 
             if($newQualification){
+                $user = User::find($request->user_id);
                 return response()->json(
                     [
                         "status" => true,
-                        "message" => "Qualification updated"
+                        "message" => "Qualification updated",
+                        "qualification_completeness" => $user->qualification_completeness
                     ], 200
                 );
             }
@@ -140,8 +146,8 @@ class QualificationController extends Controller
      */
     public function destroy(string $id)
     {
-        try{
-            if(is_null($id)){
+        try {
+            if (is_null($id)) {
                 return response()->json([
                     "status" => false,
                     "message" => "Qualification not found"
@@ -150,27 +156,33 @@ class QualificationController extends Controller
 
             $record = Qualification::find($id);
 
-            if(is_null($record)){
-                return response()->json(
-                    [
-                        "status" => false,
-                        "message" => "Qualification not found"
-                    ], 404
-                );
+            if (is_null($record)) {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Qualification not found"
+                ], 404);
             }
 
-            if($record->delete()){
+            $userId = $record->USER_ID;
+            $user = User::find($userId);
+
+            if ($record->delete()) {
                 return response()->json([
                     "status" => true,
-                    "message" => "Qualification deleted"
+                    "message" => "Qualification deleted",
+                    "qualification_completeness" => $user->qualification_completeness
                 ], 200);
             }
-        }
-        catch (\Exception $e) {
+
             return response()->json([
-                'status' => false,
-                'message' => 'Something went wrong',
-                'error_message' => $e->getMessage()
+                "status" => false,
+                "message" => "Failed to delete qualification"
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "An error occurred",
+                "error" => $e->getMessage()
             ], 500);
         }
     }
@@ -263,7 +275,7 @@ class QualificationController extends Controller
     public function getByUserId($userId=null){
         try {
             if($userId){
-                $data = Qualification::where('USER_ID', $userId)->with('user')->get();
+                $data = Qualification::where('USER_ID', $userId)->with('user')->with('discipline')->get();
                 foreach ($data as $qualification) {
                     $qualification->institute = DB::table('institute')
                         ->where('INSTITUTE_ID', $qualification->INSTITUTE_ID)

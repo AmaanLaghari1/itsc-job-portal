@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Alert from '../../components/Alert'
 import * as API from '../../api/ExperienceRequest.js'
@@ -12,6 +12,7 @@ const ExperienceEdit = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const { prevExp } = location.state || {}
+    const dispatch = useDispatch()
 
     const initialValues = {
         user_id: prevExp.USER_ID || auth.user.USER_ID,
@@ -30,7 +31,7 @@ const ExperienceEdit = () => {
     const validationRules = Yup.object({
         organization_name: Yup.string().required('Organization name required'),
         emp_type: Yup.string().required('Employment type required'),
-        contact_no: Yup.string().required('Contact No. required'),
+        // contact_no: Yup.string().required('Contact No. required'),
         address: Yup.string().required('Address required'),
         start_date: Yup.date().required('Start date required'),
         end_date: Yup.date().min(
@@ -50,6 +51,7 @@ const ExperienceEdit = () => {
 
         try {
             const response = await API.updateExperience(formattedValues, prevExp.EXPERIANCE_ID)
+            dispatch({ type: "EXPERIENCE_COMPLETENESS_SUCCESS", payload: response?.data?.experience_completeness });
             Alert({status: true, text: response?.data?.message || 'Experience updated successfully'})
             navigate('/experience')
 

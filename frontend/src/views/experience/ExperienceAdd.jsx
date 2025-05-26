@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import Alert from '../../components/Alert'
 import * as API from '../../api/ExperienceRequest.js'
@@ -10,6 +10,7 @@ const ExperienceAdd = () => {
     const auth = useSelector(state => state.auth.authData)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const initialValues = {
         user_id: auth.user.USER_ID,
@@ -28,7 +29,7 @@ const ExperienceAdd = () => {
     const validationRules = Yup.object({
         organization_name: Yup.string().required('Organization name required'),
         emp_type: Yup.string().required('Employment type required'),
-        contact_no: Yup.string().required('Contact No. required'),
+        // contact_no: Yup.string().required('Contact No. required'),
         address: Yup.string().required('Address required'),
         start_date: Yup.date().required('Start date required'),
         end_date: Yup.date().min(
@@ -49,9 +50,9 @@ const ExperienceAdd = () => {
         try {
             const response = await API.createExperience(formattedValues)
             // console.log(response)
+            dispatch({ type: "EXPERIENCE_COMPLETENESS_SUCCESS", payload: response?.data?.experience_completeness });
             Alert({status: true, text: response?.data?.message || 'Experience added successfully'})
             navigate('/experience')
-
         }
         catch (error) {
             Alert({status: false, text: error.response?.data?.error_message || 'Some error occured'})
@@ -63,6 +64,7 @@ const ExperienceAdd = () => {
 
   return (
     <div>
+        <small className='d-block fst-italic my-2'><span className="fw-bold fst-italic">Note:</span> Please add your recent experience first.</small>
         <ExperienceForm 
         initialValues={initialValues}
         validationRules={validationRules}

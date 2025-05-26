@@ -1,6 +1,6 @@
 import React from 'react'
 import { CCardHeader, CCol, CRow, CButton } from '@coreui/react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CIcon from '@coreui/icons-react';
 import { cilPen, cilTrash } from '@coreui/icons';
 import Alert from '../../components/Alert.js';
@@ -11,10 +11,11 @@ import * as API from '../../api/QualificationRequest.js'
 const QualificationCard = ({qualification, onDelete}) => {
   const auth = useSelector((state) => state.auth.authData);
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   return (
     qualification.length > 0 ? qualification.map((qual) => (
-      <div className="card w-100 p-0 my-2" key={qual.QUALIFICATION_ID}>
+      <div className="card shadow shadow-sm w-100 p-0 my-2" key={qual.QUALIFICATION_ID}>
         <CCardHeader className='fw-bolder d-flex'>
           {qual.degree.DEGREE_TITLE}
           <div className="ms-auto">
@@ -39,7 +40,9 @@ const QualificationCard = ({qualification, onDelete}) => {
                 
                 if (confirmed) {
                     const response = await API.deleteQualification(qual.QUALIFICATION_ID)
+                    console.log(response);
                     onDelete(qual.QUALIFICATION_ID)
+                    dispatch({ type: "QUALIFICATION_COMPLETENESS_SUCCESS", payload: response?.data?.qualification_completeness });
                     Alert({status: true, text: response?.data?.message || 'Qualification deleted successfully'})
               }
             }
@@ -59,14 +62,14 @@ const QualificationCard = ({qualification, onDelete}) => {
               {qual.organization.INSTITUTE_NAME}
             </CCol>
           </CRow>
-          <CRow className='border-top'>
+          {/* <CRow className='border-top'>
             <CCol sm={3} className="fw-bold">
               Institute Name
             </CCol>
             <CCol sm={9}>
               {qual.institute.INSTITUTE_NAME}
             </CCol>
-          </CRow>
+          </CRow> */}
 
           <CRow className='border-top'>
             <CCol sm={3} className="fw-bold">Discipline</CCol>
@@ -81,15 +84,10 @@ const QualificationCard = ({qualification, onDelete}) => {
           <CRow className='border-top'>
             <CCol sm={3} className="fw-bold">Roll No.</CCol>
             <CCol sm={3}>{qual.ROLL_NO || '-'}</CCol>
-            <CCol sm={3} className="fw-bold">Grade</CCol>
+            <CCol sm={3} className="fw-bold">
+              {qual.GRADING_AS == 'G' ? 'Grade' : 'CGPA'}
+            </CCol>
             <CCol sm={3}>{qual.GRADE || qual.CGPA || '-'}</CCol>
-          </CRow>
-
-          <CRow className='border-top'>
-            <CCol sm={3} className="fw-bold">Start Date</CCol>
-            <CCol sm={3}>{qual.START_DATE || '-'}</CCol>
-            <CCol sm={3} className="fw-bold">End Date</CCol>
-            <CCol sm={3}>{qual.END_DATE || '-'}</CCol>
           </CRow>
 
           <CRow className='border-top'>
