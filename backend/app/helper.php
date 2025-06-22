@@ -30,3 +30,23 @@ if (!function_exists("formatRequestData")) {
     }
 }
 
+function postCURL($_url, $_param,$method="POST"){
+
+
+    $data_string = json_encode($_param);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL,$_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json')
+    );
+    $output=curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    return array("response"=>$output,"response_code"=>$httpcode);
+}
+

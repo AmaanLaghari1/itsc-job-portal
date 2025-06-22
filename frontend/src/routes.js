@@ -1,6 +1,7 @@
 import React from 'react'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
+const ApplicationConfirm = React.lazy(() => import('./views/dashboard/ApplicationConfirm'))
 const Announcement = React.lazy(() => import('./views/announcement/Announcement'))
 const AnnouncementAdd = React.lazy(() => import('./views/admin/AnnouncementAdd'))
 const AnnouncementDetail = React.lazy(() => import('./views/announcement/AnnouncementDetail'))
@@ -16,6 +17,7 @@ const Users = React.lazy(() => import('./views/users/Users'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+  { path: '/confirm-application', name: 'Application', element: ApplicationConfirm },
   { path: '/announcements', name: 'Announcement', element: Announcement },
   { path: '/announcement-add', name: 'Add Announcement', element: AnnouncementAdd },
   { path: '/announcement-detail', name: 'Announcement Detail', element: AnnouncementDetail },

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\AuthController;
@@ -41,7 +42,7 @@ Route::get('login-check/{token}', [AuthController::class, 'checkLoggedIn']);
 Route::get('districts/{provinceId?}', [UserController::class, 'getDistricts']);
 Route::get('cities', [UserController::class, 'getCities']);
 Route::get('provinces/{countryId?}', [UserController::class, 'getProvinces']);
-Route::get('countries', [UserController::class, 'getCountries']);
+Route::get('countries/{countryId?}', [UserController::class, 'getCountries']);
 
 Route::prefix('user')->group(function() {
     Route::get('get', [UserController::class, 'index']);
@@ -50,6 +51,7 @@ Route::prefix('user')->group(function() {
     Route::put('put/{id}', [UserController::class, 'update']);
     Route::delete('delete/{id}', [UserController::class, 'destroy']);
     Route::post('upload-img', [UserController::class, 'uploadImg']);
+    Route::get('get-user-detail/{countryId?}/{provinceId?}/{districtId?}/{cityId?}', [UserController::class, 'getUserDetails']);
 });
 
 Route::prefix('qualification')->group(function() {
@@ -72,6 +74,7 @@ Route::prefix('experience')->group(function() {
 
 Route::prefix('announcement')->group(function() {
     Route::get('get', [AnnouncementController::class, 'index']);
+    Route::get('application_requirement', [AnnouncementController::class, 'applicationRequirements']);
     Route::post('post', [AnnouncementController::class, 'create']);
     Route::put('put/{id}', [AnnouncementController::class, 'update']);
     Route::get('get/{id}', [AnnouncementController::class, 'show']);
@@ -82,7 +85,9 @@ Route::prefix('application')->group(function() {
     Route::get('get', [ApplicationController::class, 'index']);
     Route::post('post', [ApplicationController::class, 'create']);
     Route::put('put/{id}', [ApplicationController::class, 'update']);
+    Route::post('application_requirement', [ApplicationController::class, 'applicationRequirements']);
 //    Route::get('get/{id}', [ApplicationController::class, 'show']);
     Route::delete('delete/{id}', [ApplicationController::class, 'destroy']);
     Route::get('get/{userId?}', [ApplicationController::class, 'getByUserId']);
 });
+

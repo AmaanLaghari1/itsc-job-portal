@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
+use App\Models\ApplicationExperience;
+use App\Models\ApplicationQualification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Application;
@@ -17,7 +19,7 @@ class ApplicationController extends Controller
     public function index()
     {
         try {
-            $allRecords = Application::with('announcement')->get();
+            $allRecords = Application::with('announcement.qualification_requirements.degree')->with('application_status')->get();
 
             return response()->json([
                 'status' => true,
@@ -38,8 +40,11 @@ class ApplicationController extends Controller
      */
     public function create(Request $request)
     {
+        $payload = json_decode($request->input('payload'), true);
+        $applicationQualification = json_decode($request->input('application_qualification'), true);
+        $applicationExperience = json_decode($request->input('application_experience'), true);
         try {
-            $validation = Validator::make(request()->all(), [
+            $validation = Validator::make($payload, [
                 'announcement_id' => 'required',
                 'user_id' => 'required',
                 'apply_date' => 'required'
@@ -53,36 +58,37 @@ class ApplicationController extends Controller
                 ], 401);
             }
 
-            $user = User::with('qualifications')->find($request->user_id);
-
-            $announcement = Announcement::find($request->announcement_id);
-
-            if(!$announcement->checkAge($user->getAge($announcement->END_DATE))){
-                return response()->json([
-                    'status' => false,
-                    'error_message' => 'You are not eligible for this job'
-                ], 403);
-            }
-
-            if(Application::where('USER_ID', $request->user_id)->where('ANNOUNCEMENT_ID', $request->announcement_id)->exists()){
-                return response()->json([
-                    'status' => false,
-                    'error_message' => 'You already applied for this job'
-                ], 403);
-            }
-
-            if (!$announcement->checkQualifications($user->qualifications->toArray())){
-                return response()->json([
-                    'status' => false,
-                    'error_message' => "Your qualification doesn't match this job requirement"
-                ], 403);
-            }
+            $announcement = Announcement::find($payload['announcement_id']);
 
             $newRecord = Application::create(
-                formatRequestData($request->all())
+                formatRequestData($payload)
             );
 
             if($newRecord){
+                $applicationId = $newRecord->APPLICATION_ID;
+
+                foreach ($applicationQualification as $qualification) {
+                    $qualification['APPLICATION_ID'] = $applicationId;
+                    ApplicationQualification::create($qualification);
+                }
+
+                foreach ($applicationExperience as $experience) {
+                    $experience['APPLICATION_ID'] = $applicationId;
+                    ApplicationExperience::create($experience);
+                }
+
+                if(!is_null($announcement->APPLICATION_FEE)){
+                    $applicationURL = url('pdf/'. base64_encode($applicationId));
+                    Application::find($applicationId)->update([
+                        'APPLICATION_STATUS' => 2,
+                        'APPLICATION_URL' => $applicationURL,
+                    ]);
+                    return response()->json([
+                        'status' => true,
+                        'redirect_url' => $applicationURL,
+                    ], 200);
+                }
+
                 return response()->json([
                     'status' => true,
                     'data' => $newRecord,
@@ -102,6 +108,68 @@ class ApplicationController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function applicationRequirements(Request $request){
+        $user = User::with('qualifications')->find($request->user_id);
+
+        $announcement = Announcement::find($request->announcement_id);
+
+        if($user->profile_completeness != 100){
+            return response()->json([
+                'status' => false,
+                'error_message' => 'Please complete your profile before applying for this job.'
+            ], 403);
+        }
+
+        if($user->qualification_completeness != 100){
+            return response()->json([
+                'status' => false,
+                'error_message' => 'Please complete your qualification before applying for this job.'
+            ], 403);
+        }
+
+        if(Application::where('USER_ID', $request->user_id)->where('ANNOUNCEMENT_ID', $request->announcement_id)->exists()){
+            return response()->json([
+                'status' => false,
+                'error_message' => 'You already applied for this job'
+            ], 403);
+        }
+
+        if(!$announcement->checkAge($user->getAge($announcement->END_DATE))){
+            return response()->json([
+                'status' => false,
+                'error_message' => "You age doesn't meet this job requirement"
+            ], 403);
+        }
+
+        if (!$announcement->checkQualifications($user->qualifications->toArray())){
+            return response()->json([
+                'status' => false,
+                'error_message' => "Your qualification doesn't meet this job requirement"
+            ], 403);
+        }
+
+        if($announcement->EXPERIENCE_YEARS > 0){
+            if($user->experience_completeness != 100){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => "You don't have the required experience for this job."
+                ], 403);
+            }
+
+            if(!$announcement->checkExperience($user->getTotalExperience())){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => "Your experience doesn't meet this job requirement"
+                ], 403);
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'You are eligible for this job'
+        ], 200);
     }
 
     /**
@@ -247,7 +315,7 @@ class ApplicationController extends Controller
 
     public function getByUserId(string $id){
         try{
-            $record = Application::with('announcement')->where('USER_ID', $id)->get();
+            $record = Application::with('announcement.qualification_requirements.degree')->with('application_status')->where('USER_ID', $id)->get();
 
             if(is_null($record)){
                 return response()->json([
@@ -269,4 +337,5 @@ class ApplicationController extends Controller
             ], 500);
         }
     }
+
 }

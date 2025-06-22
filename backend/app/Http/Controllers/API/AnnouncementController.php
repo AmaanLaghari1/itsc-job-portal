@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
+use App\Models\AnnouncementQualificationRequirement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,7 +16,7 @@ class AnnouncementController extends Controller
     public function index()
     {
         try {
-            $allRecords = Announcement::with('program')->orderBy('ANNOUNCEMENT_ID', 'desc')->get();
+            $allRecords = Announcement::with('program')->with('qualification_requirements.degree')->orderBy('ANNOUNCEMENT_ID', 'desc')->get();
 
             return response()->json([
                 'status' => true,
@@ -43,6 +44,7 @@ class AnnouncementController extends Controller
                 'start_date' => 'required',
                 'end_date' => 'required',
                 'experience_years' => 'nullable|integer',
+                'qualifications' => 'required'
             ]);
 
             if ($validation->stopOnFirstFailure()->fails()) {
@@ -53,11 +55,19 @@ class AnnouncementController extends Controller
                 ], 401);
             }
 
-            $data = formatRequestData($request->all());
+            $data = formatRequestData($request->except('qualifications'));
 
             $newRecord = Announcement::create($data);
 
             if($newRecord){
+                foreach ($request->qualifications as $qualification) {
+                    $newRecord = AnnouncementQualificationRequirement::create([
+                        'ANNOUNCEMENT_ID' => $newRecord->ANNOUNCEMENT_ID,
+                        'DEGREE_ID' => $qualification['key'],
+                        'IS_REQUIRED' => $qualification['required'],
+                    ]);
+                }
+
                 return response()->json([
                     'status' => true,
                     'data' => $newRecord,

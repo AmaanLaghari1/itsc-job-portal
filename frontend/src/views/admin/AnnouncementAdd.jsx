@@ -9,6 +9,7 @@ import Alert from '../../components/Alert';
 import CustomSelect from '../../components/CustomSelect';
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import MultiCheckbox from '../../components/MultiCheckbox';
 
 const AnnouncementAdd = () => {
 
@@ -27,7 +28,9 @@ const AnnouncementAdd = () => {
     fetchPrograms()
   }, [])
 
-  const programOptions = programs.map(program => {
+  const programOptions = programs
+  .filter((program) => program.DEGREE_ID != 1 && program.DEGREE_ID != 10)
+  .map(program => {
     return {key:program.DEGREE_ID, value: program.DEGREE_TITLE}
   })
 
@@ -40,7 +43,8 @@ const AnnouncementAdd = () => {
     application_fee: '',
     age_from: 18,
     age_to: '',
-    program_id: '',
+    qualifications: [],
+    // is_required: [],
     experience_years: '',
   }
 
@@ -66,7 +70,7 @@ const AnnouncementAdd = () => {
     values.start_date = new Date(values.start_date).toISOString().split('T')[0];
     values.end_date = new Date(values.end_date).toISOString().split('T')[0];
     // values.experience_years = values.experience_years != '' ? parseInt(values.experience_years) : null;
-    const { position_name, dept_name, description, start_date, end_date, application_fee, age_to, age_from, program_id, experience_years } = values;
+    const { position_name, dept_name, description, start_date, end_date, application_fee, age_to, age_from, qualifications, experience_years } = values;
     const data = {
       position_name,
       dept_name,
@@ -76,9 +80,11 @@ const AnnouncementAdd = () => {
       application_fee,
       age_to,
       age_from,
-      program_id,
-      experience_years
+      qualifications,
+      experience_years,
     };
+
+    // alert(JSON.stringify(data))
 
     try {
       const response = await API.createAnnouncement(data);
@@ -144,7 +150,7 @@ const AnnouncementAdd = () => {
                       control='input' 
                       type='text'
                       name="age_from" 
-                      label='From' 
+                      label='Min' 
                       required={true}
                       onInput={e => {
                         e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2)
@@ -158,7 +164,7 @@ const AnnouncementAdd = () => {
                       control='input' 
                       type='text'
                       name="age_to" 
-                      label='To' 
+                      label='Max' 
                       required={true}
                       onInput={e => {
                         e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2)
@@ -173,17 +179,21 @@ const AnnouncementAdd = () => {
               <legend className='fw-bold'>Qualification Requirement</legend>
               <div className="row">
                 <div className="col-md-12">
-                  <div className="form-group my-2">
-                    <CustomSelect
+                  <div className="d-flex form-group my-2">
+                    {/* <FormControl
+                    control='checkbox'
                     className="form-control"
                     label="Level"
-                    name="program_id"
+                    name="program_id[]"
                     options={programOptions} // Options should be dynamically loaded if using async
-                    onChange={(selectedOption) => {
-                        setFieldValue('program_id', selectedOption?.key || '')
-                        // handleDegreeProgamChange(selectedOption.key || '')
-                    }}
                     required={true}
+                    /> */}
+                    <MultiCheckbox
+                      className="form-control"
+                      label=""
+                      name="qualifications"
+                      options={programOptions}
+                      required={true}
                     />
 
                   </div>

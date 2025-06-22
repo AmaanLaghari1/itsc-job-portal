@@ -7,6 +7,7 @@ import Alert from '../../components/Alert.js';
 import AlertConfirm from '../../components/AlertConfirm.js';
 import { useNavigate } from 'react-router-dom';
 import * as API from '../../api/QualificationRequest.js'
+import { formatDate } from '../../helper.js';
 
 const QualificationCard = ({qualification, onDelete}) => {
   const auth = useSelector((state) => state.auth.authData);
@@ -101,7 +102,7 @@ const QualificationCard = ({qualification, onDelete}) => {
             <CCol sm={3} className="fw-bold">Passing Year</CCol>
             <CCol sm={3}>{qual.PASSING_YEAR || '-'}</CCol>
             <CCol sm={3} className="fw-bold">Result Declaration Date</CCol>
-            <CCol sm={3}>{qual.RESULT_DATE || '-'}</CCol>
+            <CCol sm={3}>{formatDate(qual.RESULT_DATE) || '-'}</CCol>
           </CRow>
         </div>
 

@@ -1,3 +1,4 @@
+
 // Generic function to map options
 export const mapOptions = (items, idKey, nameKey) =>
     items.map(item => ({ key: item[idKey], value: item[nameKey] }));
@@ -11,7 +12,7 @@ export const truncateLongTxt = (text, maxWords=20) => {
 export const formatDate = (dateString) => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return ''; // Invalid date
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('en-UK', {
         day: 'numeric',
         month: 'numeric',
         year: 'numeric'

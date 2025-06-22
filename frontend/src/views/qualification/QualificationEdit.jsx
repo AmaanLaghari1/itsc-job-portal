@@ -11,7 +11,7 @@ const QualificationEdit = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const location = useLocation()
-    const {prevQual} = location.state || {}
+    const {prevQual, return_url, announcement} = location.state || {}
     const dispatch = useDispatch()
 
     const handleSubmit = async (values, {setSubmitting, resetForm}) => {
@@ -31,6 +31,14 @@ const QualificationEdit = () => {
             const response = await API.updateQualification(formattedValues, prevQual.QUALIFICATION_ID)
             dispatch({ type: "QUALIFICATION_COMPLETENESS_SUCCESS", payload: response?.data?.qualification_completeness });
             Alert({status: true, text: response?.data?.message || 'Qualification updated successfully'})
+            if(return_url){
+                navigate(return_url, {
+                    state: {
+                        announcement: announcement
+                    }
+                })
+                return
+            }
             navigate('/qualifications')
         }
         catch (error) {

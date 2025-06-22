@@ -28,7 +28,7 @@ const _nav = data => [
       to: '/user-profile',
       icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
       badge: {
-        color: data.completeness.profile > 80 ? 'success' :'danger',
+        color: data.completeness.profile == 100 ? 'success' :'danger',
         text: data.completeness.profile+'%',
       },
     },
@@ -38,7 +38,7 @@ const _nav = data => [
       to: '/qualifications',
       icon: <CIcon icon={cilEducation} customClassName="nav-icon" />,
       badge: {
-        color: data.completeness.qualification >= 60 ? 'success' :'danger',
+        color: data.completeness.qualification == 100 ? 'success' :'danger',
         text: data.completeness.qualification+'%',
       },
     },
@@ -48,7 +48,7 @@ const _nav = data => [
       to: '/experience',
       icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
       badge: {
-        color: data.completeness.experience >= 60 ? 'success' :'danger',
+        color: data.completeness.experience == 100 ? 'success' :'danger',
         text: data.completeness.experience+'%',
       },
     },

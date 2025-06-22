@@ -11,6 +11,15 @@ export const createApplication = (formdata) => {
     })
 }
 
+export const applicationRequirement = (formdata) => {
+    return API.post("application_requirement", formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
 export const getApplication = (userId) => {
     return API.get("get/"+userId, {
         headers: {

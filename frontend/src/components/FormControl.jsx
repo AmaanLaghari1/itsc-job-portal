@@ -1,5 +1,5 @@
 import React from 'react'
-import { Field, ErrorMessage } from 'formik'
+import { Field, ErrorMessage, useFormikContext } from 'formik'
 import DateView from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { CFormCheck } from '@coreui/react';
@@ -100,18 +100,32 @@ const Select = props => {
 
 const Checkbox = props => {
     const {label, name, options, required, ...rest} = props
+    const {values} = useFormikContext();
     return (
-        <div>
-            {label != '' && <label className='form-check-label' htmlFor={name}>{label}{required ? <span className='text-danger fw-bold'>*</span>: ''}</label>}
-            <div className="d-flex justify-content-between">
-                <Field className='form-check-input' id={name} name={name} {...rest}>
+        <div className='w-100'>
+            {label != '' && <label className='form-check-label' htmlFor={name}>{label}{required ? <span className='text-danger fw-bold w-100'>*</span>: ''}</label>}
+            <div className="d-flex justify-content-between flex-column w-100">
+                <Field className='form-check-input w-100' id={name} name={name} {...rest}>
                     {
                         ({field}) => {
+                            // console.log(field.value);
                             return options.map(opt => {
-                                return (<div key={opt.key}>
-                                    <input type="checkbox" className='form-check-input' id={opt.key} {...field} value={opt.value} checked={field.value.includes(opt.value)} />
-                                    <label className='form-check-label mx-1' htmlFor={opt.key}> {opt.value}</label>
-                                </div>)
+                                return (
+                                <div className='row my-2' key={opt.key}>
+                                    <div className="col-9 d-flex">
+                                        <input type="checkbox" className='form-check-input' id={opt.key} {...field} value={opt.key} checked={field.value == undefined ? false : field.value.includes(opt.key.toString())}  />
+                                        <label className='form-check-label mx-1' htmlFor={opt.key}> {opt.value}</label>
+                                    </div>
+                                    {/* <div className='col-3 d-flex'>
+                                        <label htmlFor="">Required?</label>
+                                        <select disabled={field.value == undefined ? false : !field.value.includes(opt.key.toString())} className='form-control' name="is_required[]" id="">
+                                            <option value="">Select</option>
+                                            <option value="1">Required</option>
+                                            <option value="0">Prefered</option>
+                                        </select>
+                                    </div> */}
+                                </div>
+                                )
                             })
                         }
                     }
@@ -123,6 +137,7 @@ const Checkbox = props => {
         </div>
     )
 }
+
 
 const ReadOnlyInput = React.forwardRef((props, ref) => (
   <input {...props} ref={ref} readOnly className='form-control w-100' />

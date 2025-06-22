@@ -11,8 +11,12 @@ import CustomSelect from '../../components/CustomSelect'
 import './Profile.css'
 import { CButton } from '@coreui/react'
 import { mapOptions } from '../../helper.js'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const Profile = () => {
+    const navigate = useNavigate()
+    const location = useLocation()
+    const { return_url, announcement } = location.state || {}
     const auth = useSelector(state => state.auth.authData)
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
@@ -88,7 +92,7 @@ const Profile = () => {
     const provinceOptions = mapOptions(data.provinces, "PROVINCE_ID", "PROVINCE_NAME");
     const countryOptions = mapOptions(data.countries, "COUNTRY_ID", "COUNTRY_NAME");
 
-    console.log(auth.user);
+    // console.log(auth.user);
 
     const initialValues = {
         first_name: auth.user.FIRST_NAME || '',
@@ -159,6 +163,13 @@ const Profile = () => {
             const response = await dispatch(updateUser(values, auth.user.USER_ID));
     
             if (response?.success) {
+                if(return_url != {}){
+                    navigate(return_url, {
+                        state: {
+                            announcement: announcement
+                        }
+                    })
+                }
                 Alert({ status: true, text: "Profile Saved." });
                 setFieldValue('profile_image', null)
             } else {

@@ -1,50 +1,13 @@
-import { CButton, CCard, CCardBody, CCardText, CCardTitle } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilArrowRight } from '@coreui/icons'
-import * as API from '../../api/ApplicationRequest.js'
+import { CCard, CCardBody, CCardText, CCardTitle } from '@coreui/react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import AlertConfirm from '../../components/AlertConfirm.js'
-import Alert from '../../components/Alert.js'
-import { useSelector } from 'react-redux'
 import HtmlRenderer from '../../components/HTMLRenderer.jsx'
+import { formatDate } from '../../helper.js'
 
 const AnnouncementDetail = () => {
     const location = useLocation()
-    const navigate = useNavigate()
     const {announcement} = location.state || {}
-    const auth = useSelector((state) => state.auth.authData)
-
-    const handleApply = async (announcement) => {
-        const confirmed = await AlertConfirm({
-            title: 'Apply for this announcement?',
-            text: 'Please review your application details carefully before applying.',
-            confirmBtnText: 'Apply',
-            cancelBtnText: 'Cancel',
-        });
-
-        if (confirmed) {
-            const formData = new FormData();
-            formData.append('announcement_id', announcement.ANNOUNCEMENT_ID);
-            formData.append('user_id', auth.user.USER_ID);
-            formData.append('apply_date', new Date().toISOString().split('T')[0]);
-            try {
-                const response = await API.createApplication(formData)
-                if (response.status == 200) {
-                    Alert({
-                        status: true,
-                        text: 'Application submitted successfully'
-                    })
-                }
-            } catch (error) {
-                console.log(error);
-                Alert({
-                    status: false,
-                    text: error.response?.data?.error_message || "Error submitting application"
-                })
-            }
-        }
-    }
-
+    console.log(announcement);
+    
     return (
         <div>
             <CCard className="shadow shadow-lg my-5 border-0">
@@ -53,26 +16,33 @@ const AnnouncementDetail = () => {
                     <CCardTitle className='h2 my-3'>Job Title - {announcement.POSITION_NAME}</CCardTitle>
                     <CCardText className='h5'>Department - {announcement.DEPT_NAME}</CCardText>
 
+                    <div>
+                        {
+                            announcement?.qualification_requirements?.length > 0 &&
+                            <h6>Qualifications Requirements</h6>
+                        }
+                        <ul>
+                            {
+                                announcement.qualification_requirements.length > 0 && 
+                                announcement.qualification_requirements.map(require => {
+                                    return (
+                                        <li key={require.REQ_ID}>
+                                            {require.degree.DEGREE_TITLE} - {require.IS_REQUIRED == 1 ? 'Required' : 'Preferred'}
+                                        </li>
+                                    )
+                                })
+                            }
+                        </ul>
+                    </div>
+
                     <div className="border-bottom border-1 mb-2 border-secondary-subtle"></div>
                     <div className='lead'>
                         {/* {announcement.DESCRIPTION} */}
                         <HtmlRenderer htmlContent={announcement.DESCRIPTION || ''} />
                     </div>
-                    <div className="d-flex flex-column">
-                        <CCardText>Posted - {announcement.START_DATE}</CCardText>
-                        <CCardText className='text-danger'>Last date to apply - {announcement.END_DATE}</CCardText>
-                    </div>
-
-                    <div className="text-center my-3">
-                        <CButton color="primary" className='rounded-5 fs-5 shadow shadow-sm px-3 mt-3'
-                        onClick={
-                            () => {
-                                handleApply(announcement)
-                            }
-                        }
-                        >
-                            Apply Now 
-                        </CButton>
+                    <div className="d-flex flex-wrap justify-content-between">
+                        <CCardText className='text-muted fw-bold'>Posted: {formatDate(announcement.START_DATE)}</CCardText>
+                        <CCardText className='text-muted fw-bold'>Last date to apply: {formatDate(announcement.END_DATE)}</CCardText>
                     </div>
                 </CCardBody>
             </CCard>

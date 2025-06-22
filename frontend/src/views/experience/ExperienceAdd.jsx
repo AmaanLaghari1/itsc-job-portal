@@ -28,6 +28,7 @@ const ExperienceAdd = () => {
 
     const validationRules = Yup.object({
         organization_name: Yup.string().required('Organization name required'),
+        job_description: Yup.string().required('Job description required'),
         emp_type: Yup.string().required('Employment type required'),
         // contact_no: Yup.string().required('Contact No. required'),
         address: Yup.string().required('Address required'),

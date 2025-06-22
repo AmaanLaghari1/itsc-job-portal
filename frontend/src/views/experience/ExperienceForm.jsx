@@ -38,14 +38,14 @@ const ExperienceForm = ({handleSubmit, initialValues, validationRules, loading})
                                         placeholder="Select Employment Type"
                                         name="emp_type"
                                         options={[
-                                            { key: 'Internship', value: 'Internship' },
-                                            { key: 'Part Time', value: 'Part Time' },
-                                            { key: 'Full Time', value: 'Full Time' },
-                                            { key: 'Freelance', value: 'Freelance' },
-                                            { key: 'Contract', value: 'Contract' },
-                                            { key: 'Temporary', value: 'Temporary' },
-                                            { key: 'Volunteer', value: 'Volunteer' },
-                                            { key: 'Apprenticeship', value: 'Apprenticeship' },
+                                            { key: 'internship', value: 'Internship' },
+                                            { key: 'part time', value: 'Part Time' },
+                                            { key: 'full time', value: 'Full Time' },
+                                            { key: 'freelance', value: 'Freelance' },
+                                            { key: 'contract', value: 'Contract' },
+                                            { key: 'temporary', value: 'Temporary' },
+                                            { key: 'volunteer', value: 'Volunteer' },
+                                            { key: 'apprenticeship', value: 'Apprenticeship' },
                                         ]}
                                         onChange={(selectedOption) => {
                                             setFieldValue('emp_type', selectedOption?.key || '')

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Experience;
 use App\Models\Qualification;
+use Carbon\Carbon;
 
 class User extends Authenticatable
 {
@@ -170,15 +171,24 @@ class User extends Authenticatable
 
     public function getQualificationCompletenessAttribute()
     {
-        $totalFields = 23; // Adjust based on the fields you consider
-        $qualifications = $this->qualifications;
+        $fields = [
+            'DISCIPLINE_ID',
+            'USER_ID',
+            'ORGANIZATION_ID',
+            'IS_RESULT_DECLARE',
+            'MAJOR',
+            'ROLL_NO',
+        ];
 
-        $filled = 0;
+        $qualifications = $this->qualifications;
+        $totalFields = count($fields);
         $totalPossible = $qualifications->count() * $totalFields;
 
+        $filled = 0;
+
         foreach ($qualifications as $qualification) {
-            foreach ($qualification->getAttributes() as $key => $value) {
-                if (in_array($key, $qualification->getFillable()) && !is_null($value) && $value !== '') {
+            foreach ($fields as $field) {
+                if (!is_null($qualification->$field) && $qualification->$field !== '') {
                     $filled++;
                 }
             }
@@ -194,15 +204,25 @@ class User extends Authenticatable
 
     public function getExperienceCompletenessAttribute()
     {
-        $totalFields = 13; // Adjust based on the fields you consider
-        $experiences = $this->experiences;
+        $fields = [
+            'EMP_TYPE',
+            'ORGANIZATION_NAME',
+            'ADDRESS',
+            'CONTACT_NO',
+            'START_DATE',
+            'JOB_DESCRIPTION',
+            'USER_ID'
+        ];
 
-        $filled = 0;
+        $experiences = $this->experiences;
+        $totalFields = count($fields);
         $totalPossible = $experiences->count() * $totalFields;
 
+        $filled = 0;
+
         foreach ($experiences as $experience) {
-            foreach ($experience->getAttributes() as $key => $value) {
-                if (in_array($key, $experience->getFillable()) && !is_null($value) && $value !== '') {
+            foreach ($fields as $field) {
+                if (!is_null($experience->$field) && $experience->$field !== '') {
                     $filled++;
                 }
             }
@@ -224,6 +244,27 @@ class User extends Authenticatable
         } catch (\Exception $e) {
             return null; // or throw, or log, based on your app needs
         }
+    }
+
+    public function getTotalExperience()
+    {
+        $totalDays = 0;
+
+        foreach ($this->experiences as $exp) {
+            $start = Carbon::parse($exp->START_DATE);
+
+            $end = $exp->IS_JOB_CONTINUE
+                ? Carbon::now()
+                : Carbon::parse($exp->END_DATE);
+
+            $totalDays += $start->diffInDays($end);
+        }
+
+        // Convert total days into years with decimal
+        $totalYears = $totalDays / 365;
+
+        // Round to 1 decimal place (e.g., 4.6 years)
+        return round($totalYears, 1);
     }
 
 

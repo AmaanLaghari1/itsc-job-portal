@@ -130,7 +130,7 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
                 <div className="form-group my-2">
                 <CustomSelect
                 className="form-control"
-                label="Level"
+                label="Qualification Level"
                 name="degree_program"
                 options={programOptions} // Options should be dynamically loaded if using async
                 onChange={(selectedOption) => {

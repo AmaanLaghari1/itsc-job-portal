@@ -17,7 +17,7 @@ const Qualification = () => {
     async function fetchQualData(){
         setFetching(true)
         const response = await API.getQualification(auth.user.USER_ID);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setQualification(response.data.data);
         setFetching(false)
       }

@@ -41,6 +41,10 @@ class Announcement extends Model
         return $this->hasOne(Announcement::class, 'PROGRAM_ID', 'DEGREE_ID');
     }
 
+    public function qualification_requirements(){
+        return $this->hasMany(AnnouncementQualificationRequirement::class, 'ANNOUNCEMENT_ID');
+    }
+
     public function checkAge($userAge){
         $ageFrom = $this->AGE_FROM;
         $ageTo = $this->AGE_TO;
@@ -56,16 +60,37 @@ class Announcement extends Model
         return false;
     }
 
-    public function checkQualifications($data=[]){
-        foreach($data as $value){
-//           to do
+    public function checkQualifications($data = [])
+    {
+        // Extract DEGREE_IDs from the given discipline data
+        $providedDegreeIds = [];
+
+        foreach ($data as $value) {
             $program = Discipline::where('DISCIPLINE_ID', $value['DISCIPLINE_ID'])->first();
-            if($program->DEGREE_ID == $this->PROGRAM_ID){
-                return true;
+            if ($program) {
+                $providedDegreeIds[] = $program->DEGREE_ID;
             }
         }
 
-        return false;
+        // Get all required DEGREE_IDs from the qualification requirements
+        $requiredDegreeIds = $this->qualification_requirements->where('IS_REQUIRED', 1)->pluck('DEGREE_ID')->unique();
+
+
+        // Check if all required DEGREE_IDs are in the provided list
+        $allMatch = $requiredDegreeIds->every(function ($degreeId) use ($providedDegreeIds) {
+            return in_array($degreeId, $providedDegreeIds);
+        });
+
+        return $allMatch;
     }
 
+    public function checkExperience($experience){
+        $check = false;
+
+        if($experience > $this->EXPERIENCE_YEARS){
+            $check = true;
+        }
+
+        return $check;
+    }
 }

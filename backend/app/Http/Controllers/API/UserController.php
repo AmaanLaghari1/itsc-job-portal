@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\UserRoleRelation;
+use App\Models\UserLog;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -76,7 +77,7 @@ class UserController extends Controller
         );
 
         if($newUser){
-            $role = UserRoleRelation::create(['role_id' => $request->role, 'user_id' => $newUser->id]);
+//            $role = UserRoleRelation::create(['role_id' => $request->role, 'user_id' => $newUser->id]);
             return response()->json([
                 'status' => true,
                 'message' => 'User created successfully.',
@@ -190,6 +191,14 @@ class UserController extends Controller
             $user->update(formatRequestData($request->all()));
         }
 
+        UserLog::updateOrCreate(
+            ['USER_ID' => $user->USER_ID],
+            [
+                'USER_DATA' => json_encode($user),
+                'CREATED_AT' => Carbon::now()
+            ]
+        );
+
         return response()->json([
             'status' => true,
             'message' => 'User updated successfully.',
@@ -279,9 +288,13 @@ class UserController extends Controller
         }
     }
 
-    public function getCountries(){
+    public function getCountries($countryId=null){
         try {
             $options = DB::table('countries')->get();
+
+            if (!is_null($countryId)){
+                $options = DB::table('countries')->where('COUNTRY_ID', $countryId)->get();
+            }
 
             return response()->json([
                 'options' => $options,
@@ -293,5 +306,27 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 404);
         }
+    }
+
+    public function getUserDetails($countryId, $provinceId=null, $districtId=null, $cityId=null){
+        $country = DB::table('countries')->where('COUNTRY_ID', $countryId)->get();
+        $data['country'] = $country;
+
+        if(!is_null($provinceId)){
+            $province = DB::table('provinces')->where('PROVINCE_ID', $provinceId)->get();
+            $data['province'] = $province;
+        }
+        if(!is_null($districtId)){
+            $district = DB::table('districts')->where('DISTRICT_ID', $districtId)->get();
+            $data['district'] = $district;
+        }
+        if(!is_null($cityId)){
+            $city = DB::table('cities')->where('CITY_ID', $cityId)->get();
+            $data['city'] = $city;
+        }
+
+        return response()->json([
+            'data' => $data
+        ], 200);
     }
 }

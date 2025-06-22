@@ -1,4 +1,3 @@
-import React from 'react'
 import { CButton, CCardHeader, CCol, CRow } from '@coreui/react'
 import { useDispatch, useSelector } from 'react-redux';
 import { cilTrash, cilPen } from '@coreui/icons';
@@ -24,7 +23,7 @@ const ExperienceCard = ({experience, onDelete}) => {
             onClick={() => {
                 navigate('/experience-edit', {
                   state: {
-                    prevExp: exp,
+                    prevExp: exp
                   }
                 })
               }
@@ -91,7 +90,7 @@ const ExperienceCard = ({experience, onDelete}) => {
             <CCol sm={3} className="">Start Date</CCol>
             <CCol sm={3} className='fw-bold'>{formatDate(exp.START_DATE) || '-'}</CCol>
             <CCol sm={3} className="">End Date</CCol>
-            <CCol sm={3} className='fw-bold'>{exp.IS_JOB_CONTINUE === 'Y' ? 'Currently Working' : exp.END_DATE || '-'}</CCol>
+            <CCol sm={3} className='fw-bold'>{exp.IS_JOB_CONTINUE === 'Y' ? 'Currently Working' : formatDate(exp.END_DATE) || '-'}</CCol>
           </CRow>
 
         {
