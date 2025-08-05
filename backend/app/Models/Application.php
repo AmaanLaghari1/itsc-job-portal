@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Announcement;
 use App\Models\ApplicationStatus;
+use App\Models\ApplicationQualification;
+use App\Models\ApplicationExperience;
 use Carbon\Carbon;
 
 class Application extends Model
@@ -43,6 +45,7 @@ class Application extends Model
         'COUNTRY_ID',
         'PROVINCE_ID',
         'DISTRICT_ID',
+        'PROFILE_IMAGE',
         'APPLICATION_STATUS',
         'APPLICATION_URL'
     ];
@@ -68,5 +71,13 @@ class Application extends Model
         $value->setTimezone($timezone);
 
         return $value->format('d-M-Y'); // Format to d-M-Y
+    }
+
+    public function qualifications(){
+        return $this->hasMany(ApplicationQualification::class, 'APPLICATION_ID');
+    }
+
+    public function experiences(){
+        return $this->hasMany(ApplicationExperience::class, 'APPLICATION_ID');
     }
 }

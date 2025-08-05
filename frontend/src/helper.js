@@ -18,3 +18,7 @@ export const formatDate = (dateString) => {
         year: 'numeric'
     }).replace(/\//g, '-'); // Replace slashes with dashes
 }
+
+export const strToUpper = str => {
+    return str.toUppercase()
+}

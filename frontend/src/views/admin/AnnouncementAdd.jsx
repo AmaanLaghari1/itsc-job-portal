@@ -35,6 +35,7 @@ const AnnouncementAdd = () => {
   })
 
   const initialValues = {
+    announcement_title: '',
     position_name: '',
     dept_name: '',
     description: '',
@@ -49,8 +50,11 @@ const AnnouncementAdd = () => {
   }
 
   const validationSchema = Yup.object().shape({
+    announcement_title: Yup.string()
+      .required('Title required')
+      .max(255, 'Title is too long'),
     position_name: Yup.string()
-      .required('Title required'),
+      .required('Position Name required'),
     dept_name: Yup.string()
       .required('Department required'),
     start_date: Yup.string()
@@ -70,8 +74,9 @@ const AnnouncementAdd = () => {
     values.start_date = new Date(values.start_date).toISOString().split('T')[0];
     values.end_date = new Date(values.end_date).toISOString().split('T')[0];
     // values.experience_years = values.experience_years != '' ? parseInt(values.experience_years) : null;
-    const { position_name, dept_name, description, start_date, end_date, application_fee, age_to, age_from, qualifications, experience_years } = values;
+    const { announcement_title, position_name, dept_name, description, start_date, end_date, application_fee, age_to, age_from, qualifications, experience_years } = values;
     const data = {
+      announcement_title,
       position_name,
       dept_name,
       description,
@@ -107,7 +112,11 @@ const AnnouncementAdd = () => {
           <h2>Add Announcement</h2>
 
           <div className="form-group my-2">
-            <FormControl control='input' type='text' name='position_name' label='Position Title' required={true} />
+            <FormControl control='input' type='text' name='announcement_title' label='Announcement Title' required={true} />
+          </div>
+
+          <div className="form-group my-2">
+            <FormControl control='input' type='text' name='position_name' label='Position Name' required={true} />
           </div>
 
           <div className="form-group my-2">
@@ -127,7 +136,7 @@ const AnnouncementAdd = () => {
             </div>
             <div className="col-6 col-sm-3">
               <div className="form-group my-2">
-                <FormControl control='date' name="end_date" label='End Date' required={true} />
+                <FormControl control='date' name="end_date" label='End Date' required={true} maxDateDisabled={true} />
               </div>
             </div>
             <div className="col-6">

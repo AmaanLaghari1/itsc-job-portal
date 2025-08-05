@@ -63,6 +63,7 @@ const ApplicationConfirm = () => {
         const payload = {
             announcement_id: announcement.ANNOUNCEMENT_ID,
             user_id: auth.user.USER_ID,
+            profile_image: auth.user.PROFILE_IMAGE,
             apply_date: new Date().toISOString().split('T')[0], // Format date as YYYY-MM-DD
             first_name: auth.user.FIRST_NAME,
             last_name: auth.user.LAST_NAME,
@@ -236,7 +237,7 @@ const ApplicationConfirm = () => {
                                         Gender
                                     </CCol>
                                     <CCol sm={4} className="border-bottom border-1 p-2 fw-bold">
-                                        {auth.user.GENDER == 'M' ? 'Male' : auth.user.GENDER == 'F' ? 'Female': ''}
+                                        {auth.user.GENDER == 'M' ? 'MALE' : auth.user.GENDER == 'F' ? 'FEMALE': ''}
                                     </CCol>
                                     <CCol sm={2} className="border-bottom border-1 p-2 ">
                                         RELIGION
@@ -250,7 +251,11 @@ const ApplicationConfirm = () => {
                                         MARITAL STATUS
                                     </CCol>
                                     <CCol sm={4} className="border-bottom border-1 p-2 fw-bold">
-                                        {auth.user.MARITAL_STATUS || ''}
+                                        {
+                                            auth.user.MARITAL_STATUS == 1 ? 'SINGLE' :
+                                            auth.user.MARITAL_STATUS == 2 ? 'MARRIED' :
+                                            auth.user.MARITAL_STATUS == 3 ? 'WIDOWED' : 'DIVORCED'
+                                        }
                                     </CCol>
                                     <CCol sm={2} className="border-bottom border-1 p-2 ">
                                         COUNTRY

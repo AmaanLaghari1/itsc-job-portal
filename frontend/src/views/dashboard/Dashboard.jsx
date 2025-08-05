@@ -1,15 +1,30 @@
-import React from 'react'
 import ApplicationCard from './ApplicationCard'
 import * as API from '../../api/ApplicationRequest.js'
 import { useEffect, useState } from 'react'
 import { CSpinner } from '@coreui/react'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import axios from 'axios'
 
 const Dashboard = () => {
     const [fetching, setFetching] = useState(false)
     const [applications, setApplications] = useState([]);
     const auth = useSelector((state) => state.auth.authData)
+
+    
+    const checkPayment = async () => {
+      for (const application of applications) {
+        console.log(application);
+        if (application.application_status.STATUS === 'UNPAID') {
+          try {
+            const response = await axios.get(import.meta.env.VITE_BACKEND_URL + 'api/application/verify-challan/'+application.APPLICATION_ID);
+            console.log(response);
+          } catch (error) {
+            console.error('Error fetching payment status:', error);
+          }
+        }
+      }
+    };
 
     // Fetch data from API
     async function fetchData(){
@@ -25,7 +40,11 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
-        fetchData()
+      fetchData()
+    }, [])
+
+    useEffect(() => {
+      checkPayment();
     }, [])
 
   return (

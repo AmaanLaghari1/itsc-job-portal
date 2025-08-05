@@ -89,5 +89,7 @@ Route::prefix('application')->group(function() {
 //    Route::get('get/{id}', [ApplicationController::class, 'show']);
     Route::delete('delete/{id}', [ApplicationController::class, 'destroy']);
     Route::get('get/{userId?}', [ApplicationController::class, 'getByUserId']);
+    Route::get('verify-challan/{application_id}', [ApplicationController::class, 'verifyChallan']);
 });
+
 

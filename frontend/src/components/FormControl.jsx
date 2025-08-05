@@ -144,7 +144,7 @@ const ReadOnlyInput = React.forwardRef((props, ref) => (
 ));
 
 const DateInput = props => {
-    const {label, name, required, ...rest} = props
+    const {label, name, required, maxDateDisabled, ...rest} = props
     const maxDate = new Date(); // Current date
 
     return (
@@ -170,7 +170,7 @@ const DateInput = props => {
                                 showMonthDropdown
                                 yearDropdownItemNumber={50}
                                 scrollableYearDropdown
-                                maxDate={maxDate}
+                                maxDate={maxDateDisabled ? '' : maxDate}
                                 minDate={new Date("01/01/1900")}
                                 dateFormat="dd/MM/yyyy"
                                 customInput={<ReadOnlyInput />}  

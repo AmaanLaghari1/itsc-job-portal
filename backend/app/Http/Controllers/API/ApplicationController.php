@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\ApplicationExperience;
 use App\Models\ApplicationQualification;
+use App\Models\ApplicationStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Application;
@@ -331,6 +332,60 @@ class ApplicationController extends Controller
             ], 200);
         }
         catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function verifyChallan($applicationId){
+        try {
+            $application = Application::find($applicationId);
+            $challan_no = sprintf("%08d", $applicationId);
+            $_param = array (
+//        'p_ConsumerNumber'=> "530000533",
+//        'p_ConsumerNumber'=> "212530416",
+                'p_ConsumerNumber'=> $challan_no,
+                'p_UserName'=> env('PAYMENT_VERIFY_USERNAME'),
+                'p_Password'=> env('PAYMENT_VERIFY_PASSWORD')
+            );
+
+            $data = postCURL(env('PAYMENT_VERIFY_API'), $_param);
+
+            if($data['response_code'] == 200) {
+                $challanData = json_decode($data['response'], true);
+
+                if($challanData['p_IsPaid'] == 1) {
+                    $application->update(
+                        ['APPLICATION_STATUS' => 1]
+                    );
+                }
+
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Challan verified successfully',
+                    'data' => json_decode($data['response'])
+                ], 200);
+            }
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateStatus(Request $request)
+    {
+        try {
+            $validation = Validator::make(request()->all(), [
+                'application_id' => 'required',
+                'application_status' => 'required'
+            ]);
+        }
+        catch (\Exception $e){
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage()

@@ -33,12 +33,16 @@ export const ApplicationCard = ({application}) => {
                             Applied on: {formatDate(application.APPLY_DATE)}
                         </CCardText>
                         <div className="d-flex flex-wrap gap-2 my-2">
-                            <a href={import.meta.env.VITE_BACKEND_URL+"application-pdf/"+application.APPLICATION_ID} className="btn btn-sm btn-success text-light rounded-pill px-3" download='itsc_application'>
-                                Download Form
-                            </a>
-                            <a href={application.APPLICATION_URL} className="btn btn-sm btn-danger text-light rounded-pill px-3" download='itsc_application'>
-                                Download Challan
-                            </a>
+                            {
+                                application.application_status?.APPLICATION_STATUS_ID !== 1 ?
+                                    <a href={application.APPLICATION_URL} className="btn btn-sm btn-danger text-light rounded-pill px-3" download='itsc_application'>
+                                        Download Challan
+                                    </a>
+                                :
+                                    <a href={import.meta.env.VITE_BACKEND_URL+"application-pdf/"+application.APPLICATION_ID} className="btn btn-sm btn-success text-light rounded-pill px-3" download='itsc_application'>
+                                        Download Form
+                                    </a>
+                            }
                             <CButton className='rounded-pill px-3' color="secondary" size='sm'
                             onClick={
                                 () => {

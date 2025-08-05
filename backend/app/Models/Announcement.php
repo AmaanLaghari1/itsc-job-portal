@@ -18,6 +18,7 @@ class Announcement extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'ANNOUNCEMENT_TITLE',
         'DEPT_NAME',
         'POSITION_NAME',
         'START_DATE',

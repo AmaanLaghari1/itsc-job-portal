@@ -31,18 +31,6 @@ Route::get('/test', function () {
     dd($response);
 });
 
-Route::get('/test2', function () {
-    $_param = array(
-        "p_UserName" => env('PAYMENT_INQUIRY_USERNAME'),
-        "p_Password" => env('PAYMENT_INQUIRY_PASSWORD'),
-        "p_ConsumerNumber" => env('PAYMENT_INQUIRY_CONSUMER_NO')
-    );
-
-    $response = postCURL(env('PAYMENT_INQUIRY_API'), $_param);
-    dd($response);
-});
-
-
 Route::get('/pdf/{id?}', [PdfController::class, 'generateChallan']);
 Route::get('/application-pdf/{id?}', [PdfController::class, 'generateApplication']);
 

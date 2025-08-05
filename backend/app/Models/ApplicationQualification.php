@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Discipline;
+use App\Models\DegreeProgram;
 use Illuminate\Support\Facades\DB;
 
 class ApplicationQualification extends Model
@@ -59,4 +60,12 @@ class ApplicationQualification extends Model
     {
         return $this->belongsTo(Discipline::class, 'DISCIPLINE_ID');
     }
+
+    public function degree()
+    {
+        return DB::table('degree_program')
+            ->where('DEGREE_ID', $this->discipline->DEGREE_ID)
+            ->first();
+    }
+
 }

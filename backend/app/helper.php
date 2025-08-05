@@ -23,7 +23,7 @@ if (!function_exists("formatRequestData")) {
             }
 
             // Preserve original value for 'email'; otherwise convert to uppercase
-            $requestData[strtoupper($key)] = $key !== 'email' ? strtoupper($value) : $value;
+            $requestData[strtoupper($key)] = $key !== 'email' && $key !== 'password' ? strtoupper($value) : $value;
         }
 
         return $requestData;
