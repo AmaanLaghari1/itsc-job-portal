@@ -1,0 +1,29 @@
+/* Data-table.css or a global CSS file */
+.rdt_Table {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.rdt_TableHead,
+.rdt_TableBody {
+  border-top: 1px solid #dee2e6;
+}
+
+.rdt_TableRow,
+.rdt_TableCol {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.rdt_TableCell {
+  border-right: 1px solid #dee2e6;
+}
+
+.rdt_TableRow:last-child .rdt_TableCell {
+  border-bottom: none;
+}
+
+.rdt_TableCol:last-child .rdt_TableCell,
+.rdt_TableCell:last-child {
+  border-right: none;
+}
