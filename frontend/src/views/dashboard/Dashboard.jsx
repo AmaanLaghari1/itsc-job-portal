@@ -13,40 +13,88 @@ const Dashboard = () => {
     const auth = useSelector((state) => state.auth.authData)
     const currentRole = useSelector(state => state.roles.selectedRole)
 
-    const checkPayment = async () => {
-      for (const application of applications) {
-        console.log(application);
-        if (application.application_status.STATUS === 'UNPAID') {
-          try {
-            const response = await axios.get(import.meta.env.VITE_BACKEND_URL + 'api/application/verify-challan/'+application.APPLICATION_ID);
-            console.log(response);
-          } catch (error) {
-            console.error('Error fetching payment status:', error);
-          }
-        }
-      }
-    };
+    // const checkPayment = async () => {
+    //  // console.log('check payment working');
+    //   setFetching(true)
+    //   try {
+    //     for (const application of applications) {
+    //       console.log(application);
+    //       if (application.application_status.STATUS === 'UNPAID') {
+    //         //console.log('working')
+    //         try {
+    //           const response = await axios.get(import.meta.env.VITE_BACKEND_URL + 'api/application/verify-challan/'+application.APPLICATION_ID);
+    //           console.log(application.APPLICATION_ID,response.data.status);
+    //         } catch (error) {
+    //           console.error('Error fetching payment status:', error);
+    //         }
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.log(error) 
+    //   }
+    //   setFetching(false)
+    // };
+
 
     // Fetch data from API
-    async function fetchData(){
-        setFetching(true)
+    // async function fetchData(){
+    //   //console.log('FETCH ATA');  
+    //     setFetching(true)
+    //     try {
+    //       const response = await API.getApplication(auth.user.USER_ID);
+    //        //console.log(response.data.data);
+    //      // console.log('finish1');   
+    //        setApplications(response.data.data);
+    //       //console.log('finish2');
+    //      // const checkPayment1 = await checkPayment()
+    //       //console.log('finish');
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    //     setFetching(false)
+    // }
+
+    async function fetchData() {
+  setFetching(true);
+  try {
+    const response = await API.getApplication(auth.user.USER_ID);
+    const appData = response.data.data;
+    // setApplications(appData);
+
+    // Check payment immediately after fetching
+    const updatedApplications = await Promise.all(appData.map(async (application) => {
+      if (application.application_status.STATUS === 'UNPAID') {
         try {
-          const response = await API.getApplication(auth.user.USER_ID);
-          // console.log(response.data.data);
-          setApplications(response.data.data);
+          const res = await axios.get(import.meta.env.VITE_BACKEND_URL + 'api/application/verify-challan/' + application.APPLICATION_ID);
+          // console.log(res)
+          if (res.data.status) {
+            return {
+              ...application,
+              
+              application_status: {
+                ...application.application_status,
+                STATUS: 'APPLIED',
+                APPLICATION_STATUS_ID: 1 || application.application_status?.APPLICATION_STATUS_ID
+              }
+            };
+          }
         } catch (error) {
-            console.log(error);
+          console.error('Error fetching payment status:', error);
         }
-        setFetching(false)
-    }
+      }
+      return application;
+    }));
 
-    useEffect(() => {
-      fetchData()
-    }, [])
+    setApplications(updatedApplications);
+  } catch (error) {
+    // console.log(error);
+  }
+  setFetching(false);
+}
 
-    useEffect(() => {
-      checkPayment();
-    }, [])
+useEffect(() => {
+  fetchData();
+}, []);
 
   return (
       currentRole == 4 ?

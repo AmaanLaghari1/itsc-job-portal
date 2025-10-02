@@ -1,4 +1,4 @@
-import { CButton, CCard, CCardBody, CCardTitle, CCardHeader, CCol, CRow } from "@coreui/react"
+import { CButton, CCard, CCardBody, CCardTitle, CCardHeader, CCol, CRow, CSpinner } from "@coreui/react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import * as API from '../../api/ApplicationRequest.js'
 import Alert from "../../components/Alert.js"
@@ -112,6 +112,7 @@ const ApplicationConfirm = () => {
 
     useEffect(() => {
         const getUserDetail =  async (countryId, provinceId=null, districtId=null) => {
+            setFetching(true)
             try {
                 const response = await axios.get(import.meta.env.VITE_API_URL+'user/get-user-detail/'+countryId+'/'+provinceId+'/'+districtId);
                 // console.log(response);
@@ -126,6 +127,7 @@ const ApplicationConfirm = () => {
                 console.error("Error fetching user details:", error);
                 return;
             }
+            setFetching(false)
         }
         getUserDetail(
             auth.user.COUNTRY_ID,
@@ -163,6 +165,8 @@ const ApplicationConfirm = () => {
                         <br /> 
                         <br /> 
                     </p>
+                    {
+                        fetching ? <CSpinner className='align-slef-start my-3' color='primary' /> :
                         <div className="card shadow shadow-sm my-3 w-100 p-0 my-2">
                             <CCardHeader className='fw-bolder d-flex align-items-center'>
                                 <CCardTitle className="h5 my-2">
@@ -303,6 +307,7 @@ const ApplicationConfirm = () => {
                                 </CRow>
                             </div>
                         </div>
+                    }
 
                         <div className="card shadow shadow-sm my-3 w-100 p-0 my-2">
                             <CCardHeader className='fw-bolder d-flex align-items-center'>
@@ -312,6 +317,7 @@ const ApplicationConfirm = () => {
                             </CCardHeader>
                             
                             {
+                                fetching ? <CSpinner className='align-slef-start my-3' color='primary' /> :
                                 filteredQualifications.map((qualification, index) => (
                                     <div key={index}>
                                         <CCardHeader className='fw-bolder d-flex align-items-center'>
@@ -382,7 +388,7 @@ const ApplicationConfirm = () => {
 
                         {
                             experiences.length > 0 &&
-
+                            
                             <div className="card shadow shadow-sm my-3 w-100 p-0 my-2">
                                 <CCardHeader className='fw-bolder d-flex align-items-center'>
                                     <CCardTitle className="h5 my-2">
@@ -390,6 +396,7 @@ const ApplicationConfirm = () => {
                                     </CCardTitle>
                                 </CCardHeader>
                                 {
+                                fetching ? <CSpinner className='align-slef-start my-3' color='primary' /> :
                                     experiences.map((exp, index) => (
                                         <div key={index}>
                                             <div className="card w-100 p-0" key={exp.EXPERIANCE_ID}>

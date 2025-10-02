@@ -4,15 +4,20 @@ import { useEffect, useState } from 'react'
 import AnnouncementCard from './AnnouncementCard.jsx'
 
 const Announcement = () => {
-    // const [fetching, setFetching] = useState(false)
+    const [fetching, setFetching] = useState(false)
     const [announcements, setAnnouncements] = useState([]);
 
     // Fetch data from API
     async function fetchData() {
-        // setFetching(true)
-        const response = await API.getAnnouncement();
-        // setFetching(false)
-        setAnnouncements(response.data.data);
+        setFetching(true)
+        try {
+            const response = await API.getAnnouncement();
+            setAnnouncements(response.data.data);
+            
+        } catch (error) {
+            
+        }
+        setFetching(false)
     }
 
     useEffect(() => {
@@ -27,7 +32,7 @@ const Announcement = () => {
 
             </div>
             {
-                // fetching ? <CSpinner className='align-self-start my-3' color="primary" /> :
+                fetching ? <CSpinner className='align-self-start my-3' color="primary" /> :
                     <div className='w-100 my-3'>
                         {
                             announcements && announcements.length > 0 ?

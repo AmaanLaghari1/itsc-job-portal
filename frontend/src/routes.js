@@ -7,6 +7,7 @@ const ApplicationEdit = React.lazy(() => import('./views/admin/applications/Appl
 const ApplicationUpdateUser = React.lazy(() => import('./views/admin/applications/ApplicationUpdateUser'))
 const AnnouncementEdit = React.lazy(() => import('./views/admin/announcements/AnnouncementEdit'))
 const UsersAll = React.lazy(() => import('./views/admin/users/UsersAll'))
+const ProgramManage = React.lazy(() => import('./views/admin/programs/ProgramManage'))
 
 // Public Components
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
@@ -33,6 +34,7 @@ const routes = [
   { path: '/admin/application/edit', name: 'Dashboard', element: ApplicationEdit },
   { path: '/admin/application/update-user', name: 'Dashboard', element: ApplicationUpdateUser },
   { path: '/admin/users', name: 'All Users', element: UsersAll },
+  { path: '/admin/program/manage', name: 'All Users', element: ProgramManage },
 
   // Public routes
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },

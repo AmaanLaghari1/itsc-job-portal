@@ -10,6 +10,7 @@ use App\Services\QRCodeService;
 
 class ChallanPDF extends FPDF
 {
+    public $file_name = null;
     public function __construct()
     {
         parent::__construct();
@@ -29,10 +30,13 @@ class ChallanPDF extends FPDF
     {
         $pdf = $this;
 
+        $sectionAccountId = env('SECTION_ACCOUNT_ID');
+        $typeCode = env('TYPE_CODE');
+
         $stdName = $applicationData->FIRST_NAME;
         $fName = $applicationData->FNAME;
         $surName = $applicationData->LAST_NAME;
-        $applicationId = 9;
+        $applicationId = $applicationData['APPLICATION_ID'];
 
         $fee_label = "APPLICATION FEE";
         $fee_amount = $applicationData->announcement->APPLICATION_FEE ?? 0;
@@ -42,12 +46,8 @@ class ChallanPDF extends FPDF
         $category_name = "JOB APPLICATION";
 
         $valid_upto = $challan['PAYMENT_DUE_DATE'] ?? "EXPIRED";
-        $allotment_expiry = ($challan['EXPIRY'] ?? "00-00-0000") === "00-00-0000" ? '' : $challan['EXPIRY'];
 
-        $account_no = "00427991822903";
-        $campus_name = "JAMSHORO";
-
-        $challan_no = sprintf("%07d", $applicationId) ?? "";
+       $this->file_name = $challan_no = $sectionAccountId . sprintf("%07d", $applicationId) ?? "";
         $oneBillID = 1001145094 . $challan_no;
         $challan_date = "07-09-2025";
         $cnic_no = $applicationData->CNIC_NO ?? "";
@@ -153,37 +153,29 @@ class ChallanPDF extends FPDF
         $height += 3;
         $pdf->text($x + 5, $height, strtoupper($mobile_no));
 
-        if ($challan_type_id != 8) {
+//        if ($challan_type_id != 8) {
 
             $pdf->SetFont('Arial', '', 8);
             $height += 5;
+            $pdf->text($x + 5, $height, "APPLIED POSITION:");
+            $pdf->SetFont('Arial', 'B', 9);
+            $pdf->SetXY($x + 4, $height);
+            $pdf->MultiCell(65, 4, strtoupper($position_name), 0, "L");
+
+            $pdf->SetFont('Arial', '', 8);
+            $height += 15;
             $pdf->text($x + 5, $height, "DEPARTMENT:");
             $pdf->SetFont('Arial', 'B', 9);
             $pdf->SetXY($x + 4, $height += 1);
             $pdf->MultiCell(65, 4, "$dept_name", 0, "L");
+//        }
 
-            $pdf->SetFont('Arial', '', 8);
-            $height += 8;
-            $pdf->text($x + 5, $height, "APPLIED POSITION:");
-            $pdf->SetFont('Arial', 'B', 9);
-            $pdf->SetXY($x + 4, $height);
-            $pdf->MultiCell(65, 4, strtoupper($position_name . " software engr"), 0, "L");
-        }
-
-        $pdf->SetXY($x + 3, $height += 20);
+        $pdf->SetXY($x + 3, $height += 12);
         $pdf->SetFont('Times', 'B', 9);
         $pdf->Cell(40, 6, "$fee_label", 1, "", "R");
         $pdf->Cell(25, 6, "Rs. " . number_format($fee_amount, 2), 1, "", "R");
 
-        // $pdf->SetXY($x + 3, $height += 6);
-        // $pdf->Cell(40, 6, "DUES", 1, "", "R");
-        // $pdf->Cell(25, 6, "Rs. " . number_format($due, 2), 1, "", "R");
-
-        // $pdf->SetXY($x + 3, $height += 6);
-        // $pdf->Cell(40, 6, "TOTAL FEE", 1, "", "R");
-        // $pdf->Cell(25, 6, "Rs. " . number_format($total_amount, 2), 1, "", "R");
-
-        $pdf->SetXY($x + 3, $height += 7);
+        $pdf->SetXY($x + 3, $height += 8);
         $pdf->SetFont('Arial', '', 7);
         $pdf->MultiCell(65, 4, "                           IMPORTANT NOTE
          This paid amount (Rs: " . number_format($total_amount, 2) . "/=) is non-transferable. In case any applicant submitted / provided wrong information (detected at any stage), his/her challan shall be cancelled. The University of Sindh reserves the right to rectify any error / omission detected at any stage.", 1, "L");

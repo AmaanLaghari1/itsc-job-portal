@@ -172,7 +172,7 @@ const AnnouncementForm = ({initialValues, validationRules, handleSubmit, loading
                     control='input' 
                     type='text'
                     name="experience_years" 
-                    label="Years of Experience"
+                    label="Minimum years of experience"
                     onInput={e => {
                       e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2)
                     }}

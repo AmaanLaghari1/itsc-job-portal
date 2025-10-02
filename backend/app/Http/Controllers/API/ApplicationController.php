@@ -8,6 +8,7 @@ use App\Models\ApplicationExperience;
 use App\Models\ApplicationQualification;
 use App\Models\ApplicationStatus;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Application;
 use Illuminate\Support\Facades\DB;
@@ -116,6 +117,20 @@ class ApplicationController extends Controller
         $user = User::with('qualifications')->find($request->user_id);
 
         $announcement = Announcement::find($request->announcement_id);
+
+        if(strtotime($announcement->END_DATE) < strtotime(Carbon::now()->format('Y-m-d'))){
+            if(Application::where('USER_ID', $request->user_id)->where('ANNOUNCEMENT_ID', $request->announcement_id)->exists()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => 'You have already applied for this job'
+                ], 403);
+            }else {
+                return response()->json([
+                    'status' => false,
+                    'error_message' => 'Announcement expired.'
+                ], 403);
+            }
+        }
 
         if($user->profile_completeness != 100){
             return response()->json([
@@ -317,7 +332,7 @@ class ApplicationController extends Controller
 
     public function getByUserId(string $id){
         try{
-            $record = Application::with(['announcement.qualification_requirements.degree', 'announcement.department'])->with('application_status')->where('USER_ID', $id)->get();
+            $record = Application::with(['announcement.qualification_requirements.degree', 'announcement.department'])->with('application_status')->where('USER_ID', $id)->orderBy('APPLICATION_ID', 'desc')->get();
 
             if(is_null($record)){
                 return response()->json([
@@ -341,33 +356,49 @@ class ApplicationController extends Controller
     }
 
     public function verifyChallan($applicationId){
+//        dd($applicationId);
         try {
+            $sectionAccountId = env('SECTION_ACCOUNT_ID');
+            $typeCode = env('TYPE_CODE');
             $application = Application::find($applicationId);
-            $challan_no = sprintf("%08d", $applicationId);
+            $challan_no = sprintf("%07d", $applicationId);
             $_param = array (
 //        'p_ConsumerNumber'=> "530000533",
 //        'p_ConsumerNumber'=> "212530416",
-                'p_ConsumerNumber'=> $challan_no,
+                'p_ConsumerNumber'=> env('SECTION_ACCOUNT_ID') . $challan_no,
+
                 'p_UserName'=> env('PAYMENT_VERIFY_USERNAME'),
                 'p_Password'=> env('PAYMENT_VERIFY_PASSWORD')
             );
 
             $data = postCURL(env('PAYMENT_VERIFY_API'), $_param);
-
+//            dd($data);
             if($data['response_code'] == 200) {
                 $challanData = json_decode($data['response'], true);
+//                dd($challanData);
+//                p_PaidDate":null,"p_PaidAmount":null,"p_Channel":null
 
-                if($challanData['p_IsPaid'] == 1) {
+                if($challanData['p_IsPaid'] == 1  && $challanData['p_PaidAmount'] >= $application->announcement->APPLICATION_FEE) {
                     $application->update(
-                        ['APPLICATION_STATUS' => 1]
+                        ['APPLICATION_STATUS' => 1, 'PAID_AMOUNT' => $challanData['p_PaidAmount'],
+                            'PAID_DATE' => $challanData['p_PaidDate'],
+                            'CHANNEL' => $challanData['p_Channel']
+                        ],
                     );
-                }
-
                 return response()->json([
-                    'status' => false,
+                    'status' => true,
                     'message' => 'Challan verified successfully',
                     'data' => json_decode($data['response'])
                 ], 200);
+                }
+                else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Fees not verified!',
+                        'data' => json_decode($data['response'])
+                    ], 200);
+                }
+
             }
         }
         catch (\Exception $e){
@@ -412,6 +443,20 @@ class ApplicationController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getApplicationsByAnnouncementId($announcementId)
+    {
+        try {
+            $records = Application::where('ANNOUNCEMENT_ID', $announcementId)->get();
+            return response()->json($records, 200);
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage()

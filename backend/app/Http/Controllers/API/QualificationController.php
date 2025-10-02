@@ -118,7 +118,7 @@ class QualificationController extends Controller
             }
 
             $data = formatRequestData($request->all());
-            
+
             if($data['IS_RESULT_DECLARE'] == 'N'){
                 $data['TOTAL_MARKS'] = '';
                 $data['OBTAINED_MARKS'] = '';
@@ -199,12 +199,11 @@ class QualificationController extends Controller
 
     public function getPrograms($programId=null){
         try {
-            if($programId){
-                $options = DB::table('degree_program')->where('DISCIPLINE_ID', $programId)->get();
-            }
-            else {
-                $options = DB::table('degree_program')->get();
-            }
+            $options = DB::table('degree_program')->whereNull('REMARKS')
+//                    ->like('REMARKS', 'HIDE')
+                    ->orderBy('DEGREE_ORDER', 'asc')
+                    ->get();
+
             return response()->json([
                 'options' => $options,
                 'status' => true
@@ -220,7 +219,9 @@ class QualificationController extends Controller
     public function getDisciplines($programId=null){
         try {
             if($programId){
-                $options = DB::table('discipline')->where('DEGREE_ID', $programId)->where('ACTIVE', 1)->get();
+                $options = DB::table('discipline')->where('DEGREE_ID', $programId)->where('ACTIVE', 1)
+//                    ->whereNot('REMARKS', 'HIDE')
+                    ->get();
             }
             else {
                 $options = DB::table('discipline')->get();

@@ -30,8 +30,10 @@ class ApplicationPDF extends FPDF
 //        $this->Image(env('ASSET_URL') .'images/usindh-logo2.png', 10, 5, 20, 20, '', '');
         $this->Image(public_path('images/usindh_logo.png'), 10, 5, 20, 20, '', '');
 
+
 //        $this->Image(env('ASSET_URL') .'images/qr_frame.png', 180, 5, 20, 20, '', '');
-        $this->Image(public_path('images/qr_frame.png'), 180, 5, 20, 20, '', '');
+//        $this->Image(public_path('images/qr_frame.png'), 180, 5, 20, 20, '', '');
+//        $this->Image($this->getQrCode(1), 180, 5, 20, 20, '', '');
         $this->Ln(5);
     }
 
@@ -231,7 +233,7 @@ class ApplicationPDF extends FPDF
             "POSITION_APPLIED_FOR" => $data['announcement']['POSITION_NAME'] . " at " . $data['announcement']['department']['DEPT_NAME'],
             "APPLICATION_FEE" => $data['announcement']['APPLICATION_FEE'] ?? '',
             "CHALLAN_NO" => sprintf("%07d", $data['APPLICATION_ID']) ?? '',
-            "PAYMENT_DATE" => $data['PAID_DATE'] ?? '',
+            "PAYMENT_DATE" => date('d-m-Y', strtotime($data['PAID_DATE'])) ?? '',
             "NAME" => $data['FIRST_NAME'] ?? '',
             "SURNAME" => $data['LAST_NAME'] ?? '',
             "FNAME" => $data['FNAME'] ?? '',
@@ -257,6 +259,12 @@ class ApplicationPDF extends FPDF
             "PROFILE_IMAGE" => $data['PROFILE_IMAGE'] ?? '',
             "REF_NO" => $data['announcement']['REF_NO'] ?? '',
         ];
+    }
+
+    public function getQrCode($content)
+    {
+        $qrCodeService = new QRCodeService();
+        return $qrCodeService->generate($content, 'qr_frames/'.$content.'qr_code.png');
     }
 
 }

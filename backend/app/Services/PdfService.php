@@ -19,6 +19,7 @@ class PdfService
 
     public function generatePdf($applicationData)
     {
+//        dd();
         $this->challanPDF->AddPage('L');
 
         $challan = [
@@ -39,9 +40,9 @@ class PdfService
         $this->challanPDF->myLine($x);
 
         $x = 215;
-        $this->challanPDF->myFunction("MIS COPY", $x, $challan, $applicationData);
+        $this->challanPDF->myFunction("OFFICE COPY", $x, $challan, $applicationData);
 
-        return $this->challanPDF->Output('I');
+        return $this->challanPDF->Output('I', $this->challanPDF->file_name.'.pdf');
     }
 
 
@@ -63,6 +64,10 @@ class PdfService
 
     public function applicationContent($data)
     {
+        $this->applicationPDF->Image($this->applicationPDF->getQrCode($data['APPLICATION_NO']), 180, 5, 20, 20, '', '');
+
+//        $this->applicationPDF->Image(public_path('images/qr_frame.png'), 180, 5, 20, 20, '', '');
+
         //        Position Applied
         $this->applicationPDF->SetFillColor(255); // dark purple header
 //        $this->applicationPDF->SetTextColor(255);
@@ -99,7 +104,7 @@ class PdfService
 //        Space
         $this->applicationPDF->ln(2);
 //      Personal Info
-        $this->SectionTitle('Personal Information' . dirname(base_path()));
+        $this->SectionTitle('Personal Information');
         $y = $this->applicationPDF->GetY();
 //        $this->applicationPDF->Image(base_path('../resource/uploads/' . $data['PROFILE_IMAGE']), 161, $y+1, 39, 40);
         $this->applicationPDF->Image(dirname(base_path()) . '/resource/uploads/' . $data['PROFILE_IMAGE'], 161, $y+1, 39, 40);
@@ -180,6 +185,7 @@ class PdfService
         $this->applicationPDF->Ln(5);
 
 //        Experience Section
+        if(count($data['experience']) > 0){
         $this->SectionTitle('Experience');
         $expHeader = ['Organization Name', 'Employment Type', 'Start Date', 'End Date', 'Total Experience'];
         $expData = [
@@ -189,11 +195,12 @@ class PdfService
         $this->setFontStyle('B', 'Times', 8);
         $this->applicationPDF->FancyTable($expHeader, $data['experience'], $expColWidths);
         $this->applicationPDF->fieldWithLabel('Total Experience', $data['total_experience'], 50, 0, 7, 1, 'L');
+        }
     }
 
     public function generateApplicationPdf($applicationData)
     {
-//        return $applicationData;
+//        dd($applicationData->toArray());
         $requiredData = $this->applicationPDF->RequiredData($applicationData);
 //        return $requiredData['qualifications'];
         if (ob_get_length()) {
@@ -207,7 +214,7 @@ class PdfService
 
         $this->applicationContent($requiredData);
 
-        $this->applicationPDF->Output('I');
+        $this->applicationPDF->Output('I', $applicationData->toArray()['APPLICATION_ID'].'.pdf');
         exit;
     }
 }

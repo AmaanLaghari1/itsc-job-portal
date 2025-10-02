@@ -39,7 +39,7 @@ export const ApplicationCard = ({application}) => {
                         <div className="d-flex flex-wrap gap-2 my-2">
                             {
                                 application.application_status?.APPLICATION_STATUS_ID !== 1 ?
-                                    <a href={application.APPLICATION_URL} className="btn btn-sm btn-outline-danger rounded-pill px-3" download='itsc_application'>
+                                    <a href={import.meta.env.VITE_BACKEND_URL+"pdf/"+btoa(application.APPLICATION_ID)} className="btn btn-sm btn-outline-danger rounded-pill px-3" download='itsc_application'>
                                         Download Challan
                                     </a>
                                 :

@@ -79,6 +79,12 @@ const _nav = data => {
           to: '/admin/users',
           icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
         },
+        {
+          component: CNavItem,
+          name: 'Program Management',
+          to: '/admin/program/manage',
+          icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+        },
       ]
     }
 }

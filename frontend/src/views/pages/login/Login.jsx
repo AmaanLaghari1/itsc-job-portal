@@ -6,7 +6,7 @@ import { login } from '../../../actions/AuthAction.js'
 import Alert from '../../../components/Alert.js'
 import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
-import { getRecentAnnouncement } from '../../../api/AnnouncementRequest.js'
+import { getRecentAnnouncement, getAnnouncement } from '../../../api/AnnouncementRequest.js'
 import { Link } from 'react-router-dom'
 import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
 import { CButton, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
@@ -35,8 +35,11 @@ const Login = () => {
 
     const fetchAnnouncements = async () => {
         try {
-            const response = await getRecentAnnouncement()
+            const response = await getRecentAnnouncement(6)
+            // const response = await getAnnouncement()
+            // console.log(response)
             setAnnouncements(response.data)
+            // setAnnouncements(response.data.data)
         } catch (error) {
             console.log(error)
         }
@@ -99,7 +102,7 @@ const Login = () => {
                                                 announcements.map((item, index) => (
                                                     <CTableRow key={item.ANNOUNCEMENT_ID}>
                                                         <CTableHeaderCell scope="row" className="text-center align-middle">
-                                                            <div className="d-flex justify-content-center align-items-center fw-bold" style={{ height: '100%' }}>
+                                                            <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
                                                                 {index + 1}
                                                             </div>
                                                         </CTableHeaderCell>
@@ -107,9 +110,14 @@ const Login = () => {
                                                         style={{cursor: 'pointer'}}
                                                         onClick={() => handleView(item)}>
                                                             <div
-                                                                className='scrollable-title fw-bold'
+                                                                className='scrollable-title'
                                                             >
                                                                 {item.ANNOUNCEMENT_TITLE}
+                                                            </div>
+                                                            <div className="small">
+                                                                Last Date: <span className="text-danger fw-bold">
+                                                                    {formatDate(item.END_DATE)??''}
+                                                                </span>
                                                             </div>
                                                         </CTableDataCell>
                                                     </CTableRow>
@@ -197,7 +205,7 @@ const Login = () => {
                     <div className="col-12 col-sm-6 order-1 order-sm-2">
                         <div className="row">
                             <div className="col-12 col-lg-8 mx-auto login-container">
-                                <div className="col-10 mx-auto">
+                                <div className="col-12 mx-auto">
                                     <div className="d-flex align-items-center flex-wrap mt-5">
                                         <img src={theme == 'dark' ? logoWhite : logo} width='150' className='' alt="Usindh Logo" />
                                     </div>
@@ -242,6 +250,10 @@ const Login = () => {
                                             </div>
                                         </Form>
                                     </Formik>
+
+                                    <div className="mt-5 small shadow shadow-lg p-2">
+                                        &copy; 2025 Developed by: Information Technology Services Centre, University of Sindh
+                                    </div>
                                 </div>
                             </div>
                         </div>

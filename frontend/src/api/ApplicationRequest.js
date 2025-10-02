@@ -29,6 +29,15 @@ export const getApplication = (userId) => {
     })
 }
 
+export const getApplicationByAnnouncementId = (announcementId) => {
+    return API.get("get_by_announcement/"+announcementId, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
 export const updateApplication = (formdata, id) => {
     return API.put("put/"+id, formdata, {
         headers: {

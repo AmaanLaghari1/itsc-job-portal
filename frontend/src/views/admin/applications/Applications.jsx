@@ -8,12 +8,25 @@ import { Formik, Form } from "formik";
 import * as Yup from 'yup'
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedDeptId, setSelectedAnnouncementId } from "../../../slicers/applicationFilterSlice.js";
+import { getAnnouncement } from "../../../api/AnnouncementRequest.js";
+import { getApplicationByAnnouncementId } from "../../../api/ApplicationRequest.js";
 
 const Applications = () => {
     const [applications, setApplications] = useState([])
     const navigate = useNavigate()
     const [deptData, setDeptData] = useState([])
     const [announcement, setAnnouncements] = useState([])
+
+
+    const getAllAnnouncements = async () => {
+      try {
+        const response = await getAnnouncement()
+        console.log(response)
+        setAnnouncements(response.data?.data)
+      } catch (error) {
+        
+      }
+    }
 
     const dispatch = useDispatch();
 
@@ -53,6 +66,7 @@ const Applications = () => {
     };
 
     fetchAndSet();
+    getAllAnnouncements()
   }, []);
 
     
@@ -165,18 +179,29 @@ const Applications = () => {
     setAnnouncements(selectedDept[0].announcements)
   }
   
-  const handleAnnouncementChange = (selectedOption, setFieldValue) => {
-    setFieldValue('announcement_id', selectedOption?.key || '')
-    const announcementId = selectedOption?.key || '';
-    const selectedAnnouncement = announcement.filter(item => item.ANNOUNCEMENT_ID == selectedOption.key)
-    dispatch(setSelectedAnnouncementId(announcementId));
-    setApplications(selectedAnnouncement[0].applications)
-  }
-  
-  const filteredData = applications.map((item) =>
-    // hasRole(item.ACCESS_ID)
-  item
+  const handleAnnouncementChange = async (selectedOption, setFieldValue) => {
+  setFieldValue('announcement_id', selectedOption?.key || '')
+  const announcementId = selectedOption?.key || '';
+  const selectedAnnouncement = announcement.find(
+    item => item.ANNOUNCEMENT_ID == selectedOption?.key
   );
+  dispatch(setSelectedAnnouncementId(announcementId));
+  try {
+    const response = await getApplicationByAnnouncementId(announcementId)
+    // console.log(response)
+    setApplications(response.data)
+  } catch (error) {
+    
+  }
+
+  // if (selectedAnnouncement && selectedAnnouncement.applications) {
+  //   setApplications(selectedAnnouncement.applications);
+  // } else {
+  //   // setApplications([]); // fallback to empty array
+  // }
+};
+
+const filteredData = Array.isArray(applications) ? applications.map(item => item) : [];
 
   
   return (

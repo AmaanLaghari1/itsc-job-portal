@@ -11,7 +11,7 @@ export const truncateLongTxt = (text, maxWords=20) => {
 
 export const formatDate = (dateString) => {
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return ''; // Invalid date
+    // if (isNaN(date.getTime())) return ''; // Invalid date
     return date.toLocaleDateString('en-UK', {
         day: 'numeric',
         month: 'numeric',

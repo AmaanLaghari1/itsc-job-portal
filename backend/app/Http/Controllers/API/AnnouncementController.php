@@ -19,7 +19,7 @@ class AnnouncementController extends Controller
     public function index()
     {
         try {
-            $allRecords = Announcement::with('program')->with('qualification_requirements.degree')->with('department')->orderBy('ANNOUNCEMENT_ID', 'desc')->get();
+            $allRecords = Announcement::with('program')->with('qualification_requirements.degree')->with('department')->orderBy('START_DATE', 'desc')->get();
 
             return response()->json([
                 'status' => true,
@@ -42,6 +42,7 @@ class AnnouncementController extends Controller
     {
         try {
             $validation = Validator::make(request()->all(), [
+                'announcement_title' => 'required',
                 'position_name' => 'required',
                 'dept_id' => 'required',
                 'start_date' => 'required',
@@ -58,9 +59,26 @@ class AnnouncementController extends Controller
                 ], 401);
             }
 
-            $data = formatRequestData($request->except('qualifications'));
+//            $data = formatRequestData($request->except('qualifications'));
 
-            $newRecord = Announcement::create($data);
+            $requestData = [
+                'ANNOUNCEMENT_TITLE' => $request->announcement_title,
+                'POSITION_NAME' => $request->position_name,
+                'DEPT_ID' => $request->dept_id,
+                'DESCRIPTION' => $request->description,
+                'START_DATE' => $request->start_date,
+                'END_DATE' => $request->end_date,
+                'APPLICATION_FEE' => $request->application_fee,
+                'AGE_FROM' => $request->age_from,
+                'AGE_TO' => $request->age_to,
+                'EXPERIENCE_YEARS' => $request->experience_years,
+                'REF_NO' => $request->ref_no,
+                'ACCESS_ID' => $request->access_id
+            ];
+
+//            return response()->json($requestData);
+
+            $newRecord = Announcement::create($requestData);
 
             if($newRecord){
                 foreach ($request->qualifications as $qualification) {
@@ -140,6 +158,7 @@ class AnnouncementController extends Controller
             }
 
             $validation = Validator::make($request->all(), [
+                'announcement_title' => 'required',
                 'position_name' => 'required',
                 'dept_id' => 'required',
                 'start_date' => 'required',
@@ -156,8 +175,25 @@ class AnnouncementController extends Controller
 
             DB::beginTransaction(); // Start DB transaction
 
-            $data = formatRequestData($request->except(['qualifications', 'qual_req_data']));
-            $record->update($data); // Update main announcement
+//            $data = formatRequestData($request->except(['qualifications', 'qual_req_data']));
+            $requestData = [
+                'ANNOUNCEMENT_TITLE' => $request->announcement_title,
+                'POSITION_NAME' => $request->position_name,
+                'DEPT_ID' => $request->dept_id,
+                'DESCRIPTION' => $request->description,
+                'START_DATE' => $request->start_date,
+                'END_DATE' => $request->end_date,
+                'APPLICATION_FEE' => $request->application_fee,
+                'AGE_FROM' => $request->age_from,
+                'AGE_TO' => $request->age_to,
+                'EXPERIENCE_YEARS' => $request->experience_years,
+                'REF_NO' => $request->ref_no,
+                'ACCESS_ID' => $request->access_id
+            ];
+
+            dd($requestData);
+
+            $record->update($requestData); // Update main announcement
 
             $qualifications = $request->qualifications ?? [];
             $previousData = $request->qual_req_data ?? [];
@@ -239,10 +275,15 @@ class AnnouncementController extends Controller
         }
     }
 
-    public function getRecentAnnouncements()
+    public function getRecentAnnouncements($cutoff=null)
     {
         try {
-            $cutoffDate = Carbon::now()->subDays(14); // 14 days from today
+            if($cutoff){
+                $cutoffDate = Carbon::now()->subMonths($cutoff); // 6 months from today
+            }
+            else {
+                $cutoffDate = Carbon::now()->subDays(25); // 14 days from today
+            }
 
             $records = Announcement::with([
                 'program',
@@ -250,8 +291,8 @@ class AnnouncementController extends Controller
                 'department'
             ])
                 ->where('END_DATE', '>=', $cutoffDate)
-                ->orderBy('ANNOUNCEMENT_ID', 'desc')
-                ->take(5)
+                ->orderBy('START_DATE', 'desc')
+//                ->take(5)
                 ->get();
 
             return response()->json($records, 200);
@@ -262,6 +303,5 @@ class AnnouncementController extends Controller
             ], 500);
         }
     }
-
 
 }

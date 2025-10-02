@@ -68,6 +68,7 @@ Route::prefix('experience')->group(function() {
 
 Route::prefix('announcement')->group(function() {
     Route::get('get', [AnnouncementController::class, 'index']);
+    Route::get('get/recent_announcements', [AnnouncementController::class, 'getSixMonthOldAnnouncements']);
     Route::get('application_requirement', [AnnouncementController::class, 'applicationRequirements']);
     Route::post('post', [AnnouncementController::class, 'create']);
     Route::put('put/{id}', [AnnouncementController::class, 'update']);
@@ -77,6 +78,7 @@ Route::prefix('announcement')->group(function() {
 
 Route::prefix('application')->group(function() {
     Route::get('get', [ApplicationController::class, 'index']);
+    Route::get('get_by_announcement/{announcementId}', [ApplicationController::class, 'getApplicationsByAnnouncementId']);
     Route::post('post', [ApplicationController::class, 'create']);
     Route::put('put/{id}', [ApplicationController::class, 'update']);
     Route::post('application_requirement', [ApplicationController::class, 'applicationRequirements']);
@@ -99,7 +101,7 @@ Route::get('/department/get', function(){
     return response()->json($department);
 });
 
-Route::get('/announcement/recent', [AnnouncementController::class, 'getRecentAnnouncements']);
+Route::get('/announcement/recent/{cutoff?}', [AnnouncementController::class, 'getRecentAnnouncements']);
 Route::post('/assign_role', [UserRoleController::class, 'assignRole']);
 Route::get('/delete_role/{roleId}', [UserRoleController::class, 'destroy']);
 

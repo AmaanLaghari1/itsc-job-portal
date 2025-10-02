@@ -3,7 +3,6 @@ import * as Yup from 'yup';
 import * as API from '../../../api/AnnouncementRequest';
 import Alert from '../../../components/Alert';
 import { useEffect, useMemo, useState } from 'react';
-import axios from 'axios';
 import AnnouncementForm from './AnnouncementForm';
 import { useSelector } from 'react-redux';
 

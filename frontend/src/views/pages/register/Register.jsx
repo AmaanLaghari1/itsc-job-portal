@@ -31,7 +31,7 @@ const Register = () => {
         first_name: Yup.string().required('Name is required!'),
         fname: Yup.string().required("Father's Name is required!"),
         cnic_no: Yup.number().min(1111111111111, 'CNIC No. must contain only 13 digits!').required('CNIC is required!'),
-        mobile_no: Yup.number().min(11111111111, 'Mobile No. must contain only 11 digits!').required('Mobile No. is required!'),
+        mobile_no: Yup.number().max(99999999999, 'Mobile No. must contain only 11 digits!').required('Mobile No. is required!'),
         email: Yup.string().email('Invalid email format').required('Email is required!'),
         password: Yup.string().min(8, 'Password is too short!').required('Password is required!'),
         password_confirmation: Yup.string().required('Password Confirmation is required!').oneOf([Yup.ref('password'), null], 'Passwords must match!'),
@@ -83,7 +83,7 @@ const Register = () => {
                                                 <span className="text-danger fw-bold">*</span>
                                                 <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='' name='first_name' id='first_name' 
                                                 onInput={(e) => {
-                                                e.target.value = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
+                                                e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
                                                 }}
                                                 />
                                                 <div className="small text-danger">
@@ -99,7 +99,7 @@ const Register = () => {
                                                 <span className=""> (optional)</span>
                                                 <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='' name='last_name' id='last_name' 
                                                 onInput={(e) => {
-                                                e.target.value = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
+                                                e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
                                                 }}
                                                 />
                                                 <div className="small text-danger">
@@ -115,7 +115,7 @@ const Register = () => {
                                                 <span className="text-danger fw-bold">*</span>
                                                 <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='' name='fname' id='fname'
                                                 onInput={(e) => {
-                                                e.target.value = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
+                                                e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
                                                 }}
                                                 />
                                                 <div className="small text-danger">

@@ -21,8 +21,8 @@ export const getAnnouncement = () => {
     })
 }
 
-export const getRecentAnnouncement = () => {
-    return API.get("recent", {
+export const getRecentAnnouncement = (cutoff) => {
+    return API.get("recent/"+cutoff, {
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json"
