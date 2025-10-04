@@ -161,7 +161,7 @@ const ApplicationConfirm = () => {
                         Please review your application details before submitting.
                         Ensure all information is correct and complete to avoid any issues with your application. <br />
                         You will not be able to edit your application after submission.
-                        <span className=""> If you have any questions, please contact us at <a href="mailto:usindh.edu.pk" className="text-decoration-none">usindh.edu.pk</a>.</span>
+                        <span className=""> If you have any questions, please contact us at <a href="mailto:careers@usindh.edu.pk" className="text-decoration-none">careers@usindh.edu.pk</a>.</span>
                         <br /> 
                         <br /> 
                     </p>

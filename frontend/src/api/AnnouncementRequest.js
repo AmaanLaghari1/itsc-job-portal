@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const API = axios.create({baseURL: import.meta.env.VITE_API_URL+"announcement/"})
-const AdminAPI = axios.create({baseURL: import.meta.env.VITE_API_URL+"admin/annoucement"})
 
 export const createAnnouncement = (formdata) => {
     return API.post("post", formdata, {

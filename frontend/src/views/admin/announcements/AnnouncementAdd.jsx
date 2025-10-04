@@ -24,7 +24,8 @@ const AnnouncementAdd = () => {
     // is_required: [],
     experience_years: '',
     ref_no: '',
-    access_id: userRole
+    access_id: userRole,
+    active: 1
   }
 
   const validationSchema = Yup.object().shape({
@@ -52,6 +53,8 @@ const AnnouncementAdd = () => {
   });
 
   const submitHandler = async (values) => {
+    alert(JSON.stringify(values))
+    return
     setLoading(true)
     values.start_date = new Date(values.start_date).toISOString().split('T')[0];
     values.end_date = new Date(values.end_date).toISOString().split('T')[0];

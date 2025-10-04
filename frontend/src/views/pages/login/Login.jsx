@@ -251,7 +251,15 @@ const Login = () => {
                                         </Form>
                                     </Formik>
 
-                                    <div className="mt-5 small shadow shadow-lg p-2">
+                                    <div className="mt-3 mb-2 small shadow shadow-sm p-2">
+                                        For queries email at: 
+                                        <a className='text-decoration-none' href="mailto:careers@usindh.edu.pk">
+                                            careers@usindh.edu.pk
+                                        </a>
+                                        <br /> Concerned person for any queries: Nadeem Butt (Deputy Registrar) General Branch AC-II Building
+                                    </div>
+
+                                    <div className="mt-1 small shadow shadow-lg p-2">
                                         &copy; 2025 Developed by: Information Technology Services Centre, University of Sindh
                                     </div>
                                 </div>

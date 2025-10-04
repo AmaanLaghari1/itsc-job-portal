@@ -57,7 +57,8 @@ const AnnouncementEdit = () => {
   }))??[],
         // is_required: [],
         experience_years: prevData.EXPERIENCE_YEARS??'',
-        ref_no: prevData.REF_NO??''        
+        ref_no: prevData.REF_NO??'', 
+        active: prevData.ACTIVE       
     }
 
     const validationRules = Yup.object({

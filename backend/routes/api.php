@@ -11,6 +11,7 @@ use App\Http\Controllers\API\QualificationController;
 use App\Http\Controllers\API\ExperienceController;
 use App\Http\Controllers\API\AnnouncementController;
 use App\Http\Controllers\API\ApplicationController;
+use App\Http\Controllers\API\DegreeProgramController;
 
 Route::group(['middleware' => 'api'], function ($router) {
     Route::post('refresh', [AuthController::class, 'refresh']);
@@ -99,6 +100,14 @@ Route::get('/department/get', function(){
 //    $departments = DB::table('department')->get();
     $department = \App\Models\Department::with('announcements.applications.qualifications')->with('announcements.qualification_requirements')->get();
     return response()->json($department);
+});
+
+Route::prefix('degree_program')->group(function() {
+    Route::get('/get', [DegreeProgramController::class, 'index']);
+    Route::get('/discipline/get/{programId}', [DegreeProgramController::class, 'getDisciplineByProgramId']);
+    Route::post('discipline/post', [DegreeProgramController::class, 'createDiscipline']);
+    Route::put('discipline/put/{id}', [DegreeProgramController::class, 'updateDiscipline']);
+    Route::put('discipline/status/update/{id}', [DegreeProgramController::class, 'updateDisciplineStatus']);;
 });
 
 Route::get('/announcement/recent/{cutoff?}', [AnnouncementController::class, 'getRecentAnnouncements']);

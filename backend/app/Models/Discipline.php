@@ -13,10 +13,13 @@ class Discipline extends Model
 
     protected $primaryKey = 'DISCIPLINE_ID';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'DISCIPLINE_NAME',
         'REMARKS',
-        'DEGREE_ID'
+        'DEGREE_ID',
+        'ACTIVE'
     ];
 
     public function degree(){

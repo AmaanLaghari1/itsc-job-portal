@@ -34,7 +34,7 @@ const routes = [
   { path: '/admin/application/edit', name: 'Dashboard', element: ApplicationEdit },
   { path: '/admin/application/update-user', name: 'Dashboard', element: ApplicationUpdateUser },
   { path: '/admin/users', name: 'All Users', element: UsersAll },
-  { path: '/admin/program/manage', name: 'All Users', element: ProgramManage },
+  { path: '/admin/program/manage', name: 'Programs Management', element: ProgramManage },
 
   // Public routes
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },

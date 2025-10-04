@@ -37,3 +37,21 @@ export const deleteQualification = (id) => {
         }
     })
 }
+
+export const getDegreeProgram = () => {
+    return API.get("program", {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const getProgramDiscipline = (programId) => {
+    return API.get("discipline/"+programId, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}

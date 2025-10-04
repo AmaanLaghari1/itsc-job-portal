@@ -73,7 +73,8 @@ class AnnouncementController extends Controller
                 'AGE_TO' => $request->age_to,
                 'EXPERIENCE_YEARS' => $request->experience_years,
                 'REF_NO' => $request->ref_no,
-                'ACCESS_ID' => $request->access_id
+                'ACCESS_ID' => $request->access_id,
+                'ACTIVE' => $request->active
             ];
 
 //            return response()->json($requestData);
@@ -188,10 +189,11 @@ class AnnouncementController extends Controller
                 'AGE_TO' => $request->age_to,
                 'EXPERIENCE_YEARS' => $request->experience_years,
                 'REF_NO' => $request->ref_no,
-                'ACCESS_ID' => $request->access_id
+                'ACCESS_ID' => $request->access_id,
+                'ACTIVE' => $request->active,
             ];
 
-            dd($requestData);
+//            dd($requestData);
 
             $record->update($requestData); // Update main announcement
 

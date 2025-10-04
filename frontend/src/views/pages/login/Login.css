@@ -11,37 +11,36 @@ body {
   overflow-x: hidden;
 }
 
+/* Scrollbar container */
 ::-webkit-scrollbar {
-  display: none;
-  /* background: #f1f1f1;
-    border-radius: 4px;
-    width: 5px; */
+  width: 10px; /* width of the scrollbar */
+  height: 8px; /* height for horizontal scrollbar */
+  background-color: #f1f1f1; /* background color of the scrollbar track */
+  border-radius: 4px; /* rounded corners */
+  margin-right: 5px;
 }
 
-/* .scrollable-title {
-  overflow-x: auto;
-  white-space: nowrap;
-  max-width: 100%;
-  padding-bottom: 2px;
+/* Scrollbar thumb (the draggable part) */
+::-webkit-scrollbar-thumb {
+  background-color: #0b62f89f; /* color of the draggable part */
+  border-radius: 4px; /* rounded corners */
+  border: 2px solid #f1f1f1; /* creates a gap around the thumb */
 }
 
-.scrollable-title::-webkit-scrollbar {
+/* Scrollbar thumb hover effect */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* darker shade when hovered */
+}
+
+/* Optional: Customize scrollbar on horizontal scroll */
+::-webkit-scrollbar-horizontal {
   height: 6px;
 }
 
-.scrollable-title::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+/* Optional: Customize scrollbar on vertical scroll */
+::-webkit-scrollbar-vertical {
+  width: 6px;
 }
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-.scrollable-title::-webkit-scrollbar-thumb:hover {
-  background: #555;
-} */
 
 .bg-primary {
   background-color: #0B63F8 !important;
@@ -92,4 +91,8 @@ input {
   height: 100vh;
   border-radius: 1rem;
   color: rgba(255, 255, 255, .87);
+}
+
+.announcement-container ::-webkit-scrollbar {
+  display: block;
 }
