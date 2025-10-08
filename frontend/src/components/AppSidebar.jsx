@@ -67,11 +67,11 @@ const AppSidebar = () => {
       </div> */}
       <RoleSwitcher />
       <AppSidebarNav items={navigation(profile)} />
-      <CSidebarFooter className="border-to border-light d-none d-lg-flex">
+      {/* <CSidebarFooter className="border-to border-light d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
         />
-      </CSidebarFooter>
+      </CSidebarFooter> */}
     </CSidebar>
   )
 }

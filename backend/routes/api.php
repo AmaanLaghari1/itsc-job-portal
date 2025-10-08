@@ -12,6 +12,7 @@ use App\Http\Controllers\API\ExperienceController;
 use App\Http\Controllers\API\AnnouncementController;
 use App\Http\Controllers\API\ApplicationController;
 use App\Http\Controllers\API\DegreeProgramController;
+use App\Http\Controllers\API\InstituteController;
 
 Route::group(['middleware' => 'api'], function ($router) {
     Route::post('refresh', [AuthController::class, 'refresh']);
@@ -88,6 +89,8 @@ Route::prefix('application')->group(function() {
     Route::get('get/{userId?}', [ApplicationController::class, 'getByUserId']);
     Route::get('verify-challan/{application_id}', [ApplicationController::class, 'verifyChallan']);
     Route::put('update-user/{id}', [ApplicationController::class, 'updateUserApplicationData']);
+    Route::post('payment/report/get', [ApplicationController::class, 'getPaymentReport']);
+    Route::put('payment/import', [ApplicationController::class, 'importPaidApplications']);
 });
 
 // routes/api.php
@@ -110,7 +113,16 @@ Route::prefix('degree_program')->group(function() {
     Route::put('discipline/status/update/{id}', [DegreeProgramController::class, 'updateDisciplineStatus']);;
 });
 
+Route::prefix('institute')->group(function() {
+   Route::get('/get', [InstituteController::class, 'index']);
+   Route::get('/type/get', [InstituteController::class, 'getInstTypes']);
+   Route::post('post', [InstituteController::class, 'create']);
+   Route::put('put/{id}', [InstituteController::class, 'update']);
+});
+
 Route::get('/announcement/recent/{cutoff?}', [AnnouncementController::class, 'getRecentAnnouncements']);
 Route::post('/assign_role', [UserRoleController::class, 'assignRole']);
 Route::get('/delete_role/{roleId}', [UserRoleController::class, 'destroy']);
+
+Route::get('/get_payments', [ApplicationController::class, 'getPayments']);
 

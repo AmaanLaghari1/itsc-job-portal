@@ -157,7 +157,7 @@ const Register = () => {
                                                 </label>
                                                 <span className="text-danger fw-bold">*</span>
                                                 <Field type="text" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='333241****' name='mobile_no' id='mobile_no' 
-                                                onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11)}                                                
+                                                onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11)}                                              
                                                 />
                                                 <div className="small text-danger">
                                                     <ErrorMessage name='mobile_no' />

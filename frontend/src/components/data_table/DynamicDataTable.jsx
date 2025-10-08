@@ -3,7 +3,13 @@ import DataTable from "react-data-table-component";
 import './Data-table.css';
 import { useSelector } from "react-redux";
 
-const DynamicDataTable = ({ columns, data, title }) => {
+const DynamicDataTable = ({
+  columns,
+  data,
+  title,
+  selectableRows = false,
+  onSelectedRowsChange = () => {}, // default no-op
+}) => {
   const [searchText, setSearchText] = useState("");
   const theme = useSelector((state) => state.ui.theme);
 
@@ -73,14 +79,11 @@ const DynamicDataTable = ({ columns, data, title }) => {
     },
   };
 
-
-  // Filtered data by searching all fields (case-insensitive)
   const filteredData = useMemo(() => {
     if (!searchText) return data;
-    return data.filter(row =>
-      Object.values(row).some(
-        value =>
-          String(value).toLowerCase().includes(searchText.toLowerCase())
+    return data.filter((row) =>
+      Object.values(row).some((value) =>
+        String(value).toLowerCase().includes(searchText.toLowerCase())
       )
     );
   }, [data, searchText]);
@@ -97,6 +100,7 @@ const DynamicDataTable = ({ columns, data, title }) => {
           onChange={(e) => setSearchText(e.target.value)}
         />
       </div>
+
       <DataTable
         columns={columns}
         data={filteredData}
@@ -105,6 +109,8 @@ const DynamicDataTable = ({ columns, data, title }) => {
         highlightOnHover
         pointerOnHover
         dense
+        selectableRows={selectableRows}
+        onSelectedRowsChange={onSelectedRowsChange}
         customStyles={theme === "dark" ? customStyles : {}}
       />
     </div>

@@ -2,7 +2,7 @@
 import * as Yup from 'yup';
 import * as API from '../../../api/AnnouncementRequest';
 import Alert from '../../../components/Alert';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import AnnouncementForm from './AnnouncementForm';
 import { useSelector } from 'react-redux';
 
@@ -53,8 +53,6 @@ const AnnouncementAdd = () => {
   });
 
   const submitHandler = async (values) => {
-    alert(JSON.stringify(values))
-    return
     setLoading(true)
     values.start_date = new Date(values.start_date).toISOString().split('T')[0];
     values.end_date = new Date(values.end_date).toISOString().split('T')[0];

@@ -5,6 +5,7 @@ import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 import PrivateRoute from './routes/PrivateRoute.jsx'
 import { getDashboardPath } from './helper.js'
+import useTokenExpiryHandler from './hooks/useTokenExpiryHandler.js'
 
 // Lazy imports
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout.jsx'))
@@ -17,6 +18,7 @@ const Page404 = React.lazy(() => import('./views/pages/page404/Page404.jsx'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500.jsx'))
 
 const App = () => {
+  useTokenExpiryHandler()
   const { setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const storedTheme = useSelector((state) => state.ui.theme)
   const auth = useSelector((state) => state.auth)

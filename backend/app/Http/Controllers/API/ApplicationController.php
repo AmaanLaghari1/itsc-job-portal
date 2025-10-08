@@ -63,6 +63,13 @@ class ApplicationController extends Controller
 
             $announcement = Announcement::find($payload['announcement_id']);
 
+            if(Application::where('USER_ID', $request->user_id)->where('ANNOUNCEMENT_ID', $request->announcement_id)->exists()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => 'You have already applied for this job'
+                ], 403);
+            }
+
             $newRecord = Application::create(
                 formatRequestData($payload)
             );
@@ -460,6 +467,108 @@ class ApplicationController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getPaymentReport(Request $request){
+        try {
+            $validation = Validator::make(request()->all(), [
+                'from_date' => 'required',
+                'to_date' => 'required'
+            ]);
+
+            if ($validation->stopOnFirstFailure()->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 401);
+            }
+
+            $data = array(
+                'p_UserName' => 'itsc##123.#5%9',
+                'p_Password' => 'ie3Sc##12!@#3%',
+                'p_FromDate' => date('Y-m-d', strtotime($request->from_date)),
+                'p_ToDate' => date('Y-m-d', strtotime($request->to_date)),
+                'p_sectionAccountID' => env('SECTION_ACCOUNT_ID'),
+            );
+
+// URL
+            $url = 'https://itsc.usindh.edu.pk/payments/getDateReport';
+
+            $response = postCURL($url, $data);
+//            return response()->json($response);
+
+            if($response['response_code'] == 200) {
+                return response()->json(json_decode($response['response']), 200);
+            }
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Payment report not found',
+                'data' => json_decode($response['response'])
+            ], 404);
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function importPaidApplications(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $validation = Validator::make($request->all(), [
+                'paid_applications_data' => 'required'
+            ]);
+
+            if ($validation->stopOnFirstFailure()->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Data Required!'
+                ]);
+            }
+
+            $data = json_decode($request->paid_applications_data);
+
+            foreach ($data as $application) {
+                $challanNo = $application->CHALLAN_NO;
+
+                // If the format is '62xxxxxxx', extract last 7 digits
+                $id = (int)substr($challanNo, 2);
+
+                $record = Application::where('APPLICATION_ID', $id)->first();
+
+                if ($record) {
+                    $record->update([
+                        'APPLICATION_STATUS' => 1,
+                        'PAID_AMOUNT' => $application->PAID_AMOUNT,
+                        'PAID_DATE' => $application->PAID_DATE,
+                        'CHANNEL' => $application->CHANNEL
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Paid applications imported successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to import paid applications. Please try again later.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

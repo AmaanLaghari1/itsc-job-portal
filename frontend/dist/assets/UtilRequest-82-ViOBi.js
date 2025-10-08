@@ -1,1 +1,0 @@
-import{j as n}from"./isSymbol-B98uY8n-.js";const t=n.create({baseURL:"https://careers.usindh.edu.pk/backend/api/"}),a=()=>t.get("/department/get",{header:{"Content-Type":"application/json"}}),s=e=>t.post("/assign_role",e,{header:{"Content-Type":"application/json"}}),r=e=>t.get("/delete_role/"+e,{},{header:{"Content-Type":"application/json"}});export{s as a,a as g,r};

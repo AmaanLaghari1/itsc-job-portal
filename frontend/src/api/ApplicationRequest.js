@@ -29,6 +29,15 @@ export const getApplication = (userId) => {
     })
 }
 
+export const getPaidApplications = (formdata) => {
+    return API.post("payment/report/get", formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
 export const getApplicationByAnnouncementId = (announcementId) => {
     return API.get("get_by_announcement/"+announcementId, {
         headers: {
@@ -58,6 +67,15 @@ export const deleteApplication = (id) => {
 
 export const updateUserApplicationData = (formdata, id) => {
     return API.put("update-user/"+id, formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const importPaidApplications = (formdata) => {
+    return API.put("payment/import", formdata, {
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json"

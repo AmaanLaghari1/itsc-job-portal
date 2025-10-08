@@ -21,7 +21,6 @@ const Applications = () => {
     const getAllAnnouncements = async () => {
       try {
         const response = await getAnnouncement()
-        console.log(response)
         setAnnouncements(response.data?.data)
       } catch (error) {
         

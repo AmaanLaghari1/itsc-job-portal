@@ -81,45 +81,71 @@ const ApplicationReview = ({ prevData, announcement }) => {
 
                 <div className="d-flex flex-column gap-2 p-3">
                     <CRow className='mx-2'>
-                        <CCol sm={2} className="border-bottom border-1 p-2 ">
-                            Name
-                        </CCol>
-                        <CCol sm={4} className="border-bottom border-1 fw-bold p-2 ">
-                            {prevData.FIRST_NAME || ''}
-                        </CCol>
-                        <CCol sm={2} className="border-bottom border-1 p-2 ">
-                            Surname
-                        </CCol>
-                        <CCol sm={4} className="border-bottom border-1  p-2 fw-bold">
-                            {prevData.LAST_NAME || ''}
-                        </CCol>
-                    </CRow>
-                    <CRow className='mx-2'>
-                        <CCol sm={2} className="border-bottom border-1 p-2 ">
-                            Email
-                        </CCol>
-                        <CCol sm={4} className="border-bottom border-1 p-2 fw-bold">
-                            {prevData.EMAIL || ''}
-                        </CCol>
-                        <CCol sm={2} className="border-bottom border-1 p-2 ">
-                            CNIC No.
-                        </CCol>
-                        <CCol sm={4} className="border-bottom border-1 p-2 fw-bold">
-                            {prevData.CNIC_NO || ''}
-                        </CCol>
-                    </CRow>
-                    <CRow className='mx-2'>
-                        <CCol sm={2} className="border-bottom border-1 p-2 ">
-                            Father's Name
-                        </CCol>
-                        <CCol sm={4} className="border-bottom border-1 p-2 fw-bold">
-                            {prevData.FNAME || ''}
-                        </CCol>
-                        <CCol sm={2} className="border-bottom border-1 p-2 ">
-                            Mobile No.
-                        </CCol>
-                        <CCol sm={4} className="border-bottom border-1 p-2 fw-bold">
-                            {prevData.MOBILE_NO || ''}
+                        <CCol sm={12}>
+                            <CRow>
+                                <CCol md={3}>
+                                    <img
+                                        src={import.meta.env.VITE_ASSET_URL + prevData.PROFILE_IMAGE}
+                                        alt="User Image"
+                                        className="img-thumbnail"
+                                        style={{
+                                            width: "16rem",
+                                            height: "16rem"
+                                        }}
+                                    />
+                                </CCol>
+                                <CCol md={9}>
+                                    <CRow>
+                                        <CCol sm={2} className="border-bottom border-1 p-2 ">
+                                            Name
+                                        </CCol>
+                                        <CCol sm={10} className="border-bottom border-1 fw-bold p-2 ">
+                                            {prevData.FIRST_NAME || ''}
+                                        </CCol>
+                                    </CRow>
+                                    <CRow>
+                                        <CCol sm={2} className="border-bottom border-1 p-2 ">
+                                            Surname
+                                        </CCol>
+                                        <CCol sm={10} className="border-bottom border-1 fw-bold p-2 ">
+                                            {prevData.LAST_NAME || ''}
+                                        </CCol>
+                                    </CRow>
+                                    <CRow>
+                                        <CCol sm={2} className="border-bottom border-1 p-2 ">
+                                            Email
+                                        </CCol>
+                                        <CCol sm={10} className="border-bottom border-1 fw-bold p-2 ">
+                                            {prevData.EMAIL || ''}
+                                        </CCol>
+                                    </CRow>
+                                    <CRow>
+                                        <CCol sm={2} className="border-bottom border-1 p-2 ">
+                                            CNIC No.
+                                        </CCol>
+                                        <CCol sm={10} className="border-bottom border-1 fw-bold p-2 ">
+                                            {prevData.CNIC_NO || ''}
+                                        </CCol>
+                                    </CRow>
+                                    <CRow>
+                                        <CCol sm={2} className="border-bottom border-1 p-2 ">
+                                            Father's Name
+                                        </CCol>
+                                        <CCol sm={10} className="border-bottom border-1 fw-bold p-2 ">
+                                            {prevData.FNAME || ''}
+                                        </CCol>
+                                    </CRow>
+                                    <CRow>
+                                        <CCol sm={2} className="border-bottom border-1 p-2 ">
+                                            Mobile No.
+                                        </CCol>
+                                        <CCol sm={10} className="border-bottom border-1 fw-bold p-2 ">
+                                            {prevData.MOBILE_NO || ''}
+                                        </CCol>
+                                    </CRow>
+
+                                </CCol>
+                            </CRow>
                         </CCol>
                     </CRow>
                     <CRow className='mx-2'>
@@ -265,90 +291,90 @@ const ApplicationReview = ({ prevData, announcement }) => {
                     )
                 }
             </div>
-            
+
             {
                 experiences.length > 0 &&
-            <div className="card shadow shadow-sm my-3 w-100 p-0 my-2">
-                <CCardHeader className='fw-bolder d-flex align-items-center'>
-                    <CCardTitle className="h5 my-2">
-                        Experience
-                    </CCardTitle>
-                </CCardHeader>
-                {
-                    experiences.map((exp, index) => (
-                        <div key={index}>
-                            <div className="card w-100 p-0" key={exp.EXPERIANCE_ID}>
-                                <CCardHeader className='fw-bolder d-flex'>
-                                    {exp.ORGANIZATION_NAME}
-                                </CCardHeader>
+                <div className="card shadow shadow-sm my-3 w-100 p-0 my-2">
+                    <CCardHeader className='fw-bolder d-flex align-items-center'>
+                        <CCardTitle className="h5 my-2">
+                            Experience
+                        </CCardTitle>
+                    </CCardHeader>
+                    {
+                        experiences.map((exp, index) => (
+                            <div key={index}>
+                                <div className="card w-100 p-0" key={exp.EXPERIANCE_ID}>
+                                    <CCardHeader className='fw-bolder d-flex'>
+                                        {exp.ORGANIZATION_NAME}
+                                    </CCardHeader>
 
-                                <div className="d-flex flex-column gap-2 p-3 small">
-                                    <CRow className=''>
-                                        <CCol sm={3} className="">
-                                            Employment Type
-                                        </CCol>
-                                        <CCol sm={9} className="fw-bold">
-                                            {exp.EMP_TYPE}
-                                        </CCol>
-                                    </CRow>
-                                    <CRow className='border-top'>
-                                        <CCol sm={3} className="">
-                                            Job Description
-                                        </CCol>
-                                        <CCol sm={9} className="fw-bold">
-                                            {exp.JOB_DESCRIPTION}
-                                        </CCol>
-                                    </CRow>
-                                    <CRow className='border-top'>
-                                        <CCol sm={3} className="">
-                                            Salary
-                                        </CCol>
-                                        <CCol sm={9} className="fw-bold">
-                                            {exp.SALARY??'-'}
-                                        </CCol>
-                                    </CRow>
-                                    <CRow className='border-top'>
-                                        <CCol sm={3} className="">
-                                            Employer Contact No.
-                                        </CCol>
-                                        <CCol sm={9} className="fw-bold">
-                                            {exp.CONTACT_NO}
-                                        </CCol>
-                                    </CRow>
-
-                                    <CRow className='border-top'>
-                                        <CCol sm={3} className="">Start Date</CCol>
-                                        <CCol sm={3} className='fw-bold'>{formatDate(exp.START_DATE) || '-'}</CCol>
-                                        <CCol sm={3} className="">End Date</CCol>
-                                        <CCol sm={3} className='fw-bold'>{exp.IS_JOB_CONTINUE === 'Y' ? 'Currently Working' : formatDate(exp.END_DATE) || '-'}</CCol>
-                                    </CRow>
-
-                                    {
-                                        exp.IS_JOB_CONTINUE !== 'Y' &&
-                                        <CRow className='border-top'>
-                                            <CCol sm={3} className="">Reason for leaving</CCol>
-
+                                    <div className="d-flex flex-column gap-2 p-3 small">
+                                        <CRow className=''>
+                                            <CCol sm={3} className="">
+                                                Employment Type
+                                            </CCol>
                                             <CCol sm={9} className="fw-bold">
-                                                {exp.REASON_FOR_LEAVING || '-'}
+                                                {exp.EMP_TYPE}
                                             </CCol>
                                         </CRow>
-                                    }
-                                    <CRow className='border-top'>
-                                        <CCol sm={3} className="">Address</CCol>
+                                        <CRow className='border-top'>
+                                            <CCol sm={3} className="">
+                                                Job Description
+                                            </CCol>
+                                            <CCol sm={9} className="fw-bold">
+                                                {exp.JOB_DESCRIPTION}
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className='border-top'>
+                                            <CCol sm={3} className="">
+                                                Salary
+                                            </CCol>
+                                            <CCol sm={9} className="fw-bold">
+                                                {exp.SALARY ?? '-'}
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className='border-top'>
+                                            <CCol sm={3} className="">
+                                                Employer Contact No.
+                                            </CCol>
+                                            <CCol sm={9} className="fw-bold">
+                                                {exp.CONTACT_NO}
+                                            </CCol>
+                                        </CRow>
 
-                                        <CCol sm={9} className="fw-bold">
-                                            {exp.ADDRESS || '-'}
-                                        </CCol>
-                                    </CRow>
+                                        <CRow className='border-top'>
+                                            <CCol sm={3} className="">Start Date</CCol>
+                                            <CCol sm={3} className='fw-bold'>{formatDate(exp.START_DATE) || '-'}</CCol>
+                                            <CCol sm={3} className="">End Date</CCol>
+                                            <CCol sm={3} className='fw-bold'>{exp.IS_JOB_CONTINUE === 'Y' ? 'Currently Working' : formatDate(exp.END_DATE) || '-'}</CCol>
+                                        </CRow>
+
+                                        {
+                                            exp.IS_JOB_CONTINUE !== 'Y' &&
+                                            <CRow className='border-top'>
+                                                <CCol sm={3} className="">Reason for leaving</CCol>
+
+                                                <CCol sm={9} className="fw-bold">
+                                                    {exp.REASON_FOR_LEAVING || '-'}
+                                                </CCol>
+                                            </CRow>
+                                        }
+                                        <CRow className='border-top'>
+                                            <CCol sm={3} className="">Address</CCol>
+
+                                            <CCol sm={9} className="fw-bold">
+                                                {exp.ADDRESS || '-'}
+                                            </CCol>
+                                        </CRow>
+
+                                    </div>
+
 
                                 </div>
-
-
                             </div>
-                        </div>
-                    ))
-                }
-            </div>
+                        ))
+                    }
+                </div>
             }
 
         </div>

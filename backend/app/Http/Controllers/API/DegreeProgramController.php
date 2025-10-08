@@ -100,6 +100,14 @@ class DegreeProgramController extends Controller
             'discipline_name' => 'required'
         ]);
 
+        if($validation->stopOnFirstFailure()->fails()){
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation failed.',
+                'error_message' => $validation->errors()->first()
+            ], 400);
+        }
+
         try {
             $record = Discipline::find($id);
 
