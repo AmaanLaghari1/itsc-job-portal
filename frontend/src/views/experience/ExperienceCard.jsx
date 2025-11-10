@@ -58,7 +58,7 @@ const ExperienceCard = ({experience, onDelete}) => {
               Employment Type
             </CCol>
             <CCol sm={9} className="fw-bold">
-              {exp.EMP_TYPE}
+              {exp.EMP_TYPE??'-'}
             </CCol>
           </CRow>
           <CRow className='border-top'>
@@ -66,7 +66,7 @@ const ExperienceCard = ({experience, onDelete}) => {
               Job Description
             </CCol>
             <CCol sm={9} className="fw-bold">
-              {exp.JOB_DESCRIPTION}
+              {exp.JOB_DESCRIPTION??'-'}
             </CCol>
           </CRow>
           <CRow className='border-top'>
@@ -74,7 +74,7 @@ const ExperienceCard = ({experience, onDelete}) => {
               Salary
             </CCol>
             <CCol sm={9} className="fw-bold">
-              {exp.SALARY}
+              {exp.SALARY??'-'}
             </CCol>
           </CRow>
           <CRow className='border-top'>
@@ -82,7 +82,7 @@ const ExperienceCard = ({experience, onDelete}) => {
               Employer Contact No.
             </CCol>
             <CCol sm={9} className="fw-bold">
-              {exp.CONTACT_NO}
+              {exp.CONTACT_NO??'-'}
             </CCol>
           </CRow>
 

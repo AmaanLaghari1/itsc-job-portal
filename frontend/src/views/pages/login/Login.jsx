@@ -6,10 +6,10 @@ import { login } from '../../../actions/AuthAction.js'
 import Alert from '../../../components/Alert.js'
 import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
-import { getRecentAnnouncement, getAnnouncement } from '../../../api/AnnouncementRequest.js'
+import { getRecentAnnouncement } from '../../../api/AnnouncementRequest.js'
 import { Link } from 'react-router-dom'
 import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
-import { CButton, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
+import { CSpinner, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
 import { CCard, CCardBody, CCardText, CCardTitle } from '@coreui/react'
 import HtmlRenderer from '../../../components/HTMLRenderer.jsx'
 import Modal from '../../../components/Modal.jsx'
@@ -21,6 +21,7 @@ const Login = () => {
     const theme = useSelector(state => state.ui.theme)
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
+    const [fetching, setFetching] = useState(false)
     const [announcements, setAnnouncements] = useState([])
 
     const handleView = (announcement) => {
@@ -34,6 +35,7 @@ const Login = () => {
     };
 
     const fetchAnnouncements = async () => {
+        setFetching(true)
         try {
             const response = await getRecentAnnouncement(6)
             // const response = await getAnnouncement()
@@ -43,6 +45,7 @@ const Login = () => {
         } catch (error) {
             console.log(error)
         }
+        setFetching(false)
     }
 
     useEffect(() => {
@@ -83,122 +86,127 @@ const Login = () => {
                         <div className="announcement-container rounded-4 w-100 h-100 shadow shadow-lg">
                             <h3 className='fw-bolder p-3 text-decoration-underline link-offset-3'>Recent Announcements</h3>
 
-                            <div className='px-3' style={{ maxHeight: '84vh', overflowY: 'scroll' }}>
-                                <CTable striped hover bordered style={{ tableLayout: 'fixed' }}>
-                                    <CTableHead className="bg-danger" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
-                                        <CTableRow>
-                                            <CTableHeaderCell className="col-1 bg-primary text-white fw-bold text-center">#</CTableHeaderCell>
-                                            <CTableHeaderCell className="bg-primary text-white fw-bold">Announcement</CTableHeaderCell>
-                                        </CTableRow>
-                                    </CTableHead>
+                            {
+                                fetching ?
+                                <CSpinner className='align-slef-start m-3' color='light' />
+                                :
+                                <div className='px-3' style={{ maxHeight: '84vh', overflowY: 'scroll' }}>
+                                    <CTable striped hover bordered style={{ tableLayout: 'fixed' }}>
+                                        <CTableHead className="bg-danger" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+                                            <CTableRow>
+                                                <CTableHeaderCell className="col-1 bg-primary text-white fw-bold text-center">#</CTableHeaderCell>
+                                                <CTableHeaderCell className="bg-primary text-white fw-bold">Announcement</CTableHeaderCell>
+                                            </CTableRow>
+                                        </CTableHead>
 
-                                    <CTableBody className='w-100' style={{ maxHeight: '18rem', overflowY: 'auto' }}>
-                                        {
-                                            announcements.length < 1 ? (
-                                                <CTableRow>
-                                                    <CTableHeaderCell colSpan={2} className='text-center'>No announcements available at the moment!</CTableHeaderCell>
-                                                </CTableRow>
-                                            ) : (
-                                                announcements.map((item, index) => (
-                                                    <CTableRow key={item.ANNOUNCEMENT_ID}>
-                                                        <CTableHeaderCell scope="row" className="text-center align-middle">
-                                                            <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
-                                                                {index + 1}
-                                                            </div>
-                                                        </CTableHeaderCell>
-                                                        <CTableDataCell
-                                                        style={{cursor: 'pointer'}}
-                                                        onClick={() => handleView(item)}>
-                                                            <div
-                                                                className='scrollable-title'
-                                                            >
-                                                                {item.ANNOUNCEMENT_TITLE}
-                                                            </div>
-                                                            <div className="small">
-                                                                Last Date: <span className="text-danger fw-bold">
-                                                                    {formatDate(item.END_DATE)??''}
-                                                                </span>
-                                                            </div>
-                                                        </CTableDataCell>
+                                        <CTableBody className='w-100' style={{ maxHeight: '18rem', overflowY: 'auto' }}>
+                                            {
+                                                announcements.length < 1 ? (
+                                                    <CTableRow>
+                                                        <CTableHeaderCell colSpan={2} className='text-center'>No announcements available at the moment!</CTableHeaderCell>
                                                     </CTableRow>
-                                                ))
-                                            )
-                                        }
-                                    </CTableBody>
-                                </CTable>
+                                                ) : (
+                                                    announcements.map((item, index) => (
+                                                        <CTableRow key={item.ANNOUNCEMENT_ID}>
+                                                            <CTableHeaderCell scope="row" className="text-center align-middle">
+                                                                <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
+                                                                    {index + 1}
+                                                                </div>
+                                                            </CTableHeaderCell>
+                                                            <CTableDataCell
+                                                            style={{cursor: 'pointer'}}
+                                                            onClick={() => handleView(item)}>
+                                                                <div
+                                                                    className='scrollable-title'
+                                                                >
+                                                                    {item.ANNOUNCEMENT_TITLE}
+                                                                </div>
+                                                                <div className="small">
+                                                                    Last Date: <span className="text-danger fw-bold">
+                                                                        {formatDate(item.END_DATE)??''}
+                                                                    </span>
+                                                                </div>
+                                                            </CTableDataCell>
+                                                        </CTableRow>
+                                                    ))
+                                                )
+                                            }
+                                        </CTableBody>
+                                    </CTable>
 
-                                {/* Dynamic Modal for Selected Announcement */}
-                                {selectedAnnouncement && (
-                                    <Modal
-                                        setVisible={setVisible}
-                                        visible={visible}
-                                        size={'lg'}
-                                        position='center'
-                                        onClose={handleCloseModal}
-                                    >
-                                        <CCard className="shadow shadow-lg my-5 border-0">
-                                            <CCardBody>
-                                                <CCardTitle className='fw-bolder h3'>
-                                                    {selectedAnnouncement.ANNOUNCEMENT_TITLE ?? 'NA'}
-                                                </CCardTitle>
-                                                <CCardText>
-                                                    <span className="fw-bold">Position: </span>
-                                                    {selectedAnnouncement.POSITION_NAME ?? 'NA'} <br />
-                                                    <span className="fw-bold">Department: </span>
-                                                    {selectedAnnouncement?.department.DEPT_NAME ?? 'NA'}
-                                                </CCardText>
+                                    {/* Dynamic Modal for Selected Announcement */}
+                                    {selectedAnnouncement && (
+                                        <Modal
+                                            setVisible={setVisible}
+                                            visible={visible}
+                                            size={'lg'}
+                                            position='center'
+                                            onClose={handleCloseModal}
+                                        >
+                                            <CCard className="shadow shadow-lg my-5 border-0">
+                                                <CCardBody>
+                                                    <CCardTitle className='fw-bolder h3'>
+                                                        {selectedAnnouncement.ANNOUNCEMENT_TITLE ?? 'NA'}
+                                                    </CCardTitle>
+                                                    <CCardText>
+                                                        <span className="fw-bold">Position: </span>
+                                                        {selectedAnnouncement.POSITION_NAME ?? 'NA'} <br />
+                                                        <span className="fw-bold">Department: </span>
+                                                        {selectedAnnouncement?.department.DEPT_NAME ?? 'NA'}
+                                                    </CCardText>
 
-                                                <div>
-                                                    {
-                                                        selectedAnnouncement?.qualification_requirements?.length > 0 &&
-                                                        <h6 className='fw-bold'>Required Qualifications:</h6>
-                                                    }
-                                                    <ul>
+                                                    <div>
                                                         {
-                                                            selectedAnnouncement.qualification_requirements.length > 0 &&
-                                                            selectedAnnouncement.qualification_requirements.map(require => {
-                                                                return (
-                                                                    <li key={require.REQ_ID}>
-                                                                        {require.degree.DEGREE_TITLE} - {require.IS_REQUIRED == 1 ? 'Required' : 'Preferred'}
-                                                                    </li>
-                                                                )
-                                                            })
+                                                            selectedAnnouncement?.qualification_requirements?.length > 0 &&
+                                                            <h6 className='fw-bold'>Required Qualifications:</h6>
                                                         }
-                                                    </ul>
-                                                </div>
+                                                        <ul>
+                                                            {
+                                                                selectedAnnouncement.qualification_requirements.length > 0 &&
+                                                                selectedAnnouncement.qualification_requirements.map(require => {
+                                                                    return (
+                                                                        <li key={require.REQ_ID}>
+                                                                            {require.degree.DEGREE_TITLE} - {require.IS_REQUIRED == 1 ? 'Required' : 'Preferred'}
+                                                                        </li>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </ul>
+                                                    </div>
 
-                                                <div>
-                                                    <h6 className="">
-                                                        <span className="fw-bold">
-                                                            Required Age:
-                                                        </span> {selectedAnnouncement.AGE_FROM ?? 'NA'} to {selectedAnnouncement.AGE_TO ?? 'NA'} years
-                                                    </h6>
-                                                </div>
+                                                    <div>
+                                                        <h6 className="">
+                                                            <span className="fw-bold">
+                                                                Required Age:
+                                                            </span> {selectedAnnouncement.AGE_FROM ?? 'NA'} to {selectedAnnouncement.AGE_TO ?? 'NA'} years
+                                                        </h6>
+                                                    </div>
 
-                                                <div className="border-bottom border-1 mb-2 border-secondary-subtle"></div>
+                                                    <div className="border-bottom border-1 mb-2 border-secondary-subtle"></div>
 
-                                                {/* Description */}
-                                                <div className='lead'>
-                                                    <HtmlRenderer htmlContent={selectedAnnouncement.DESCRIPTION || ''} />
-                                                </div>
+                                                    {/* Description */}
+                                                    <div className='lead'>
+                                                        <HtmlRenderer htmlContent={selectedAnnouncement.DESCRIPTION || ''} />
+                                                    </div>
 
-                                                {/* Dates */}
-                                                <div className="d-flex flex-wrap justify-content-between mt-3">
-                                                    <CCardText className='text-muted fw-bold'>
-                                                        Posted: {formatDate(selectedAnnouncement.START_DATE)}
-                                                    </CCardText>
-                                                    <CCardText className='text-muted fw-bold'>
-                                                        Last date to apply: {formatDate(selectedAnnouncement.END_DATE)}
-                                                    </CCardText>
-                                                </div>
-                                                <div className="fw-bold text-danger text-center">
-                                                    You need to be logged in to apply!
-                                                </div>
-                                            </CCardBody>
-                                        </CCard>
-                                    </Modal>
-                                )}
-                            </div>
+                                                    {/* Dates */}
+                                                    <div className="d-flex flex-wrap justify-content-between mt-3">
+                                                        <CCardText className='text-muted fw-bold'>
+                                                            Posted: {formatDate(selectedAnnouncement.START_DATE)}
+                                                        </CCardText>
+                                                        <CCardText className='text-muted fw-bold'>
+                                                            Last date to apply: {formatDate(selectedAnnouncement.END_DATE)}
+                                                        </CCardText>
+                                                    </div>
+                                                    <div className="fw-bold text-danger text-center">
+                                                        You need to be logged in to apply!
+                                                    </div>
+                                                </CCardBody>
+                                            </CCard>
+                                        </Modal>
+                                    )}
+                                </div>
+                            }
                         </div>
                     </div>
                     
@@ -206,7 +214,7 @@ const Login = () => {
                         <div className="row">
                             <div className="col-12 col-lg-8 mx-auto login-container">
                                 <div className="col-12 mx-auto">
-                                    <div className="d-flex align-items-center flex-wrap mt-5">
+                                    <div className="d-flex align-items-center flex-wrap mt-4">
                                         <img src={theme == 'dark' ? logoWhite : logo} width='150' className='' alt="Usindh Logo" />
                                     </div>
                                     <h2 className='fw-bolder my-4 border-bottom border-bottom-2 border-success pb-3 text-center'>University of Sindh Careers</h2>

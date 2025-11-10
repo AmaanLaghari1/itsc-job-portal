@@ -308,4 +308,7 @@ return [
 
         'storage' => PHPOpenSourceSaver\JWTAuth\Providers\Storage\Illuminate::class,
     ],
+
+    'guards' => ['api'],
+
 ];

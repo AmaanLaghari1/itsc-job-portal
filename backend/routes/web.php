@@ -16,7 +16,7 @@ use App\Http\Controllers\PdfController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('login');
 
 Route::get('/test', function () {
     $_param = array(

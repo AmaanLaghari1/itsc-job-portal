@@ -11,13 +11,13 @@ const QualificationEdit = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const location = useLocation()
-    const {prevQual, return_url, announcement} = location.state || {}
+    const { prevQual, return_url, announcement } = location.state || {}
     const dispatch = useDispatch()
 
-    const handleSubmit = async (values, {setSubmitting, resetForm}) => {
+    const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         setSubmitting(false)
         setLoading(true)
-        
+
         const formattedValues = {
             ...values,
             result_date: values.result_date ? new Date(values.result_date).toISOString().split('T')[0] : '',
@@ -31,8 +31,8 @@ const QualificationEdit = () => {
         try {
             const response = await API.updateQualification(formattedValues, prevQual.QUALIFICATION_ID)
             dispatch({ type: "QUALIFICATION_COMPLETENESS_SUCCESS", payload: response?.data?.qualification_completeness });
-            Alert({status: true, text: response?.data?.message || 'Qualification updated successfully'})
-            if(return_url){
+            Alert({ status: true, text: response?.data?.message || 'Qualification updated successfully' })
+            if (return_url) {
                 navigate(return_url, {
                     state: {
                         announcement: announcement
@@ -43,7 +43,7 @@ const QualificationEdit = () => {
             navigate('/qualifications')
         }
         catch (error) {
-            Alert({status: false, text: error.response?.data?.error_message || 'Some error occured'})
+            Alert({ status: false, text: error.response?.data?.error_message || 'Some error occured' })
             console.log(error)
         }
         setLoading(false)
@@ -64,7 +64,7 @@ const QualificationEdit = () => {
         result_date: prevQual.RESULT_DATE || '',
         grade: prevQual.GRADE || '',
         cgpa: prevQual.CGPA || '',
-        out_of: prevQual.OUT_OF || '',
+        division: prevQual.DIVISION || '',
     }
 
     const validationRules = Yup.object({
@@ -75,41 +75,46 @@ const QualificationEdit = () => {
         is_result_declare: Yup.string().required(), // make sure this exists in form values
         obtained_marks: Yup.string().when('is_result_declare', (is_result_declare, schema) => {
             return is_result_declare == 'Y'
-            ? schema.required('Obtained Marks required')
-            : schema;
+                ? schema.required('Obtained Marks required')
+                : schema;
         }),
         total_marks: Yup.string().when('is_result_declare', (is_result_declare, schema) => {
             return is_result_declare == 'Y'
-            ? schema.required('Total Marks required')
-            : schema;
+                ? schema.required('Total Marks required')
+                : schema;
         }),
         grading_as: Yup.string().when('is_result_declare', (is_result_declare, schema) => {
             return is_result_declare == 'Y'
-            ? schema.required('Grading As required')
-            : schema;
+                ? schema.required('Grading As required')
+                : schema;
         }),
         cgpa: Yup.string().when('grading_as', (grading_as, schema) => {
             return grading_as == 'C'
-            ? schema.required('CGPA required')
-            : schema;
+                ? schema.required('CGPA required')
+                : schema;
         }),
         grade: Yup.string().when('grading_as', (grading_as, schema) => {
             return grading_as == 'G'
-            ? schema.required('Grade required')
-            : schema;
+                ? schema.required('Grade required')
+                : schema;
+        }),
+        division: Yup.string().when('grading_as', (grading_as, schema) => {
+            return grading_as == 'C'
+                ? schema.required('Division required')
+                : schema;
         }),
     });
-    
-  return (
-    <div>
-        <QualificationForm 
-        initialValues={initialValues}
-        validationRules={validationRules}
-        handleSubmit={handleSubmit} 
-        loading={loading} 
-        />
-    </div>
-  )
+
+    return (
+        <div>
+            <QualificationForm
+                initialValues={initialValues}
+                validationRules={validationRules}
+                handleSubmit={handleSubmit}
+                loading={loading}
+            />
+        </div>
+    )
 }
 
 export default QualificationEdit

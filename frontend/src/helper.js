@@ -3,7 +3,7 @@
 export const mapOptions = (items, idKey, nameKey) =>
     items.map(item => ({ key: item[idKey], value: item[nameKey] }));
 
-export const truncateLongTxt = (text, maxWords=20) => {
+export const truncateLongTxt = (text, maxWords = 20) => {
     const words = text.trim().split(/\s+/);
     if (words.length <= maxWords) return text;
     return words.slice(0, maxWords).join(' ') + '...';
@@ -19,6 +19,14 @@ export const formatDate = (dateString) => {
     }).replace(/\//g, '-'); // Replace slashes with dashes
 }
 
+export const localToUTCDate = (dateStr) => {
+    const date = new Date(dateStr)
+    const offset = date.getTimezoneOffset()
+    date.setMinutes(date.getMinutes() - offset)
+    return date.toISOString().split('T')[0]
+}
+
+
 export const strToUpper = str => {
     return str.toUppercase()
 }
@@ -28,24 +36,28 @@ export const roundOff = num => {
 }
 
 export function getDashboardPath(role) {
-  return role == 1 || role == 2 || role == 3 ? '/admin/dashboard' : '/dashboard'
+    return role == 1 || role == 2 || role == 3 ? '/admin/dashboard' : '/dashboard'
 }
 
-export function getFullname(firstName, lastName){
-    if(lastName == '' || lastName == null || lastName == 'null'){
+export function getFullname(firstName, lastName) {
+    if (lastName == '' || lastName == null || lastName == 'null') {
         return firstName
     }
     else {
-        return firstName +" "+ lastName
+        return firstName + " " + lastName
     }
 }
 
 export const getRoleNameById = (id) => {
-  const roles = {
-    1: "SUPER ADMIN",
-    2: "ADMIN",
-    3: "OPERATOR",
-    4: "PRIMARY",
-  };
-  return roles[id];
+    const roles = {
+        1: "SUPER ADMIN",
+        2: "ADMIN",
+        3: "OPERATOR",
+        4: "PRIMARY",
+    };
+    return roles[id];
 };
+
+export const getNestedValue = (obj, key) => {
+    return key.split('.').reduce((acc, part) => acc && acc[part], obj)
+}

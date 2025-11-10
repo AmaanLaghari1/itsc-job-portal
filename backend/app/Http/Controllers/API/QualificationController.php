@@ -119,7 +119,7 @@ class QualificationController extends Controller
 
             $data = formatRequestData($request->all());
 
-            if($data['IS_RESULT_DECLARE'] == 'N'){
+            if(isset($data['IS_RESULT_DECLARE']) && $data['IS_RESULT_DECLARE'] == 'N'){
                 $data['TOTAL_MARKS'] = '';
                 $data['OBTAINED_MARKS'] = '';
                 $data['PASSING_YEAR'] = '';
@@ -127,6 +127,7 @@ class QualificationController extends Controller
                 $data['GRADING_AS'] = '';
                 $data['CGPA'] = NULL;
                 $data['GRADE'] = '';
+                $data['DIVISION'] = NULL;
             }
 
             $newQualification = $qualification->update($data);
@@ -286,7 +287,7 @@ class QualificationController extends Controller
     public function getByUserId($userId=null){
         try {
             if($userId){
-                $data = Qualification::where('USER_ID', $userId)->with('user')->with('discipline')->get();
+                $data = Qualification::where('USER_ID', $userId)->with(['user', 'discipline'])->get();
                 foreach ($data as $qualification) {
                     $qualification->institute = DB::table('institute')
                         ->where('INSTITUTE_ID', $qualification->INSTITUTE_ID)
@@ -301,6 +302,15 @@ class QualificationController extends Controller
                         ->where('DEGREE_ID', $qualification->discipline->DEGREE_ID)
                         ->first();
                 }
+
+                $data = $data->sortByDesc(function ($item) {
+                    return $item->degree->DEGREE_ID;
+                })
+                ->values()
+                ->map(function ($item) {
+                    return $item;
+                });
+
             }
             else {
                 $data = DB::table('qualifications')->get();

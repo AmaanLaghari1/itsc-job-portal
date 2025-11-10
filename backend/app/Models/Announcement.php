@@ -52,7 +52,7 @@ class Announcement extends Model
     }
 
     public function qualification_requirements(){
-        return $this->hasMany(AnnouncementQualificationRequirement::class, 'ANNOUNCEMENT_ID');
+        return $this->hasMany(AnnouncementQualificationRequirement::class, 'ANNOUNCEMENT_ID')->orderBy('DEGREE_ID', 'DESC');
     }
 
     public function checkAge($userAge){

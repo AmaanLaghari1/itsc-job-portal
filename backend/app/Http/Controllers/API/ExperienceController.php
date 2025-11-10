@@ -31,7 +31,7 @@ class ExperienceController extends Controller
                 'emp_type' => 'required',
                 'organization_name' => 'required',
                 'address' => 'required',
-                'contact_no' => 'required',
+//                'contact_no' => 'required',
                 'start_date' => 'required',
             ]);
 
@@ -116,7 +116,7 @@ class ExperienceController extends Controller
                 'emp_type' => 'required',
                 'organization_name' => 'required',
                 'address' => 'required',
-                'contact_no' => 'required',
+//                'contact_no' => 'required',
                 'start_date' => 'required',
             ]);
 

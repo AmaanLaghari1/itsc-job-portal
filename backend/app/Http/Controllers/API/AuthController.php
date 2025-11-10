@@ -435,5 +435,77 @@ public function verifyEmail(Request $request)
         ], 500);
     }
 
+    public function verifyPasswordToken($token){
+        if(is_null($token)){
+            return response()->json([
+                "status" => false,
+                "message" => "Invalid Token."
+            ], 401);
+        }
 
+        $user = DB::table('users_reg')
+            ->where('FORGET_PASSWORD', $token)
+            ->first();
+
+
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "Token expired."
+            ], 401);
+        }
+
+        return response()->json([
+            "status" => true,
+            "message" => "Token verified successfully.",
+        ], 200);
+    }
+
+//    Admin Update User Password
+    public function updateUserPassword(Request $request, $id){
+        try {
+            $randomNoPwd = rand(10000000, 99999999);
+
+            $userData = User::find($id);
+
+            DB::beginTransaction();
+            $user = $userData->update(['PASSWORD' => $randomNoPwd]);
+            DB::commit();
+
+            if($user){
+                $param = [
+                    'to' => $userData->EMAIL,
+                    'subject' => 'Password Update',
+                    'email_body' => 'Your password has been successfully updated.<br>
+                    Your new password is: <strong>' . $randomNoPwd . '</strong>.<br><br>
+                    You can log in at <a href="https://careers.usindh.edu.pk" target="_blank">https://careers.usindh.edu.pk</a> using your updated credentials.<br><br>
+                    If you have any questions or need assistance, please contact us at <a href="mailto:careers@usindh.edu.pk">careers@usindh.edu.pk</a>.<br><br>
+                    Please keep your password secure and do not share it with anyone.',
+                    'sender_id' => 1,
+                    'reply_to' => 'info@usindh.edu.pk'
+                ];
+
+                if($this->postMailRequest(env('MAIL_API_URL'), $param)){
+                    return response()->json([
+                        "status" => true,
+                        "message" => "Password updated successfully.",
+                        "new_password" => $randomNoPwd
+                    ], 200);
+                }
+            }
+
+            return response()->json([
+                "status" => false,
+                "message" => "Failed to update password.",
+            ], 403);
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            return response()->json([
+                "status" => false,
+                "message" => "Failed to update password.",
+                "error_message" => $e->getMessage()
+            ], 500);
+        }
+    }
 }

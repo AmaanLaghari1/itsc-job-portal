@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 import PrivateRoute from './routes/PrivateRoute.jsx'
-import { getDashboardPath } from './helper.js'
+import { getDashboardPath } from './helper.js' 
 import useTokenExpiryHandler from './hooks/useTokenExpiryHandler.js'
 
 // Lazy imports

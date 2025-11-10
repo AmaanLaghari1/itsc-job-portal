@@ -19,12 +19,12 @@ const useTokenExpiryHandler = () => {
       const currentTime = Date.now() / 1000 // seconds
 
       if (decoded.exp && decoded.exp < currentTime) {
-        console.warn('Token expired. Logging out...')
+        // console.warn('Token expired. Logging out...')
         dispatch(logOut(token)) // clear redux and localStorage
         navigate('/login')
       }
     } catch (err) {
-      console.error('Invalid token. Logging out...')
+      // console.error('Invalid token. Logging out...')
       dispatch(logOut(token))
       navigate('/login')
     }

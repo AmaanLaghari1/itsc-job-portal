@@ -160,11 +160,11 @@ const DateInput = props => {
                                 showTimeInput={false} 
                                 showYearDropdown
                                 showMonthDropdown
-                                yearDropdownItemNumber={50}
+                                yearDropdownItemNumber={70}
                                 scrollableYearDropdown
                                 maxDate={maxDateDisabled ? '' : maxDate}
                                 minDate={new Date("01/01/1900")}
-                                dateFormat="dd/MM/yyyy"
+                                dateFormat="dd-MM-yyyy"
                                 customInput={<ReadOnlyInput />}  
                                 />
                             </div>

@@ -65,6 +65,7 @@ class ApplicationQualification extends Model
     {
         return DB::table('degree_program')
             ->where('DEGREE_ID', $this->discipline->DEGREE_ID)
+            ->orderBy('DEGREE_ID', 'DESC')
             ->first();
     }
 

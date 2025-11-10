@@ -54,7 +54,7 @@ const Dashboard = () => {
     //     setFetching(false)
     // }
 
-    async function fetchData() {
+  async function fetchData() {
   setFetching(true);
   try {
     const response = await API.getApplication(auth.user.USER_ID);

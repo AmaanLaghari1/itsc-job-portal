@@ -38,7 +38,8 @@ class Qualification extends Model
         'PASSCERTIFICATE_IMAGE',
         'PASSING_YEAR',
         'STATUS',
-        'APPLICATION_ID'
+        'APPLICATION_ID',
+        'DIVISION'
     ];
 
     public function user()
@@ -53,6 +54,21 @@ class Qualification extends Model
 
     public function discipline()
     {
-        return $this->belongsTo(Discipline::class, 'DISCIPLINE_ID');
+        return $this->belongsTo(Discipline::class, 'DISCIPLINE_ID')->orderBy('DEGREE_ID','DESC');
+    }
+    public function institute() {
+        return $this->belongsTo(Institute::class, 'INSTITUTE_ID');
+    }
+
+    public function organization() {
+        return $this->belongsTo(Institute::class, 'ORGANIZATION_ID');
+    }
+
+    public function degree()
+    {
+        return DB::table('degree_program')
+            ->where('DEGREE_ID', $this->discipline->DEGREE_ID)
+            ->orderBy('DEGREE_ID', 'DESC')
+            ->first();
     }
 }

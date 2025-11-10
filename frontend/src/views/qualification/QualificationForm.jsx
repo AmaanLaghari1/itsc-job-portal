@@ -171,7 +171,7 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
             <div className="col-md-6">
                 <div className="form-group my-2">
                     
-                    <label htmlFor="is_result_decare">Is Result Declared?<span className="text-danger">*</span></label>
+                    <label htmlFor="is_result_decare" className='fw-bold'>Is Result Declared?<span className="text-danger">*</span></label>
                     <Field
                     as='select'
                     id='is_result_decare'
@@ -249,7 +249,7 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
 
                 <div className="col-md-3">
                     <div className="form-group my-2">
-                        <label htmlFor="grading_as">Grading As<span className="text-danger">*</span></label>
+                        <label htmlFor="grading_as" className='fw-bold'>Grading As<span className="text-danger">*</span></label>
                         <Field
                         as='select'
                         id='grading_as'
@@ -297,6 +297,22 @@ const QualificationForm = ({initialValues, validationRules, handleSubmit, loadin
                             {key: 'C', value: 'C'},
                             {key: 'D+', value: 'D+'},
                             {key: 'D', value: 'D'},
+                        ]}
+                        />
+                    </div>
+                </div>
+                <div className={`col-6 col-md-3 ${values.grading_as !== 'C' ? 'd-none' : ''}`}>
+                    <div className="form-group my-2">
+                        <FormControl
+                        control='select'
+                        className="form-control"
+                        label="Division"
+                        name="division"
+                        required={true}
+                        options={[
+                            {key: '1', value: '1st'},
+                            {key: '2', value: '2nd'},
+                            {key: '3', value: '3rd'}
                         ]}
                         />
                     </div>

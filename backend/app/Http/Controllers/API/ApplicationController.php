@@ -160,19 +160,19 @@ class ApplicationController extends Controller
             ], 403);
         }
 
-        if(!$announcement->checkAge($user->getAge($announcement->END_DATE))){
-            return response()->json([
-                'status' => false,
-                'error_message' => "You age doesn't meet this job requirement"
-            ], 403);
-        }
-
-        if (!$announcement->checkQualifications($user->qualifications->toArray())){
-            return response()->json([
-                'status' => false,
-                'error_message' => "Your qualification doesn't meet this job requirement"
-            ], 403);
-        }
+//        if(!$announcement->checkAge($user->getAge($announcement->END_DATE))){
+//            return response()->json([
+//                'status' => false,
+//                'error_message' => "You age doesn't meet this job requirement"
+//            ], 403);
+//        }
+//
+//        if (!$announcement->checkQualifications($user->qualifications->toArray())){
+//            return response()->json([
+//                'status' => false,
+//                'error_message' => "Your qualification doesn't meet this job requirement"
+//            ], 403);
+//        }
 
         if($announcement->EXPERIENCE_YEARS > 0){
             if($user->experience_completeness != 100){

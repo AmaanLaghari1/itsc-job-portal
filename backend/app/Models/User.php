@@ -220,9 +220,9 @@ class User extends Authenticatable implements JWTSubject
             'EMP_TYPE',
             'ORGANIZATION_NAME',
             'ADDRESS',
-            'CONTACT_NO',
+//            'CONTACT_NO',
             'START_DATE',
-            'JOB_DESCRIPTION',
+//            'JOB_DESCRIPTION',
             'USER_ID'
         ];
 

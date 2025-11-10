@@ -11,8 +11,11 @@ use App\Http\Controllers\API\QualificationController;
 use App\Http\Controllers\API\ExperienceController;
 use App\Http\Controllers\API\AnnouncementController;
 use App\Http\Controllers\API\ApplicationController;
+use App\Http\Controllers\API\ApplicationQualificationController;
+use App\Http\Controllers\API\ApplicationExperienceController;
 use App\Http\Controllers\API\DegreeProgramController;
 use App\Http\Controllers\API\InstituteController;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 Route::group(['middleware' => 'api'], function ($router) {
     Route::post('refresh', [AuthController::class, 'refresh']);
@@ -26,7 +29,7 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::post('resend-otp', [AuthController::class, 'resendOtpCode']);
         Route::post('reset-password', [AuthController::class, 'sendPasswordResetLink']);
         Route::post('change-password', [AuthController::class, 'changePassword']);
-        // Route::middleware('auth:sanctum')->post('logout', [AuthController::class, 'logout']);
+        Route::get('update-password/{id}', [AuthController::class, 'updateUserPassword']);
     });
 
 });
@@ -70,13 +73,15 @@ Route::prefix('experience')->group(function() {
 
 Route::prefix('announcement')->group(function() {
     Route::get('get', [AnnouncementController::class, 'index']);
-    Route::get('get/recent_announcements', [AnnouncementController::class, 'getSixMonthOldAnnouncements']);
     Route::get('application_requirement', [AnnouncementController::class, 'applicationRequirements']);
     Route::post('post', [AnnouncementController::class, 'create']);
     Route::put('put/{id}', [AnnouncementController::class, 'update']);
     Route::get('get/{id}', [AnnouncementController::class, 'show']);
     Route::delete('delete/{id}', [AnnouncementController::class, 'destroy']);
+    Route::post('report/get', [AnnouncementController::class, 'generateReport']);
 });
+
+Route::get('/announcement/get/recent_announcements', [AnnouncementController::class, 'getSixMonthOldAnnouncements']);
 
 Route::prefix('application')->group(function() {
     Route::get('get', [ApplicationController::class, 'index']);
@@ -91,6 +96,11 @@ Route::prefix('application')->group(function() {
     Route::put('update-user/{id}', [ApplicationController::class, 'updateUserApplicationData']);
     Route::post('payment/report/get', [ApplicationController::class, 'getPaymentReport']);
     Route::put('payment/import', [ApplicationController::class, 'importPaidApplications']);
+
+    Route::get('qualifications/get/{id}', [ApplicationQualificationController::class, 'getUserApplicationQualifications']);
+    Route::put('qualifications/update/{id}', [ApplicationQualificationController::class, 'updateUserApplicationQualifications']);
+    Route::get('experience/get/{id}', [ApplicationExperienceController::class, 'getUserApplicationExperience']);
+    Route::put('experience/update/{id}', [ApplicationExperienceController::class, 'updateUserApplicationExperience']);
 });
 
 // routes/api.php
@@ -125,4 +135,22 @@ Route::post('/assign_role', [UserRoleController::class, 'assignRole']);
 Route::get('/delete_role/{roleId}', [UserRoleController::class, 'destroy']);
 
 Route::get('/get_payments', [ApplicationController::class, 'getPayments']);
+
+Route::get('/debug-token', function (Request $request) {
+    $header = $request->header('Authorization');
+    return response()->json([
+        'authorization_header' => $header,
+        'token_parts' => explode('.', str_replace('Bearer ', '', $header ?? '')),
+    ]);
+});
+
+
+Route::get('/test-token', function () {
+    try {
+        $user = JWTAuth::parseToken()->authenticate();
+        return response()->json(['user' => $user]);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 401);
+    }
+});
 

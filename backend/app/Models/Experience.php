@@ -50,13 +50,13 @@ class Experience extends Model
             'EMP_TYPE',
             'ORGANIZATION_NAME',
             'ADDRESS',
-            'CONTACT_NO',
+//            'CONTACT_NO',
             'START_DATE',
             'END_DATE',
-            'JOB_DESCRIPTION',
+//            'JOB_DESCRIPTION',
             'IS_JOB_CONTINUE',
             'SALARY',
-            'REASON_FOR_LEAVING',
+//            'REASON_FOR_LEAVING',
         ];
 
         $filled = 0;

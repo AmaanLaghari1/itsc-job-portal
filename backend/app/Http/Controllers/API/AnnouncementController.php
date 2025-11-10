@@ -306,4 +306,35 @@ class AnnouncementController extends Controller
         }
     }
 
+    public function generateReport(Request $request){
+        try {
+            $announcementIds = $request->announcement_ids ?? [];
+            $report = DB::table('announcements as a')
+                ->leftJoin('applications as app', 'a.ANNOUNCEMENT_ID', '=', 'app.ANNOUNCEMENT_ID')
+                ->select(
+                    'a.ANNOUNCEMENT_TITLE',
+                    DB::raw('COUNT(app.APPLICATION_ID) AS TOTAL_APPLICATIONS'),
+                    DB::raw('COUNT(CASE WHEN app.PAID_DATE IS NOT NULL THEN 1 END) AS PAID_APPLICATIONS'),
+                    DB::raw('SUM(CASE WHEN app.PAID_DATE IS NOT NULL THEN a.APPLICATION_FEE ELSE 0 END) AS TOTAL_PAYMENT')
+                )
+                ->when(!empty($announcementIds), function ($query) use ($announcementIds) {
+                    $query->whereIn('a.ANNOUNCEMENT_ID', $announcementIds);
+                })
+                ->groupBy('a.ANNOUNCEMENT_TITLE')
+                ->orderBy('a.ANNOUNCEMENT_TITLE')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $report
+            ]);
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'error_message' => $e->getMessage()
+            ], 500);
+        }
+
+    }
+
 }

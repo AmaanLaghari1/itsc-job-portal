@@ -94,7 +94,7 @@ const AnnouncementForm = ({ initialValues, validationRules, handleSubmit, loadin
               </div>
               <div className="col-sm-3">
                 <div className="form-group my-2">
-                  <FormControl control='input' name="application_fee" label='Application Fee'
+                  <FormControl control='input' name="application_fee" label='Application Fee (optional)'
                     onInput={(e) => {
                       e.target.value = e.target.value.replace(/\D/g, '')
                     }}
@@ -112,6 +112,9 @@ const AnnouncementForm = ({ initialValues, validationRules, handleSubmit, loadin
 
             <fieldset className='border border-2 p-2 my-2'>
               <legend className='fw-bold'>Age Requirement</legend>
+              <span className="small text-danger">
+                Type '0' to make this optional
+              </span>
               <div className="row">
                 <div className="col-6">
                   <div className="form-group my-2">
@@ -164,7 +167,7 @@ const AnnouncementForm = ({ initialValues, validationRules, handleSubmit, loadin
             </fieldset>
 
             <fieldset className='border border-2 p-2 my-2'>
-              <legend className='fw-bold'>Experience Requirement</legend>
+              <legend className='fw-bold'>Experience Requirement (Optional)</legend>
               <div className="row">
                 <div className="col-md-12">
                   <div className="form-group my-2">

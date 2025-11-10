@@ -5,6 +5,8 @@ import FormControl from "../../../components/FormControl"
 import * as API from "../../../api/ApplicationRequest"
 import DynamicDataTable from "../../../components/data_table/DynamicDataTable"
 import { CButton } from "@coreui/react"
+import Alert from "../../../components/Alert"
+import { localToUTCDate } from "../../../helper"
 
 const ImportPaidApplications = () => {
     const [loading, setLoading] = useState(false)
@@ -21,10 +23,15 @@ const ImportPaidApplications = () => {
         to_date: Yup.string().required('Required!')
     })
 
+
     const handleSubmit = async (values) => {
         setLoading(true)
+        const payload = {
+            from_date: localToUTCDate(values.from_date),
+            to_date: localToUTCDate(values.to_date),
+        }
         try {
-            const response = await API.getPaidApplications(values)
+            const response = await API.getPaidApplications(payload)
             setApplications(response.data)
         } catch (error) {
             console.error(error)
@@ -42,9 +49,11 @@ const ImportPaidApplications = () => {
             formdata.append('paid_applications_data', JSON.stringify(selectedRows));
 
             const response = await API.importPaidApplications(formdata);
-            console.log(response);
+            // console.log(response);
+            Alert({ status: true, text: "Applications imported successfully..." })
         } catch (error) {
             console.error("Error importing selected rows:", error);
+            Alert({ status: false, text: "Some error occured!" })
         }
     };
 
@@ -107,6 +116,10 @@ const ImportPaidApplications = () => {
                                         name='from_date'
                                         label='From'
                                         required={true}
+                                        onChange={(e) => {
+                                            console.log(e.target.value)
+                                            setFieldValue(e.target.value)
+                                        }}
                                     />
                                     <FormControl
                                         control='date'

@@ -45,7 +45,7 @@ class ChallanPDF extends FPDF
         $total_amount = ($fee_amount + $due);
         $category_name = "JOB APPLICATION";
 
-        $valid_upto = $challan['PAYMENT_DUE_DATE'] ?? "EXPIRED";
+        $valid_upto = $applicationData->announcement->END_DATE ?? "EXPIRED";
 
        $this->file_name = $challan_no = $sectionAccountId . sprintf("%07d", $applicationId) ?? "";
         $oneBillID = 1001145094 . $challan_no;

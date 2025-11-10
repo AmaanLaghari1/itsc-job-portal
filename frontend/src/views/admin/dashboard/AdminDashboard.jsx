@@ -6,12 +6,16 @@ import { formatDate } from "../../../helper.js";
 import DynamicDataTable from "../../../components/data_table/DynamicDataTable.jsx";
 import AlertConfirm from "../../../components/AlertConfirm.js";
 import Alert from "../../../components/Alert.js";
+import { CButton } from "@coreui/react";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 // import './Data-table.css';
 
 const AdminDashboard = () => {
   const [announcements, setAnnouncements] = useState([]);
   const navigate = useNavigate();
   const userRole = useSelector((state) => state.roles.selectedRole);
+  const [selectableRows, setSelectedRows] = useState([])
 
   // Fetch data from API
   async function fetchData() {
@@ -22,6 +26,56 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+const generateReport = async () => {
+  try {
+    if (selectableRows.length === 0) {
+      Alert({
+        status: false,
+        text: "Please select at least one announcement to generate a report.",
+      });
+      return;
+    }
+
+    // Extract selected IDs
+    const announcementIds = selectableRows.map((row) => row.ANNOUNCEMENT_ID);
+
+    // Fetch data from backend
+    // const response = await API.getReport();
+    const response = await API.getReport({ announcement_ids: announcementIds });
+    const reportData = response.data?.data || [];
+
+    if (reportData.length === 0) {
+      Alert({
+        status: false,
+        text: "No data found for the selected announcements.",
+      });
+      return;
+    }
+
+    // Convert JSON to Excel sheet
+    const worksheet = XLSX.utils.json_to_sheet(reportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    // Create Excel file and trigger download
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+    saveAs(blob, "announcement_report.xlsx");
+
+  } catch (error) {
+    console.error(error);
+    Alert({
+      status: false,
+      text: "Failed to generate Excel report.",
+    });
+  }
+};
 
   const columns = [
     {
@@ -133,10 +187,19 @@ const AdminDashboard = () => {
         </Link>
       </div>
 
+      <CButton
+      size="sm"
+      variant="warning"
+      onClick={() => generateReport()}
+      >
+        Download Report
+      </CButton>
       <DynamicDataTable
         title="Announcements"
         columns={columns}
         data={filteredData}
+        selectableRows
+        onSelectedRowsChange={({ selectedRows }) => setSelectedRows(selectedRows)}
       />
     </div>
   );

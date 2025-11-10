@@ -82,3 +82,37 @@ export const importPaidApplications = (formdata) => {
         }
     })
 }
+
+export const getUserApplicationQualifications = (applicationId) => {
+    return API.get("qualifications/get/"+applicationId, {
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
+    })
+}
+
+export const updateQualification = (formdata, id) => {
+    return API.put("qualifications/update/"+id, formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const updateExperience = (formdata, id) => {
+    return API.put("experience/update/"+id, formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const getUserApplicationExperience = (applicationId) => {
+    return API.get("experience/get/"+applicationId, {
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
+    })
+}

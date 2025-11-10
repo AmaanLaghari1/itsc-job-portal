@@ -1,6 +1,10 @@
 import axios from "axios";
+import setupAxiosInterceptor from "../helpers/setupAxiosInterceptor";
 
 const API = axios.create({baseURL: import.meta.env.VITE_API_URL+"announcement/"})
+
+// Authorization Header
+// setupAxiosInterceptor(API);
 
 export const createAnnouncement = (formdata) => {
     return API.post("post", formdata, {
@@ -14,8 +18,9 @@ export const createAnnouncement = (formdata) => {
 export const getAnnouncement = () => {
     return API.get("get", {
         headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json"
+            // "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+            // "Authorization": "Bearer "+ token
         }
     })
 }
@@ -44,6 +49,14 @@ export const deleteAnnouncement = (id) => {
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json"
+        }
+    })
+}
+
+export const getReport = (formdata) => {
+    return API.post('report/get', formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*"
         }
     })
 }

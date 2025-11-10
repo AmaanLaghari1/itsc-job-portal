@@ -25,7 +25,9 @@ const ResetPassword = () => {
                 // console.log(response)
             } catch (error) {
                 Alert({status: false, text: error?.data?.message || "Token invalid or expired."})
-                navigate('/login');
+                console.log(error)
+                console.log(token)
+                // navigate('/login');
             }
         }
         verifyToken(token)

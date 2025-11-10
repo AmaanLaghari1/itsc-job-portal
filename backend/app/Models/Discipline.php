@@ -23,6 +23,6 @@ class Discipline extends Model
     ];
 
     public function degree(){
-        return $this->hasOne(DegreeProgram::class,'DEGREE_ID','DEGREE_ID');
+        return $this->hasOne(DegreeProgram::class,'DEGREE_ID','DEGREE_ID')->orderBy('DEGREE_ID','DESC');
     }
 }

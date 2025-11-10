@@ -2,6 +2,7 @@ import * as Yup from 'yup'
 import * as API from '../../../../api/InstituteRequest'
 import { useState } from 'react'
 import InstituteForm from './InstituteForm'
+import Alert from '../../../../components/Alert'
 
 const InstituteAdd = () => {
     const [loading, setLoading] = useState(false)
@@ -27,9 +28,11 @@ const InstituteAdd = () => {
       setLoading(true)
       try {
         const response = await API.createInstitute(values)
-        console.log(response)
+        // console.log(response)
+        Alert({status: true, text: 'Institute created successfully...'})
       } catch (error) {
         console.log(error)
+        Alert({status: false, text: 'Some error occured!'})
       }
       setLoading(false)
       resetForm()

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import setupAxiosInterceptor from '../helpers/setupAxiosInterceptor';
 
 // const API = axios.create({baseURL: import.meta.env.VITE_API_URL+"auth/"})
 
@@ -11,6 +12,8 @@ const API = axios.create({
     withCredentials: true,  // Ensure cookies (e.g., CSRF) are sent
 });
 
+// Authorization Header
+// setupAxiosInterceptor(API);
 
 export const register = (formdata) => {
     return API.post("register", formdata, {
@@ -86,6 +89,15 @@ export const resetPassword = (formdata) => {
 
 export const verifyPasswordToken = (token) => {
     return API.get("verify-password-token/"+token, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const updateUserPassword = (userId) => {
+    return API.get("update-password/"+userId, {
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json"

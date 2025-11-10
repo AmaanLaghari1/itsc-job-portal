@@ -57,7 +57,7 @@ const QualificationAdd = () => {
             result_date: '',
             grade: '',
             cgpa: '',
-            out_of: '',
+            division: '',
         }
     
         const validationRules = Yup.object({
@@ -89,6 +89,11 @@ const QualificationAdd = () => {
             grade: Yup.string().when('grading_as', (grading_as, schema) => {
                 return grading_as == 'G'
                 ? schema.required('Grade required')
+                : schema;
+            }),
+            division: Yup.string().when('grading_as', (grading_as, schema) => {
+                return grading_as == 'C'
+                ? schema.required('Division required')
                 : schema;
             }),
         });

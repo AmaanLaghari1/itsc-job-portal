@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Application;
+use App\Models\Qualification;
 use FPDF;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -203,15 +204,45 @@ class ApplicationPDF extends FPDF
         $provinceName = DB::table('provinces')->where('PROVINCE_ID', $data['PROVINCE_ID'])->value('PROVINCE_NAME');
         $districtName = DB::table('districts')->where('DISTRICT_ID', $data['DISTRICT_ID'])->value('DISTRICT_NAME');
 
-        $qualifications = $application->qualifications->map(function ($item) {
-            return [
-                $item->degree()->DEGREE_TITLE,
-                strtoupper($item->institute->INSTITUTE_NAME),
-                $item->PASSING_YEAR,
-                $item->OBTAINED_MARKS,
-                $item->TOTAL_MARKS,
-            ];
-        });
+//        $qualifications = $application->qualifications->map(function ($item) {
+//            return [
+//                $item->degree()->DEGREE_TITLE,
+//                strtoupper($item->institute->INSTITUTE_NAME),
+//                $item->PASSING_YEAR,
+//                $item->OBTAINED_MARKS,
+//                $item->TOTAL_MARKS,
+//            ];
+//        });
+
+        $qualificationsOld = $application->qualifications
+            ->sortByDesc(function ($item) {
+                return $item->degree()->DEGREE_ID;
+            })
+            ->values()
+            ->map(function ($item) {
+                return [
+                    $item->degree()->DEGREE_TITLE,
+                    strtoupper($item->institute->INSTITUTE_NAME),
+                    $item->PASSING_YEAR,
+                    $item->OBTAINED_MARKS,
+                    $item->TOTAL_MARKS,
+                ];
+            });
+
+        $qualifications = Qualification::where('USER_ID', $data['USER_ID'])->get()
+            ->sortByDesc(function ($item) {
+                return $item->degree()->DEGREE_ID;
+            })
+            ->values()
+            ->map(function ($item) {
+                return [
+                    $item->degree()->DEGREE_TITLE,
+                    strtoupper($item->institute->INSTITUTE_NAME),
+                    $item->PASSING_YEAR,
+                    $item->OBTAINED_MARKS,
+                    $item->TOTAL_MARKS,
+                ];
+            });;
 
         $experience = $application->experiences->map(function ($item) {
             $startDate = date('d-m-Y', strtotime($item->START_DATE));
