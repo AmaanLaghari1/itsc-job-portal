@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import * as API from '../../../api/AnnouncementRequest.js';
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -7,15 +7,16 @@ import DynamicDataTable from "../../../components/data_table/DynamicDataTable.js
 import AlertConfirm from "../../../components/AlertConfirm.js";
 import Alert from "../../../components/Alert.js";
 import { CButton } from "@coreui/react";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 // import './Data-table.css';
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const AdminDashboard = () => {
   const [announcements, setAnnouncements] = useState([]);
   const navigate = useNavigate();
   const userRole = useSelector((state) => state.roles.selectedRole);
   const [selectableRows, setSelectedRows] = useState([])
+  const [loading, setLoading] = useState(false)
 
   // Fetch data from API
   async function fetchData() {
@@ -27,55 +28,128 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
-const generateReport = async () => {
-  try {
-    if (selectableRows.length === 0) {
+
+  const generateReport = async () => {
+    try {
+      if (selectableRows.length === 0) {
+        Alert({
+          status: false,
+          text: "Please select at least one announcement to generate a report.",
+        });
+        return;
+      }
+
+      const announcementIds = selectableRows.map((row) => row.ANNOUNCEMENT_ID);
+
+      const response = await API.getReport({ announcement_ids: announcementIds });
+      const reportData = response.data?.data || [];
+
+      if (reportData.length === 0) {
+        Alert({
+          status: false,
+          text: "No data found for the selected announcements.",
+        });
+        return;
+      }
+
+      const doc = new jsPDF();
+
+      doc.setFontSize(12);
+      doc.text("USindh Careers Report", 14, 12);
+
+      // Headers
+      const headers = Object.keys(reportData[0]).map((key) => ({
+        header: key,
+        dataKey: key,
+      }));
+
+      // Body rows
+      const body = reportData.map(row => headers.map(h => row[h.dataKey]));
+
+      // ---------------------------
+      // Calculate totals for numeric columns
+      // ---------------------------
+      const totals = headers.map((h, index) => {
+        const values = reportData.map(d => Number(d[h.dataKey]));
+        const isNumeric = values.every(v => !isNaN(v));
+
+        if (index === 0) return "SUM TOTAL";     // First column label
+        if (!isNumeric) return "";            // Non-numeric fields → blank
+
+        const sum = values.reduce((a, b) => a + b, 0);
+        return sum;
+      });
+
+      // Add totals row to body
+      body.push(totals);
+
+      // Generate table
+      autoTable(doc, {
+        startY: 20,
+        head: [headers.map(h => h.header)],
+        body,
+        styles: { fontSize: 8 },
+        headStyles: { fontSize: 8, fillColor: [0, 102, 204] },
+        columnStyles: { fontSize: 8 },
+        didParseCell: (data) => {
+          // Make totals row bold
+          if (data.row.index === body.length - 1) {
+            data.cell.styles.fontStyle = "bold";
+          }
+        }
+      });
+
+      doc.save("announcement_report.pdf");
+
+    } catch (error) {
+      console.error(error);
       Alert({
         status: false,
-        text: "Please select at least one announcement to generate a report.",
+        text: "Failed to generate PDF report.",
       });
-      return;
     }
+  };
 
-    // Extract selected IDs
-    const announcementIds = selectableRows.map((row) => row.ANNOUNCEMENT_ID);
 
-    // Fetch data from backend
-    // const response = await API.getReport();
-    const response = await API.getReport({ announcement_ids: announcementIds });
-    const reportData = response.data?.data || [];
+  const generateApplicationsReport = async () => {
+    setLoading(true)
+    try {
+      if (selectableRows.length === 0) {
+        Alert({
+          status: false,
+          text: "Please select at least one announcement to generate a report.",
+        });
+        setLoading(false)
+        return;
+      }
 
-    if (reportData.length === 0) {
+      // Extract selected announcement IDs
+      const announcementIds = selectableRows.map(r => r.ANNOUNCEMENT_ID);
+
+      // Request PDF from backend
+      const response = await API.downloadApplicationsReport({
+        announcement_ids: announcementIds
+      });
+
+      // Create PDF blob
+      const fileURL = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+
+      // Trigger download
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.download = "applications_report.pdf";
+      link.click();
+      link.remove();
+
+    } catch (error) {
+      console.error(error);
       Alert({
         status: false,
-        text: "No data found for the selected announcements.",
+        text: "Failed to download applications report.",
       });
-      return;
     }
-
-    // Convert JSON to Excel sheet
-    const worksheet = XLSX.utils.json_to_sheet(reportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
-
-    // Create Excel file and trigger download
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const blob = new Blob([excelBuffer], {
-      type: "application/octet-stream",
-    });
-    saveAs(blob, "announcement_report.xlsx");
-
-  } catch (error) {
-    console.error(error);
-    Alert({
-      status: false,
-      text: "Failed to generate Excel report.",
-    });
-  }
-};
+    setLoading(false)
+  };
 
   const columns = [
     {
@@ -127,43 +201,43 @@ const generateReport = async () => {
       cell: (row) => (
         <div className="d-flex align-items-center flex-wrap gap-1">
           <button className="btn btn-outline-success btn-sm"
-          onClick={() => {
-            navigate('/admin/announcement/edit',
-              {
-                state: {
-                  prevData: row
+            onClick={() => {
+              navigate('/admin/announcement/edit',
+                {
+                  state: {
+                    prevData: row
+                  }
                 }
-              }
-            )
-          }}
+              )
+            }}
           >
             Edit
           </button>
           <button className="btn btn-outline-danger btn-sm"
-          onClick={async () => {
-                const confirmed = await AlertConfirm({
-                  title: 'Delete item?',
-                  text: 'This action cannot be undone.',
-                });
-                
-                if (confirmed) {
-                  try {
-                    const response = await API.deleteAnnouncement(row.ANNOUNCEMENT_ID)
-                    Alert({
-                      status: true,
-                      text: response.data?.message || 'Announcement deleted successfully'
-                    })
-                    setAnnouncements((prev) =>
-                      prev.filter((item) => item.ANNOUNCEMENT_ID !== row.ANNOUNCEMENT_ID)
-                    );
-                  } catch (error) {
-                    Alert({
-                      status: false,
-                      text: error.data?.message || 'Error deleting announcement'
-                    })
-                  }
+            onClick={async () => {
+              const confirmed = await AlertConfirm({
+                title: 'Delete item?',
+                text: 'This action cannot be undone.',
+              });
+
+              if (confirmed) {
+                try {
+                  const response = await API.deleteAnnouncement(row.ANNOUNCEMENT_ID)
+                  Alert({
+                    status: true,
+                    text: response.data?.message || 'Announcement deleted successfully'
+                  })
+                  setAnnouncements((prev) =>
+                    prev.filter((item) => item.ANNOUNCEMENT_ID !== row.ANNOUNCEMENT_ID)
+                  );
+                } catch (error) {
+                  Alert({
+                    status: false,
+                    text: error.data?.message || 'Error deleting announcement'
+                  })
                 }
               }
+            }
             }
           >
             Delete
@@ -176,24 +250,31 @@ const generateReport = async () => {
   ];
 
   const filteredData = (userRole == 1 || userRole == 2)
-  ? announcements
-  : announcements.filter(item => item.ACCESS_ID == userRole);
+    ? announcements
+    : announcements.filter(item => item.ACCESS_ID == userRole);
 
   return (
     <div className="admin-dashboard">
-      <div className="d-flex flex-wrap align-items-center justify-content-between mb-2">
-        <Link to="/admin/announcement/add" className="btn btn-primary btn-sm">
-          Add New +
-        </Link>
-      </div>
-
+      <Link to="/admin/announcement/add" className="btn btn-primary btn-sm me-2">
+        Add New +
+      </Link>
       <CButton
-      size="sm"
-      variant="warning"
-      onClick={() => generateReport()}
+        size="sm"
+        variant="warning"
+        onClick={() => generateReport()}
       >
-        Download Report
+        Announcements Report
       </CButton>
+      <CButton
+        size="sm"
+        variant="danger"
+        disabled={loading}
+        className="mx-2 text-light"
+        onClick={() => generateApplicationsReport()}
+      >
+        Applications Report
+      </CButton>
+
       <DynamicDataTable
         title="Announcements"
         columns={columns}
@@ -201,6 +282,7 @@ const generateReport = async () => {
         selectableRows
         onSelectedRowsChange={({ selectedRows }) => setSelectedRows(selectedRows)}
       />
+
     </div>
   );
 };

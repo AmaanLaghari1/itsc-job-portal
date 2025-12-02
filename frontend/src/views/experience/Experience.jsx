@@ -17,7 +17,7 @@ const Experience = () => {
     async function fetchData(){
         setFetching(true)
         const response = await API.getExperience(auth.user.USER_ID);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setExperience(response.data.data);
         setFetching(false)
       }

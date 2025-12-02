@@ -193,11 +193,11 @@ const Applications = () => {
     
   }
 
-  // if (selectedAnnouncement && selectedAnnouncement.applications) {
-  //   setApplications(selectedAnnouncement.applications);
-  // } else {
-  //   // setApplications([]); // fallback to empty array
-  // }
+  if (selectedAnnouncement && selectedAnnouncement.applications) {
+    setApplications(selectedAnnouncement.applications);
+  } else {
+    // setApplications([]); // fallback to empty array
+  }
 };
 
 const filteredData = Array.isArray(applications) ? applications.map(item => item) : [];

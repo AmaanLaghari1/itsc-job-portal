@@ -20,8 +20,17 @@ export const applicationRequirement = (formdata) => {
     })
 }
 
+export const getApplicationById = (id) => {
+    return API.get("get/"+id, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
 export const getApplication = (userId) => {
-    return API.get("get/"+userId, {
+    return API.get("get_by_user_id/"+userId, {
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json"

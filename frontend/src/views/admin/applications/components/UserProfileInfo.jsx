@@ -8,30 +8,43 @@ import {
     CAccordion,
     CAccordionBody,
     CAccordionHeader,
+    CSpinner,
 } from '@coreui/react'
 import { useEffect, useState } from "react"
 import { getUserById } from "../../../../api/UserRequest"
-import { updateUserApplicationData } from "../../../../api/ApplicationRequest"
+import { getApplication, getApplicationById, updateUserApplicationData } from "../../../../api/ApplicationRequest"
 
 const UserProfileInfo = () => {
-    const [userData, setUserData] = useState()
+    const [userData, setUserData] = useState([])
+    const [loading, setLoading] = useState(false)
     const location = useLocation()
-    const navigate = useNavigate()
     const { prevData } = location.state || {}
-    // console.log(prevData)
+    const [applicationData, setApplicationData] = useState(prevData || {})
 
     const getUserData = async (id) => {
         try {
             const response = await getUserById(id)
             setUserData(response.data.data)
         } catch (error) {
+            // console.log(error)
+        }
+    }
+
+    const fetchApplicationData = async (id) => {
+        try {
+            const response = await getApplicationById(id)
+            setApplicationData(response.data.data)
+        } catch (error) {
             console.log(error)
         }
     }
 
     useEffect(() => {
-        if (prevData?.USER_ID) getUserData(prevData.USER_ID);
-    }, [prevData]);
+        setLoading(true)
+        fetchApplicationData(prevData.APPLICATION_ID)
+        if (applicationData?.USER_ID) getUserData(applicationData.USER_ID);
+        setLoading(false)
+    }, []);
 
 
     // Example static user data
@@ -76,136 +89,163 @@ const UserProfileInfo = () => {
         { key: "PROFILE_IMAGE", label: "Profile Picture" },
     ]
 
-    const unmatchingFields = fields.filter(field => user[field.key] != prevData[field.key])
+    const unmatchingFields = fields.filter(field => user[field.key] != applicationData[field.key])
 
     return (
         <div className="my-2">
-            <h3 className="bg-primary text-light p-2">Basic Information</h3>
-            <CAccordion flush>
-                <CAccordionItem>
-                    <CAccordionHeader>
-                        <h5>PROFILE</h5>
-                    </CAccordionHeader>
-                    <CAccordionBody>
-                        <Formik
-                            initialValues={{
-                                selectedFields: {},
-                                selectAll: false,
-                            }}
-                            onSubmit={async (values) => {
-                                let selectedUserData = {}
+            <div className={`position-relative`}>
+                {/* Blur effect overlay */}
+                {loading ?
+                    <CSpinner className='align-slef-start my-3' color='primary' />
+                    :
+                    (
+                        <div>
+                            <h3 className="bg-primary text-light p-2">Basic Information</h3>
+                            <CAccordion flush>
+                                <CAccordionItem>
+                                    <CAccordionHeader>
+                                        <h5>PROFILE</h5>
+                                    </CAccordionHeader>
+                                    <CAccordionBody>
+                                        <Formik
+                                            initialValues={{
+                                                selectedFields: {},
+                                                selectAll: false,
+                                            }}
+                                            onSubmit={async (values) => {
+                                                setLoading(true)
+                                                let selectedUserData = {}
 
-                                Object.keys(values.selectedFields).forEach((fieldKey) => {
-                                    if (values.selectedFields[fieldKey]) {
-                                        selectedUserData[fieldKey] = userData[fieldKey]
-                                    }
-                                })
-
-                                try {
-                                    const response = await updateUserApplicationData(selectedUserData, prevData.APPLICATION_ID)
-                                    // console.log(response)
-                                    Alert({ status: true, text: response?.data?.message || 'Application created successfully' });
-                                    navigate('/admin/applications')
-                                } catch (error) {
-                                    console.log(error)
-                                }
-                            }}
-                        >
-                            {({ values, setFieldValue }) => (
-                                <Form>
-                                    <div className="table-responsive">
-                                        <CTable bordered hover>
-                                            <CTableHead>
-                                                <CTableRow>
-                                                    <CTableHeaderCell align="center" className="col-1 bg-primary text-light">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={values.selectAll}
-                                                            onChange={(e) => {
-                                                                const isChecked = e.target.checked
-                                                                setFieldValue("selectAll", isChecked)
-
-                                                                // Set all fields at once
-                                                                fields.forEach((field) => {
-                                                                    setFieldValue(`selectedFields.${field.key}`, isChecked)
-                                                                })
-                                                            }}
-                                                        />
-                                                        {/* <label className="ms-1"></label> */}
-                                                    </CTableHeaderCell>
-                                                    <CTableHeaderCell align="center" className="col-3 bg-primary text-light">
-                                                        Column
-                                                    </CTableHeaderCell>
-                                                    <CTableHeaderCell align="center" className="col-4 bg-primary text-light">
-                                                        Application Data
-                                                    </CTableHeaderCell>
-                                                    <CTableHeaderCell align="center" className="col-4 bg-primary text-light">
-                                                        User Data
-                                                    </CTableHeaderCell>
-                                                </CTableRow>
-                                            </CTableHead>
-                                            <CTableBody>
-                                                {(() => {
-
-                                                    if (unmatchingFields.length === 0) {
-                                                        return (
-                                                            <CTableRow>
-                                                                <CTableDataCell colSpan={4} className="text-center text-muted">
-                                                                    Nothing to update
-                                                                </CTableDataCell>
-                                                            </CTableRow>
-                                                        );
+                                                Object.keys(values.selectedFields).forEach((fieldKey) => {
+                                                    if (values.selectedFields[fieldKey]) {
+                                                        selectedUserData[fieldKey] = userData[fieldKey]
                                                     }
+                                                })
 
-                                                    return unmatchingFields.map((field) => (
-                                                        <CTableRow key={field.key}>
-                                                            <CTableDataCell align="center">
-                                                                <Field
-                                                                    type="checkbox"
-                                                                    name={`selectedFields.${field.key}`}
-                                                                    checked={values.selectedFields[field.key] || false}
-                                                                    onChange={(e) => {
-                                                                        const checked = e.target.checked;
-                                                                        setFieldValue(`selectedFields.${field.key}`, checked);
+                                                if (Object.keys(selectedUserData).length === 0) {
+                                                    Alert({ status: false, text: "Please select at least one field to update!" });
+                                                    setLoading(false);
+                                                    return;
+                                                }
 
-                                                                        // Handle "Select All" toggle safely AFTER event
-                                                                        if (!checked) {
-                                                                            setFieldValue("selectAll", false);
-                                                                        } else {
-                                                                            const allChecked = differingFields.every(
-                                                                                (f) =>
-                                                                                    f.key === field.key
-                                                                                        ? checked
-                                                                                        : values.selectedFields[f.key]
-                                                                            );
-                                                                            setFieldValue("selectAll", allChecked);
-                                                                        }
-                                                                    }}
-                                                                />
-                                                            </CTableDataCell>
-                                                            <CTableDataCell>{field.label}</CTableDataCell>
-                                                            <CTableDataCell>{prevData[field.key]}</CTableDataCell>
-                                                            <CTableDataCell>{user[field.key]}</CTableDataCell>
-                                                        </CTableRow>
-                                                    ));
-                                                })()}
-                                            </CTableBody>
+                                                try {
+                                                    const response = await updateUserApplicationData(selectedUserData, applicationData.APPLICATION_ID)
+                                                    // console.log(response)
+                                                    Alert({ status: true, text: response?.data?.message || 'Application created successfully' });
+                                                    // navigate('/admin/applications')
+                                                    setApplicationData(prev => ({
+                                                        ...prev,
+                                                        ...selectedUserData
+                                                    }));
+                                                } catch (error) {
+                                                    console.log(error)
+                                                }
+                                                setLoading(false)
+                                            }}
+                                        >
+                                            {({ values, setFieldValue }) => (
+                                                <Form>
+                                                    <div className="table-responsive">
+                                                        <CTable bordered hover>
+                                                            <CTableHead>
+                                                                <CTableRow>
+                                                                    <CTableHeaderCell align="center" className="col-1 bg-primary text-light">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={values.selectAll}
+                                                                            onChange={(e) => {
+                                                                                const isChecked = e.target.checked
+                                                                                setFieldValue("selectAll", isChecked)
 
-                                        </CTable>
-                                    </div>
-                                    <button
-                                    className="btn btn-primary my-3 mt-1" 
-                                    type="submit"
-                                    >
-                                        Update
-                                    </button>
+                                                                                // Set all fields at once
+                                                                                fields.forEach((field) => {
+                                                                                    setFieldValue(`selectedFields.${field.key}`, isChecked)
+                                                                                })
+                                                                            }}
+                                                                        />
+                                                                        {/* <label className="ms-1"></label> */}
+                                                                    </CTableHeaderCell>
+                                                                    <CTableHeaderCell align="center" className="col-3 bg-primary text-light">
+                                                                        Column
+                                                                    </CTableHeaderCell>
+                                                                    <CTableHeaderCell align="center" className="col-4 bg-primary text-light">
+                                                                        Application Data
+                                                                    </CTableHeaderCell>
+                                                                    <CTableHeaderCell align="center" className="col-4 bg-primary text-light">
+                                                                        User Data
+                                                                    </CTableHeaderCell>
+                                                                </CTableRow>
+                                                            </CTableHead>
+                                                            <CTableBody>
+                                                                {(() => {
 
-                                </Form>
-                            )}
-                        </Formik>
-                    </CAccordionBody>
-                </CAccordionItem>
-            </CAccordion>
+                                                                    if (unmatchingFields.length === 0) {
+                                                                        return (
+                                                                            <CTableRow>
+                                                                                <CTableDataCell colSpan={4} className="text-center text-muted">
+                                                                                    Nothing to update
+                                                                                </CTableDataCell>
+                                                                            </CTableRow>
+                                                                        );
+                                                                    }
+
+                                                                    return unmatchingFields.map((field) => (
+                                                                        <CTableRow key={field.key}>
+                                                                            <CTableDataCell align="center">
+                                                                                <Field
+                                                                                    type="checkbox"
+                                                                                    name={`selectedFields.${field.key}`}
+                                                                                    checked={values.selectedFields[field.key] || false}
+                                                                                    onChange={(e) => {
+                                                                                        const checked = e.target.checked;
+                                                                                        setFieldValue(`selectedFields.${field.key}`, checked);
+
+                                                                                        // Handle "Select All" toggle safely AFTER event
+                                                                                        if (!checked) {
+                                                                                            setFieldValue("selectAll", false);
+                                                                                        } else {
+                                                                                            const allChecked = unmatchingFields.every(
+                                                                                                (f) =>
+                                                                                                    f.key === field.key
+                                                                                                        ? checked
+                                                                                                        : values.selectedFields[f.key]
+                                                                                            );
+                                                                                            setFieldValue("selectAll", allChecked);
+                                                                                        }
+                                                                                    }}
+                                                                                />
+                                                                            </CTableDataCell>
+                                                                            <CTableDataCell>{field.label}</CTableDataCell>
+                                                                            <CTableDataCell>{applicationData[field.key]}</CTableDataCell>
+                                                                            <CTableDataCell>{user[field.key]}</CTableDataCell>
+                                                                        </CTableRow>
+                                                                    ));
+                                                                })()}
+                                                            </CTableBody>
+
+                                                        </CTable>
+                                                    </div>
+                                                    <button
+                                                        disabled={loading}
+                                                        className="btn btn-primary my-3 mt-1"
+                                                        type="submit"
+                                                    >
+                                                        {
+                                                            loading ?
+                                                                'Updating...' :
+                                                                'Update'
+                                                        }
+                                                    </button>
+
+                                                </Form>
+                                            )}
+                                        </Formik>
+                                    </CAccordionBody>
+                                </CAccordionItem>
+                            </CAccordion>
+                        </div>
+                    )}
+            </div>
         </div>
     )
 }

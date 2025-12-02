@@ -35,3 +35,4 @@ Route::get('/pdf/{id?}', [PdfController::class, 'generateChallan']);
 Route::get('/application-pdf/{id?}', [PdfController::class, 'generateApplication']);
 
 
+

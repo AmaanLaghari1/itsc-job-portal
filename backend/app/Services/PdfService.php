@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use FPDF;
 use App\Services\ApplicationPDF;
+use Carbon\Carbon;
+use FPDF;
 use App\Services\ChallanPDF;
 
 class PdfService
@@ -11,10 +12,15 @@ class PdfService
     protected $challanPDF;
     protected $applicationPDF;
 
+    protected $applicationReportPdf;
+
     public function __construct($applicationId = null)
     {
         $this->challanPDF = new ChallanPDF('L', 'mm', 'A4');
         $this->applicationPDF = new ApplicationPDF('P', 'mm', 'A4');
+//        $this->applicationReportPdf = new ApplicationReportPDF('L', 'mm', 'Legal');
+        $this->applicationReportPdf = new ApplicationReportPDF('L', 'mm', 'A3');
+        $this->applicationReportPdf->AliasNbPages();     // Enable {nb}
     }
 
     public function generatePdf($applicationData)
@@ -47,7 +53,6 @@ class PdfService
 
 
 //    Application Form Methods
-
     function SectionTitle($title, $w=0)
     {
 //        $this->applicationPDF->SetFillColor(0, 0, 0); // dark purple header
@@ -217,4 +222,232 @@ class PdfService
         $this->applicationPDF->Output('I', $applicationData->toArray()['APPLICATION_ID'].'.pdf');
         exit;
     }
+
+    public function generateReportPdf($announcementIds)
+    {
+        $reportData = $this->applicationReportPdf->requiredData($announcementIds);
+
+        // Must call before AddPage() for {nb}
+        $this->applicationReportPdf->AliasNbPages();
+        $this->applicationReportPdf->SetMargins(15, 10, 15);
+        $this->applicationReportPdf->SetAutoPageBreak(true, 15);
+
+//        foreach ($reportData as $report) {
+//
+//            $this->applicationReportPdf->AddPage('L', 'A3');
+//            $this->applicationReportPdf->SetTitle('Career Applications Report');
+//
+//            /** ---------------- HEADER ------------------- **/
+//            $this->applicationReportPdf->Image(public_path('images/usindh_logo.png'), 15, 5, 20, 20);
+//
+//            $this->applicationReportPdf->SetFont('Arial', 'B', 16);
+//            $this->applicationReportPdf->SetXY(15, 10);
+//            $this->applicationReportPdf->Cell(0, 10, 'UNIVERSITY OF SINDH', 0, 1, 'C');
+//
+//            $this->applicationReportPdf->SetFont('Arial', 'B', 10);
+//            $this->applicationReportPdf->setY(25);
+//
+//            // Ref No
+//            $this->applicationReportPdf->Cell(100, 7, 'Ref No. ' . ($report->REF_NO ?? ''), 0, 1, 'L');
+//
+//            // Printed date
+//            $this->applicationReportPdf->setY(25);
+//            $this->applicationReportPdf->Cell(0, 7, 'Printed: ' . Carbon::now()->format('d-m-Y'), 0, 1, 'R');
+//
+//            /** ---------------- SUB TITLE ------------------- **/
+//            $this->applicationReportPdf->SetFont('Arial', 'B', 12);
+//            $this->applicationReportPdf->MultiCell(0, 7, 'Position Applied For: ' . ($report->ANNOUNCEMENT_TITLE ?? ''), 0, 'C');
+//
+//            /** ---------------- TABLE DATA ------------------- **/
+//
+//            $qualHeader = [
+//                'No.',
+//                'Name',
+//                "Father's Name",
+//                'Cast',
+//                'Gender',
+//                'Age',
+//                'SSC',
+//                'HSC',
+//                'BS',
+//                'MPhil/MS',
+//                'PhD',
+//                'Domicile District',
+//                'Remarks'
+//            ];
+//
+//            $applications = $report->applications; // already an array (Eloquent relation)
+//
+//            $qualData = [];
+//
+//            foreach ($applications as $index => $application) {
+//
+//                $user = $application->user;
+//                $qualifications = $user->qualifications ?? [];
+//
+//                $ssc = $this->applicationReportPdf->extractQualificationValue($qualifications, 'MATRICULATION/O-LEVEL (10TH GRADE)');
+//                $hsc = $this->applicationReportPdf->extractQualificationValue($qualifications, 'INTERMIDIATE/A-LEVEL (12TH GRADE)');
+//                $bs  = $this->applicationReportPdf->extractQualificationValue($qualifications, 'BACHELOR / MASTER (16 YEAR)');
+//                $ms  = $this->applicationReportPdf->extractQualificationValue($qualifications, 'M.Phil / MS (18 YEAR)');
+//                $phd = $this->applicationReportPdf->extractQualificationValue($qualifications, 'PHD');
+//
+//                $age = null;
+//                if ($user->DATE_OF_BIRTH) {
+//                    $age = Carbon::parse($user->DATE_OF_BIRTH)->diffInYears(Carbon::parse($report->END_DATE));
+//                }
+//
+//                $qualData[] = [
+//                    $index + 1,
+//                    $user->FIRST_NAME ?? '',
+//                    $user->FNAME ?? '',
+//                    $user->LAST_NAME ?? '',
+//                    $user->GENDER == 'M' ? 'MALE' : 'FEMALE',
+//                    $age,
+//                    $ssc,
+//                    $hsc,
+//                    $bs,
+//                    $ms,
+//                    $phd,
+//                    $user->district->DISTRICT_NAME ?? '',
+//                    ''
+//                ];
+//            }
+//
+//            /** Widths: 13 columns **/
+//            $qualColWidths = [
+//                10,  // No
+//                30,  // Name
+//                40,  // Father's Name
+//                25,  // Cast
+//                25,  // Gender
+//                15,  // Age
+//                20,  // SSC
+//                20,  // HSC
+//                40,  // BS
+//                40,  // MS
+//                40,  // PhD
+//                40,  // District
+//                42   // Remarks
+//            ];
+//
+//            $alignments = [
+//                'C', 'L', 'L', 'L', 'C', 'C', 'L', 'L', 'L', 'L', 'L', 'L', 'L'
+//            ];
+//
+//            $this->applicationReportPdf->FancyTable($qualHeader, $qualData, $qualColWidths, $alignments);
+//        }
+
+        foreach ($reportData as $report) {
+            // Pass dynamic data to PDF header
+            $this->applicationReportPdf->ref_no = $report->REF_NO;
+            $this->applicationReportPdf->announcement_title = $report->ANNOUNCEMENT_TITLE;
+
+            $this->applicationReportPdf->AddPage('L', 'A3');
+            $this->applicationReportPdf->SetTitle('Career Applications Report');
+
+            // Draw subtitle centered under header
+            $this->applicationReportPdf->SetFont('Arial', 'B', 12);
+            $this->applicationReportPdf->MultiCell(0, 7, 'Position Applied For: ' . $report->ANNOUNCEMENT_TITLE, 0, 'C');
+
+            //            /** ---------------- TABLE DATA ------------------- **/
+//
+            $qualHeader = [
+                'No.',
+                'Name',
+                "Father's Name",
+                'Surname',
+                'Gender',
+                'Age',
+                'SSC',
+                'HSC',
+                'BS',
+                'MPhil/MS',
+                'PhD',
+                'Domicile District',
+                'Remarks'
+            ];
+
+            $applications = $report->applications; // already an array (Eloquent relation)
+
+            $qualData = [];
+
+            if(count($applications) == 0){
+                $this->applicationReportPdf->Ln(10);
+                $this->applicationReportPdf->setFont('Arial', '', 10);
+                $this->applicationReportPdf->Cell(0, 7, 'No applications found for this position.', 0, 1, 'C');
+            }
+            else{
+                foreach ($applications as $index => $application) {
+
+                    $user = $application->user;
+                    $qualifications = $user->qualifications ?? [];
+
+                    $ssc = $this->applicationReportPdf->extractQualificationValue($qualifications, 'MATRICULATION/O-LEVEL (10TH GRADE)');
+                    $hsc = $this->applicationReportPdf->extractQualificationValue($qualifications, 'INTERMIDIATE/A-LEVEL (12TH GRADE)');
+                    $bs  = $this->applicationReportPdf->extractQualificationValue($qualifications, 'BACHELOR / MASTER (16 YEAR)');
+                    $ms  = $this->applicationReportPdf->extractQualificationValue($qualifications, 'M.Phil / MS (18 YEAR)');
+                    $phd = $this->applicationReportPdf->extractQualificationValue($qualifications, 'PHD');
+
+                    $age = null;
+                    if ($user->DATE_OF_BIRTH) {
+                        $age = Carbon::parse($user->DATE_OF_BIRTH)->diffInYears(Carbon::parse($report->END_DATE));
+                    }
+
+                    $qualData[] = [
+                        $index + 1,
+                        $user->FIRST_NAME ?? '',
+                        $user->FNAME ?? '',
+                        $user->LAST_NAME ?? '',
+                        $user->GENDER == 'M' ? 'MALE' : 'FEMALE',
+                        $age,
+                        $ssc,
+                        $hsc,
+                        $bs,
+                        $ms,
+                        $phd,
+                        $user->district->DISTRICT_NAME ?? '',
+                        ''
+                    ];
+                }
+            }
+
+           if(count($applications) > 0) {
+
+               /** Widths: 13 columns **/
+               $qualColWidths = [
+                   10,  // No
+                   30,  // Name
+                   35,  // Father's Name
+                   25,  // Surname
+                   20,  // Gender
+                   15,  // Age
+                   20,  // SSC
+                   35,  // HSC
+                   40,  // BS
+                   40,  // MS
+                   40,  // PhD
+                   40,  // District
+                   40   // Remarks
+               ];
+
+               $alignments = [
+                   'C', 'L', 'L', 'L', 'L', 'C', 'L', 'L', 'L', 'L', 'L', 'L', 'L'
+               ];
+
+
+               // Table Header
+               $this->applicationReportPdf->TableHeader($qualHeader, $qualColWidths);
+
+               // Then call FancyTable
+               $this->applicationReportPdf->FancyTable($qualHeader, $qualData, $qualColWidths, $alignments);
+           }
+        }
+
+        // Send PDF to browser
+//        $this->applicationReportPdf->Output('I', 'report.pdf');
+        return $this->applicationReportPdf->Output('S');
+//        exit();
+    }
+
+
 }

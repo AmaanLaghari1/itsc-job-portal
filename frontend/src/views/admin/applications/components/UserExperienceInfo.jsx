@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
 import { getUserApplicationExperience, updateExperience } from "../../../../api/ApplicationRequest"
 import { getExperience } from "../../../../api/ExperienceRequest"
-import { CAccordion, CAccordionBody, CAccordionHeader, CAccordionItem, CButton, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from "@coreui/react"
+import { CAccordion, CAccordionBody, CAccordionHeader, CAccordionItem, CButton, CSpinner, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from "@coreui/react"
 import { Formik, Form } from "formik"
 import { getNestedValue } from "../../../../helper"
 import Alert from "../../../../components/Alert"
@@ -12,6 +12,7 @@ const UserExperienceInfo = () => {
   const [applicationExperience, setApplicationExperience] = useState([])
   const location = useLocation()
   const { prevData } = location.state || {}
+  const [loading, setLoading] = useState(false)
 
   const fetchApplicationData = async () => {
     try {
@@ -95,18 +96,20 @@ const UserExperienceInfo = () => {
     fetchUserData()
   }, [])
   return (
+    loading ? 
+      <CSpinner className='align-slef-start my-3' color='primary' />
+    :
     applicationExperience.length > 0 &&
     <div className="my-2">
       <h3 className="bg-primary text-light p-2">Experience</h3>
       {
         applicationExperience.map((exp, i) => {
           const matchingUserExp = userExperience.find(
-            (uq) => uq.USER_ID === exp.USER_ID
+            (uq) => uq.EXPERIANCE_ID == exp.EXPERIANCE_ID
           )
 
-          console.log(exp)
           return (
-            <div key={exp.EXPERIENCE_ID}>
+            <div key={exp.EXPERIANCE_ID}>
               <CAccordion flush>
                 <CAccordionItem>
                   <CAccordionHeader>
@@ -121,6 +124,7 @@ const UserExperienceInfo = () => {
                         selectedFields: {},
                       }}
                       onSubmit={async (values) => {
+                        setLoading(true)
                         try {
                           const selectedKeys = Object.entries(values.selectedFields)
                             .filter(([_, isChecked]) => isChecked)
@@ -128,6 +132,8 @@ const UserExperienceInfo = () => {
 
                           if (selectedKeys.length === 0) {
                             Alert({ status: false, text: "Please select at least one field to update!" })
+                            setLoading(false)
+                            return
                           }
 
                           let payload = selectedKeys.reduce((acc, id) => {
@@ -138,7 +144,7 @@ const UserExperienceInfo = () => {
                             return acc
                           }, {})
 
-                          const response = await updateExperience(payload, exp.EXPERIENCE_ID)
+                          const response = await updateExperience(payload, exp.APPLICATION_EXPERIENCE_ID)
 
                           if (response.status === 200 || response.data?.success) {
                             Alert({ status: true, text: `Successfully updated ${exp.ORGANIZATION_NAME}` })
@@ -149,6 +155,7 @@ const UserExperienceInfo = () => {
                         } catch (error) {
                           console.log(error)
                         }
+                        setLoading(false)
                       }}
                     >
                       {
@@ -246,7 +253,7 @@ const UserExperienceInfo = () => {
                             </CTable>
 
                             <div className="mt-2">
-                              <CButton type="submit" color="primary">
+                              <CButton disabled={loading} type="submit" color="primary">
                                 Update
                               </CButton>
                             </div>

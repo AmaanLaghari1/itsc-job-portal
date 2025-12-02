@@ -75,7 +75,7 @@ const ApplicationConfirm = () => {
             gender: auth.user.GENDER,
             marital_status: auth.user.MARITAL_STATUS,
             religion: auth.user.RELIGION,
-            date_of_birth: new Date(auth.user.DATE_OF_BIRTH),
+            date_of_birth: auth.user.DATE_OF_BIRTH,
             place_of_birth: auth.user.PLACE_OF_BIRTH,
             home_address: auth.user.HOME_ADDRESS,
             permanent_address: auth.user.PERMANENT_ADDRESS,

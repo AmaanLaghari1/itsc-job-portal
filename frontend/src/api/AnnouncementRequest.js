@@ -60,3 +60,12 @@ export const getReport = (formdata) => {
         }
     })
 }
+
+export const downloadApplicationsReport = async (payload) => {
+  return API.post(`report/applications`,
+    payload,
+    {
+      responseType: "blob",   // IMPORTANT for PDF
+    }
+  );
+};

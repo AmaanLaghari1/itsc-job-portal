@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\AnnouncementQualificationRequirement;
+use App\Services\PdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -313,9 +314,10 @@ class AnnouncementController extends Controller
                 ->leftJoin('applications as app', 'a.ANNOUNCEMENT_ID', '=', 'app.ANNOUNCEMENT_ID')
                 ->select(
                     'a.ANNOUNCEMENT_TITLE',
-                    DB::raw('COUNT(app.APPLICATION_ID) AS TOTAL_APPLICATIONS'),
-                    DB::raw('COUNT(CASE WHEN app.PAID_DATE IS NOT NULL THEN 1 END) AS PAID_APPLICATIONS'),
-                    DB::raw('SUM(CASE WHEN app.PAID_DATE IS NOT NULL THEN a.APPLICATION_FEE ELSE 0 END) AS TOTAL_PAYMENT')
+                    DB::raw('COUNT(app.APPLICATION_ID) AS TOTAL_APPLICANTS'),
+                    DB::raw('COUNT(CASE WHEN app.PAID_DATE IS NOT NULL THEN 1 END) AS PAID_APPLICANTS'),
+                    DB::raw('COUNT(CASE WHEN app.PAID_DATE IS NULL THEN 1 END) AS UNPAID_APPLICANTS'),
+                    DB::raw('SUM(CASE WHEN app.PAID_DATE IS NOT NULL THEN a.APPLICATION_FEE ELSE 0 END) AS PAID_AMOUNT')
                 )
                 ->when(!empty($announcementIds), function ($query) use ($announcementIds) {
                     $query->whereIn('a.ANNOUNCEMENT_ID', $announcementIds);
@@ -335,6 +337,40 @@ class AnnouncementController extends Controller
             ], 500);
         }
 
+    }
+
+    public function downloadApplicationsReport(Request $request, PdfService $pdfService)
+    {
+        try {
+
+            $validation = Validator::make($request->all(), [
+                'announcement_ids' => 'required',
+                'announcement_ids.*' => 'integer'
+            ])->stopOnFirstFailure();
+
+            if ($validation->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => $validation->errors()->first()
+                ], 422);
+            }
+
+            $announcementIds = $request->announcement_ids;
+
+            // Generate PDF
+            $pdfContent = $pdfService->generateReportPdf($announcementIds);
+
+            // Return file as download
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="applications-report.pdf"'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error_message' => $e->getMessage()
+            ], 500);
+        }
     }
 
 }

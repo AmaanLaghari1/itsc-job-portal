@@ -339,7 +339,7 @@ class ApplicationController extends Controller
 
     public function getByUserId(string $id){
         try{
-            $record = Application::with(['announcement.qualification_requirements.degree', 'announcement.department'])->with('application_status')->where('USER_ID', $id)->orderBy('APPLICATION_ID', 'desc')->get();
+            $record = Application::with(['announcement.qualification_requirements.degree', 'announcement.department', 'application_status', 'experiences'])->where('USER_ID', $id)->orderBy('APPLICATION_ID', 'desc')->get();
 
             if(is_null($record)){
                 return response()->json([

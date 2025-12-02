@@ -12,12 +12,13 @@ class ApplicationExperience extends Model
 
     public $table = 'application_experiences';
 
-    protected $primaryKey = 'EXPERIENCE_ID';
+    protected $primaryKey = 'APPLICATION_EXPERIENCE_ID';
 
     public $timestamps = false;
 
     protected $fillable = [
         'APPLICATION_ID',
+        'EXPERIANCE_ID',
         'USER_ID',
         'EMP_TYPE',
         'ORGANIZATION_NAME',

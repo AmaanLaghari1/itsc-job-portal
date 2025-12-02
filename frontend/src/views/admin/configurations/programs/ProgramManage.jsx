@@ -128,6 +128,13 @@ const ProgramManage = () => {
                         try {
                             const response = await setDisciplineStatus(values, row.DISCIPLINE_ID)
                             // console.log(response)
+                            setDisciplines(prev =>
+                                prev.map(d =>
+                                    d.DISCIPLINE_ID === row.DISCIPLINE_ID
+                                        ? { ...d, ACTIVE: values.active }
+                                        : d
+                                )
+                            );
                         } catch (error) {
                             console.log(error)
                         }

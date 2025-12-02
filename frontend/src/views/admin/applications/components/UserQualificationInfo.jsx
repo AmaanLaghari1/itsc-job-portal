@@ -14,6 +14,7 @@ import {
   CAccordion,
   CAccordionBody,
   CAccordionHeader,
+  CSpinner,
 } from "@coreui/react"
 import { getNestedValue } from "../../../../helper"
 import { Formik, Form } from "formik"
@@ -22,6 +23,7 @@ import Alert from "../../../../components/Alert"
 const UserQualificationInfo = () => {
   const [qualifications, setQualifications] = useState([])
   const [userQualifications, setUserQualifications] = useState([])
+  const [loading, setLoading] = useState(false)
   const location = useLocation()
   const { prevData } = location.state || {}
 
@@ -46,10 +48,12 @@ const UserQualificationInfo = () => {
   }
 
   useEffect(() => {
+    setLoading(true)
     if (prevData?.APPLICATION_ID && prevData?.USER_ID) {
       fetchApplicationData(prevData.APPLICATION_ID)
       fetchUserData(prevData.USER_ID)
     }
+    setLoading(false)
   }, [])
 
   // Display key = nested path for UI
@@ -70,7 +74,8 @@ const UserQualificationInfo = () => {
   const unmatchingFields = fields.filter(field => userQualifications[field.key] != qualifications[field.key])
 
   return (
-      qualifications.length > 0 &&
+    loading ? <CSpinner className='align-slef-start my-3' color='primary' /> :
+    qualifications.length > 0 &&
     <div>
       <h3 className="bg-primary text-light p-2">Qualifications</h3>
 
@@ -96,6 +101,7 @@ const UserQualificationInfo = () => {
                       selectAll: false,
                     }}
                     onSubmit={async (values, { setSubmitting }) => {
+                      setLoading(true)
                       try {
                         const selectedKeys = Object.entries(values.selectedFields)
                           .filter(([_, isChecked]) => isChecked)
@@ -152,6 +158,7 @@ const UserQualificationInfo = () => {
                         Alert({ status: false, text: "Something went wrong while updating." })
                       } finally {
                         setSubmitting(false)
+                        setLoading(false)
                       }
                     }}
                   >
@@ -250,7 +257,7 @@ const UserQualificationInfo = () => {
                         </CTable>
 
                         <div className="mt-2">
-                          <CButton type="submit" color="primary">
+                          <CButton disabled={loading} type="submit" color="primary">
                             Update
                           </CButton>
                         </div>
@@ -263,7 +270,7 @@ const UserQualificationInfo = () => {
           </CAccordion>
         )
       })}
-      
+
     </div>
   )
 }

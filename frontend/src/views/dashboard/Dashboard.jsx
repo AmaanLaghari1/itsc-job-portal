@@ -87,7 +87,7 @@ const Dashboard = () => {
 
     setApplications(updatedApplications);
   } catch (error) {
-    // console.log(error);
+    console.log(error);
   }
   setFetching(false);
 }

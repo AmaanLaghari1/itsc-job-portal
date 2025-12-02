@@ -32,6 +32,8 @@
     "dompurify": "^3.2.6",
     "file-saver": "^2.0.5",
     "formik": "^2.4.6",
+    "jspdf": "^3.0.3",
+    "jspdf-autotable": "^5.0.2",
     "jwt-decode": "^4.0.0",
     "lexical": "^0.31.2",
     "prop-types": "^15.8.1",

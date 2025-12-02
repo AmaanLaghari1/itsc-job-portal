@@ -42,13 +42,17 @@ const AnnouncementDetail = () => {
                         </ul>
                     </div>
 
-                    <div>
-                        <h6 className="">
-                            <span className="fw-bold">
-                                Required Age: 
-                            </span> {announcement.AGE_FROM??'NA'} to {announcement.AGE_TO??'NA'} years
-                        </h6>
-                    </div>
+                    {
+                        announcement.AGE_TO > announcement.AGE_FROM ? 
+                        <div>
+                            <h6 className="">
+                                <span className="fw-bold">
+                                    Required Age: 
+                                </span> {announcement.AGE_FROM??'NA'} to {announcement.AGE_TO??'NA'} years
+                            </h6>
+                        </div>
+                        : ''
+                    }
 
                     <div className="border-bottom border-1 mb-2 border-secondary-subtle"></div>
                     <div className='lead'>

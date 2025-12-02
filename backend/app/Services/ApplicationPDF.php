@@ -20,54 +20,55 @@ class ApplicationPDF extends FPDF
         $this->SetXY(0, 0);
         $this->SetFont('Arial', 'B', 10);
 
-        // Additional Space
         $this->Ln(5);
 
         $this->SetFont('Arial', 'B', 16);
         $this->SetTextColor(0, 0, 0);
         $this->Cell(190, 10, 'University of Sindh', 0, 1, 'C');
+
         $this->SetFont('Arial', 'B', 12);
         $this->Cell(190, 5, 'Application Form', 0, 1, 'C');
-//        $this->Image(env('ASSET_URL') .'images/usindh-logo2.png', 10, 5, 20, 20, '', '');
+
         $this->Image(public_path('images/usindh_logo.png'), 10, 5, 20, 20, '', '');
 
-
-//        $this->Image(env('ASSET_URL') .'images/qr_frame.png', 180, 5, 20, 20, '', '');
-//        $this->Image(public_path('images/qr_frame.png'), 180, 5, 20, 20, '', '');
-//        $this->Image($this->getQrCode(1), 180, 5, 20, 20, '', '');
         $this->Ln(5);
     }
 
-    public function Footer(){
+    public function Footer()
+    {
         $this->setMargins(10, 10, 10);
-        // Y-axis Margin
-        $this->setY(285);
+        $this->SetY(285);
         $this->SetFont('Times', '', 8);
 
-        // Border Line
         $this->Cell(50, 0, '', 1, 1, 'C');
-
         $this->Cell(50, 5, 'Signature of Applicant', 0, 0, 'C');
     }
 
     public function NbLines($w, $txt)
     {
         $cw = &$this->CurrentFont['cw'];
+
         if ($w == 0) {
             $w = $this->w - $this->rMargin - $this->x;
         }
+
         $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
+
         $s = str_replace("\r", '', $txt);
         $nb = strlen($s);
-        if ($nb > 0 and $s[$nb - 1] == "\n")
+        if ($nb > 0 && $s[$nb - 1] == "\n") {
             $nb--;
+        }
+
         $sep = -1;
         $i = 0;
         $j = 0;
         $l = 0;
         $nl = 1;
+
         while ($i < $nb) {
             $c = $s[$i];
+
             if ($c == "\n") {
                 $i++;
                 $sep = -1;
@@ -76,9 +77,12 @@ class ApplicationPDF extends FPDF
                 $nl++;
                 continue;
             }
+
             if ($c == ' ')
                 $sep = $i;
+
             $l += $cw[$c];
+
             if ($l > $wmax) {
                 if ($sep == -1) {
                     if ($i == $j)
@@ -86,6 +90,7 @@ class ApplicationPDF extends FPDF
                 } else {
                     $i = $sep + 1;
                 }
+
                 $sep = -1;
                 $j = $i;
                 $l = 0;
@@ -94,78 +99,121 @@ class ApplicationPDF extends FPDF
                 $i++;
             }
         }
+
         return $nl;
     }
 
+    // -------------------------------
+    // FIXED TABLE FUNCTION (stable)
+    // -------------------------------
     function FancyTable($header, $data, $colWidths)
     {
-//        $this->SetFont('Times', 'B', 10);
+        // ---------------------
+        // Draw Header
+        // ---------------------
+        $this->SetFont('Arial', 'B', 10);
 
-        // Header
-        $x = $this->GetX();
-        $y = $this->GetY();
-        $height = 6;
+        $nb = [];
         foreach ($header as $i => $col) {
-            $this->Rect($x, $y, $colWidths[$i], $height);
-            $this->MultiCell($colWidths[$i], 5, $col, 0, 'C');
-            $x += $colWidths[$i];
-            $this->SetXY($x, $y);
+            $nb[$i] = $this->NbLines($colWidths[$i], $col);
         }
-        $this->Ln($height);
 
-        // Data
-//        $this->SetFont('Times', '', 10);
+        $headerHeight = 6 * max($nb);
+
+        $startX = $this->GetX();
+        $startY = $this->GetY();
+        $x = $startX;
+        $y = $startY;
+
+        foreach ($header as $i => $col) {
+            $this->SetXY($x, $y);
+            $this->Rect($x, $y, $colWidths[$i], $headerHeight);
+            $this->MultiCell($colWidths[$i], 6, $col, 0, 'C');
+            $x += $colWidths[$i];
+        }
+
+        $this->SetXY($startX, $startY + $headerHeight);
+
+        // ---------------------
+        // TABLE BODY
+        // ---------------------
+        $this->SetFont('Arial', '', 9);
+
         foreach ($data as $row) {
-            $nbLines = 0;
+
+            // Compute row height
+            $nbLines = [];
             foreach ($row as $i => $cell) {
-                $nbLines = max($nbLines, $this->NbLines($colWidths[$i], $cell));
+                $nbLines[$i] = $this->NbLines($colWidths[$i], $cell);
             }
-            $rowHeight = 6 * $nbLines;
+
+            $rowHeight = 6 * max($nbLines);
 
             // Page break check
-            if ($this->GetY() + $rowHeight > $this->PageBreakTrigger)
+            if ($this->GetY() + $rowHeight > $this->PageBreakTrigger) {
                 $this->AddPage();
 
+                // Draw header again
+                $this->SetFont('Arial', 'B', 10);
+
+                $x = $this->GetX();
+                $y = $this->GetY();
+
+                foreach ($header as $i => $col) {
+                    $this->SetXY($x, $y);
+                    $this->Rect($x, $y, $colWidths[$i], $headerHeight);
+                    $this->MultiCell($colWidths[$i], 6, $col, 0, 'C');
+                    $x += $colWidths[$i];
+                }
+
+                $this->SetXY($startX, $y + $headerHeight);
+                $this->SetFont('Arial', '', 9);
+            }
+
+            // Draw row
             $x = $this->GetX();
             $y = $this->GetY();
 
             foreach ($row as $i => $cell) {
-                $this->Rect($x, $y, $colWidths[$i], $rowHeight);
-                $this->MultiCell($colWidths[$i], 5, $cell, 0, 'L');
-                $x += $colWidths[$i];
                 $this->SetXY($x, $y);
+                $this->Rect($x, $y, $colWidths[$i], $rowHeight);
+                $this->MultiCell($colWidths[$i], 6, $cell, 0, 'L');
+                $x += $colWidths[$i];
             }
-            $this->Ln($rowHeight);
+
+            // Move cursor to next row (fixed drift)
+            $this->SetXY($startX, $y + $rowHeight);
         }
     }
 
-    public function fieldWithLabel($labelTxt, $valueTxt, $labelWidth, $valueWidth, $fieldHeight, $border=0, $align='L'){
+    public function fieldWithLabel($labelTxt, $valueTxt, $labelWidth, $valueWidth, $fieldHeight, $border = 0, $align = 'L')
+    {
         $startX = $this->GetX();
         $startY = $this->GetY();
 
-        // Value
         $this->setFont('', 'B');
-        $this->setXY($startX+$labelWidth, $startY);
+        $this->setXY($startX + $labelWidth, $startY);
         $this->MultiCell($valueWidth, $fieldHeight, $valueTxt, $border, $align);
 
-        // Get height used
         $endY = $this->GetY();
         $cellHeight = $endY - $startY;
 
-        // Label
         $this->setFont('', '');
         $this->setXY($startX, $startY);
         $this->MultiCell($labelWidth, $cellHeight, $labelTxt, $border, $align);
-        // $this->ln(0);
     }
 
-    public function getTotalExperience($start_date, $end_date) {
+    public function getTotalExperience($start_date, $end_date)
+    {
         $start = Carbon::createFromFormat('d-m-Y', $start_date);
+        $end_date = $end_date == 'continued' ? Carbon::now()->format('d-m-Y') : $end_date;
         $end = Carbon::createFromFormat('d-m-Y', $end_date);
-        return $start->diff($end); // returns DateInterval
+
+        return $start->diff($end);
     }
 
-    public function sumTotalExperience($experienceData) {
+    public function sumTotalExperience($experienceData)
+    {
         $totalYears = 0;
         $totalMonths = 0;
         $totalDays = 0;
@@ -173,6 +221,7 @@ class ApplicationPDF extends FPDF
         foreach ($experienceData as $item) {
             $startDate = date('d-m-Y', strtotime($item->START_DATE));
             $endDate = empty($item->END_DATE) ? date('d-m-Y') : date('d-m-Y', strtotime($item->END_DATE));
+
             $diff = $this->getTotalExperience($startDate, $endDate);
 
             $totalYears += $diff->y;
@@ -180,7 +229,6 @@ class ApplicationPDF extends FPDF
             $totalDays += $diff->d;
         }
 
-        // Normalize days and months
         if ($totalDays >= 30) {
             $extraMonths = floor($totalDays / 30);
             $totalDays %= 30;
@@ -196,7 +244,8 @@ class ApplicationPDF extends FPDF
         return "{$totalYears} Years {$totalMonths} Months {$totalDays} Days";
     }
 
-    public function RequiredData($data = []) {
+    public function RequiredData($data = [])
+    {
         $application = Application::with(['qualifications', 'experiences'])
             ->find($data['APPLICATION_ID']);
 
@@ -204,20 +253,9 @@ class ApplicationPDF extends FPDF
         $provinceName = DB::table('provinces')->where('PROVINCE_ID', $data['PROVINCE_ID'])->value('PROVINCE_NAME');
         $districtName = DB::table('districts')->where('DISTRICT_ID', $data['DISTRICT_ID'])->value('DISTRICT_NAME');
 
-//        $qualifications = $application->qualifications->map(function ($item) {
-//            return [
-//                $item->degree()->DEGREE_TITLE,
-//                strtoupper($item->institute->INSTITUTE_NAME),
-//                $item->PASSING_YEAR,
-//                $item->OBTAINED_MARKS,
-//                $item->TOTAL_MARKS,
-//            ];
-//        });
-
-        $qualificationsOld = $application->qualifications
-            ->sortByDesc(function ($item) {
-                return $item->degree()->DEGREE_ID;
-            })
+        $qualifications = Qualification::where('USER_ID', $data['USER_ID'])
+            ->get()
+            ->sortByDesc(fn($item) => $item->degree()->DEGREE_ID)
             ->values()
             ->map(function ($item) {
                 return [
@@ -229,25 +267,11 @@ class ApplicationPDF extends FPDF
                 ];
             });
 
-        $qualifications = Qualification::where('USER_ID', $data['USER_ID'])->get()
-            ->sortByDesc(function ($item) {
-                return $item->degree()->DEGREE_ID;
-            })
-            ->values()
-            ->map(function ($item) {
-                return [
-                    $item->degree()->DEGREE_TITLE,
-                    strtoupper($item->institute->INSTITUTE_NAME),
-                    $item->PASSING_YEAR,
-                    $item->OBTAINED_MARKS,
-                    $item->TOTAL_MARKS,
-                ];
-            });;
-
         $experience = $application->experiences->map(function ($item) {
             $startDate = date('d-m-Y', strtotime($item->START_DATE));
-            $endDate = empty($item->END_DATE) ? date('d-m-Y') : date('d-m-Y', strtotime($item->END_DATE));
+            $endDate = empty($item->END_DATE) ? 'continued' : date('d-m-Y', strtotime($item->END_DATE));
             $totalExperience = $this->getTotalExperience($startDate, $endDate);
+
             return [
                 $item->ORGANIZATION_NAME,
                 $item->EMP_TYPE,
@@ -274,10 +298,7 @@ class ApplicationPDF extends FPDF
             "DATE_OF_BIRTH" => date('d-m-Y', strtotime($data['DATE_OF_BIRTH'])) ?? '',
             "PLACE_OF_BIRTH" => $data['PLACE_OF_BIRTH'] ?? '',
             "GENDER" => $data['GENDER'] == 'M' ? 'MALE' : 'FEMALE',
-            "MARITAL_STATUS" => $data['MARITAL_STATUS'] == 1 ? 'SINGLE' :
-                    ($data['MARITAL_STATUS'] == 2 ? 'MARRIED' :
-                    ($data['MARITAL_STATUS'] == 3 ? 'WIDOWED' :
-                    ($data['MARITAL_STATUS'] == 4 ? 'DIVORCED' : '-'))),
+            "MARITAL_STATUS" => $data['MARITAL_STATUS'],
             "RELIGION" => $data['RELIGION'] ?? '',
             "HOME_ADDRESS" => $data['HOME_ADDRESS'] ?? '',
             "PERMANENT_ADDRESS" => $data['PERMANENT_ADDRESS'] ?? '',
@@ -295,7 +316,6 @@ class ApplicationPDF extends FPDF
     public function getQrCode($content)
     {
         $qrCodeService = new QRCodeService();
-        return $qrCodeService->generate($content, 'qr_frames/'.$content.'qr_code.png');
+        return $qrCodeService->generate($content, 'qr_frames/' . $content . 'qr_code.png');
     }
-
 }

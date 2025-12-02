@@ -79,19 +79,21 @@ Route::prefix('announcement')->group(function() {
     Route::get('get/{id}', [AnnouncementController::class, 'show']);
     Route::delete('delete/{id}', [AnnouncementController::class, 'destroy']);
     Route::post('report/get', [AnnouncementController::class, 'generateReport']);
+    Route::post('/report/applications', [AnnouncementController::class, 'downloadApplicationsReport']);
 });
 
 Route::get('/announcement/get/recent_announcements', [AnnouncementController::class, 'getSixMonthOldAnnouncements']);
 
 Route::prefix('application')->group(function() {
     Route::get('get', [ApplicationController::class, 'index']);
+    Route::get('get/{id}', [ApplicationController::class, 'show']);
     Route::get('get_by_announcement/{announcementId}', [ApplicationController::class, 'getApplicationsByAnnouncementId']);
     Route::post('post', [ApplicationController::class, 'create']);
     Route::put('put/{id}', [ApplicationController::class, 'update']);
     Route::post('application_requirement', [ApplicationController::class, 'applicationRequirements']);
 //    Route::get('get/{id}', [ApplicationController::class, 'show']);
     Route::delete('delete/{id}', [ApplicationController::class, 'destroy']);
-    Route::get('get/{userId?}', [ApplicationController::class, 'getByUserId']);
+    Route::get('get_by_user_id/{userId?}', [ApplicationController::class, 'getByUserId']);
     Route::get('verify-challan/{application_id}', [ApplicationController::class, 'verifyChallan']);
     Route::put('update-user/{id}', [ApplicationController::class, 'updateUserApplicationData']);
     Route::post('payment/report/get', [ApplicationController::class, 'getPaymentReport']);
