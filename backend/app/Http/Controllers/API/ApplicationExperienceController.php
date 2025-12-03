@@ -54,7 +54,10 @@ class ApplicationExperienceController extends Controller
                 ], 404);
             }
 
-            $updated = $record->update($request->all());
+            $updated = $record->update([
+                "JOB_TITLE" => strtoupper($request->job_title)??''
+            ]
+            );
             if($updated){
                 return response()->json([
                     'status' => true,

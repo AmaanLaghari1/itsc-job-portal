@@ -21,6 +21,7 @@ class ApplicationExperience extends Model
         'EXPERIANCE_ID',
         'USER_ID',
         'EMP_TYPE',
+        'JOB_TITLE',
         'ORGANIZATION_NAME',
         'ADDRESS',
         'CONTACT_NO',

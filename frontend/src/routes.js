@@ -12,6 +12,7 @@ const Institutes = React.lazy(() => import('./views/admin/configurations/institu
 const InstituteAdd = React.lazy(() => import('./views/admin/configurations/institutes/InstituteAdd'))
 const InstituteEdit = React.lazy(() => import('./views/admin/configurations/institutes/InstituteEdit'))
 const ImportPaidApplications = React.lazy(() => import('./views/admin/applications/ImportPaidApplications'))
+const ApplicationUpdateExperience = React.lazy(() => import('./views/admin/applications/ApplicationUpdateExperience'))
 
 // Public Components
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
@@ -35,14 +36,15 @@ const routes = [
   { path: '/admin/announcement/add', name: 'Add Announcement', element: AnnouncementAdd },
   { path: '/admin/announcement/edit', name: 'Edit Announcement', element: AnnouncementEdit },
   { path: '/admin/applications', name: 'All Applications', element: Applications },
-  { path: '/admin/application/edit', name: 'Dashboard', element: ApplicationEdit },
-  { path: '/admin/application/update-user', name: 'Dashboard', element: ApplicationUpdateUser },
+  { path: '/admin/application/edit', name: 'Application Review', element: ApplicationEdit },
+  { path: '/admin/application/update-user', name: 'Application Update User', element: ApplicationUpdateUser },
   { path: '/admin/users', name: 'All Users', element: UsersAll },
   { path: '/admin/program/manage', name: 'Programs Management', element: ProgramManage },
   { path: '/admin/institute', name: 'All Institutes', element: Institutes },
   { path: '/admin/institute/add', name: 'Add Institute', element: InstituteAdd },
   { path: '/admin/institute/edit', name: 'Edit Institute', element: InstituteEdit },
   { path: '/admin/import/paid_applications', name: 'Import Paid Applications', element: ImportPaidApplications },
+  { path: '/admin/application/update-experience', name: 'Application Update Experience', element: ApplicationUpdateExperience },
 
   // Public routes
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },

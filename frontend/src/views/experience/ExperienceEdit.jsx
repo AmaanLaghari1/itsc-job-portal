@@ -18,6 +18,7 @@ const ExperienceEdit = () => {
         user_id: auth.user.USER_ID || prevExp.USER_ID,
         organization_name: prevExp?.ORGANIZATION_NAME || '',
         job_description: prevExp?.JOB_DESCRIPTION || '',
+        job_title: prevExp?.JOB_TITLE??'',
         start_date: prevExp?.START_DATE || '',
         end_date: prevExp?.END_DATE || '',
         is_job_continue: prevExp?.IS_JOB_CONTINUE || '',
@@ -30,6 +31,7 @@ const ExperienceEdit = () => {
 
     const validationRules = Yup.object({
         organization_name: Yup.string().required('Organization name required'),
+        job_title: Yup.string().required('Job title required'),
         job_description: Yup.string().required('Job description required'),
         emp_type: Yup.string().required('Employment type required'),
         // contact_no: Yup.string().required('Contact No. required'),

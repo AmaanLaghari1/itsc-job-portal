@@ -38,6 +38,15 @@ export const getApplication = (userId) => {
     })
 }
 
+export const getApplicationExperience = (applicationId) => {
+    return API.get("experience/get/"+applicationId, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
 export const getPaidApplications = (formdata) => {
     return API.post("payment/report/get", formdata, {
         headers: {
@@ -58,6 +67,15 @@ export const getApplicationByAnnouncementId = (announcementId) => {
 
 export const updateApplication = (formdata, id) => {
     return API.put("put/"+id, formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const updateApplicationExperience = (formdata, id) => {
+    return API.put("experience/update/"+id, formdata, {
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json"

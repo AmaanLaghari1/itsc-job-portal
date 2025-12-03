@@ -63,6 +63,14 @@ const ExperienceCard = ({experience, onDelete}) => {
           </CRow>
           <CRow className='border-top'>
             <CCol sm={3} className="">
+              Job Title
+            </CCol>
+            <CCol sm={9} className="fw-bold">
+              {exp.JOB_TITLE??'-'}
+            </CCol>
+          </CRow>
+          <CRow className='border-top'>
+            <CCol sm={3} className="">
               Job Description
             </CCol>
             <CCol sm={9} className="fw-bold">

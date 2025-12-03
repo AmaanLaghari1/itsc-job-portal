@@ -5,6 +5,7 @@ import Alert from '../../../components/Alert';
 import { useState } from 'react';
 import AnnouncementForm from './AnnouncementForm';
 import { useSelector } from 'react-redux';
+import { normalizeDate } from '../../../helper';
 
 const AnnouncementAdd = () => {
   const [loading, setLoading] = useState(false)
@@ -21,7 +22,6 @@ const AnnouncementAdd = () => {
     age_from: 18,
     age_to: '',
     qualifications: [],
-    // is_required: [],
     experience_years: '',
     ref_no: '',
     access_id: userRole,
@@ -47,19 +47,16 @@ const AnnouncementAdd = () => {
       .required('Description required')
       .min(100, 'Description too short'),
     age_from: Yup.number()
-      .required('Age Limit is required'), // 👈 Optional: remove `.required()` if not mandatory
+      .required('Age Limit is required'),
     age_to: Yup.number()
-      .required('Age Limit is required'), // 👈 Optional: remove `.required()` if not mandatory
+      .required('Age Limit is required'),
   });
 
   const submitHandler = async (values) => {
     setLoading(true)
-    values.start_date = new Date(values.start_date).toISOString().split('T')[0];
-    values.end_date = new Date(values.end_date).toISOString().split('T')[0];
-    // values.experience_years = values.experience_years != '' ? parseInt(values.experience_years) : null;
-
-    // alert(JSON.stringify(values))
-    // return 
+    values.start_date = normalizeDate(values.start_date);
+    values.end_date = normalizeDate(values.end_date);
+    
     try {
       const response = await API.createAnnouncement(values);
       // console.log('Announcement created successfully:', response);

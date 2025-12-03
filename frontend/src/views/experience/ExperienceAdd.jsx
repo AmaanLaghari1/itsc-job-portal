@@ -16,6 +16,7 @@ const ExperienceAdd = () => {
         user_id: auth.user.USER_ID,
         organization_name: '',
         job_description: '',
+        job_title: '',
         start_date: '',
         end_date: '',
         is_job_continue: '',
@@ -28,6 +29,7 @@ const ExperienceAdd = () => {
 
     const validationRules = Yup.object({
         organization_name: Yup.string().required('Organization name required'),
+        job_title: Yup.string().required('Job title required'),
         job_description: Yup.string().required('Job description required'),
         emp_type: Yup.string().required('Employment type required'),
         // contact_no: Yup.string().required('Contact No. required'),

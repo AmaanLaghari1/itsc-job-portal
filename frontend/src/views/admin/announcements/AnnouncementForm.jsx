@@ -194,7 +194,7 @@ const AnnouncementForm = ({ initialValues, validationRules, handleSubmit, loadin
                 // value={1} // The value will be 1 if checked
                 onChange={e => setFieldValue('active', e.target.checked ? 1 : 0)} // Custom value handling
               />
-              <label htmlFor="" className="form-check-label mx-1 fw-bold fs-4">Active</label>
+              <label htmlFor="active" className="form-check-label mx-1 fw-bold fs-4">Active</label>
             </div>
 
             <CButton variant='primary' type="submit" className='btn btn-primary fs-5 mx-auto d-block rounded-0 px-3 my-3'

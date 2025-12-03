@@ -46,6 +46,7 @@ class AnnouncementController extends Controller
                 'announcement_title' => 'required',
                 'position_name' => 'required',
                 'dept_id' => 'required',
+                'description' => 'required',
                 'start_date' => 'required',
                 'end_date' => 'required',
                 'experience_years' => 'nullable|integer',
@@ -163,8 +164,11 @@ class AnnouncementController extends Controller
                 'announcement_title' => 'required',
                 'position_name' => 'required',
                 'dept_id' => 'required',
+                'description' => 'required',
                 'start_date' => 'required',
                 'end_date' => 'required',
+                'experience_years' => 'nullable|integer',
+                'qualifications' => 'required'
             ]);
 
             if ($validation->stopOnFirstFailure()->fails()) {
@@ -212,7 +216,7 @@ class AnnouncementController extends Controller
                 $isRequired = $q['required'];
 
                 if ($prevMap->has($degreeId)) {
-                    // ✅ Update existing
+                    // Update existing
                     $prev = $prevMap[$degreeId];
 
                     $record = AnnouncementQualificationRequirement::find($prev['REQ_ID']);
@@ -223,7 +227,6 @@ class AnnouncementController extends Controller
                         $existingReqIds[] = $record->REQ_ID;
                     }
                 } else {
-                    // ✅ Create new
                     $new = AnnouncementQualificationRequirement::create([
                         'ANNOUNCEMENT_ID' => $record->ANNOUNCEMENT_ID,
                         'DEGREE_ID' => $degreeId,
@@ -285,7 +288,7 @@ class AnnouncementController extends Controller
                 $cutoffDate = Carbon::now()->subMonths($cutoff); // 6 months from today
             }
             else {
-                $cutoffDate = Carbon::now()->subDays(25); // 14 days from today
+                $cutoffDate = Carbon::now()->subDays(25); // 25 days from today
             }
 
             $records = Announcement::with([

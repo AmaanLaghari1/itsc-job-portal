@@ -4,13 +4,16 @@ import { formatDate } from "../../../helper"
 import { useEffect, useMemo, useState } from "react"
 import axios from "axios"
 import { getQualification } from "../../../api/QualificationRequest"
-import { getExperience } from "../../../api/ExperienceRequest"
+import CIcon from "@coreui/icons-react"
+import { cilPen } from "@coreui/icons"
+import { getApplicationExperience } from "../../../api/ApplicationRequest"
 
 const ApplicationReview = ({ prevData, announcement }) => {
     const [fetching, setFetching] = useState(false)
     const [userDetails, setUserDetails] = useState({})
     const [qualifications, setQualification] = useState([]);
     const [experiences, setExperience] = useState([]);
+    const navigate = useNavigate()
 
     const getUserDetail = async (countryId, provinceId = null, districtId = null) => {
         try {
@@ -39,7 +42,7 @@ const ApplicationReview = ({ prevData, announcement }) => {
 
     async function fetchExpData() {
         setFetching(true)
-        const response = await getExperience(prevData.USER_ID);
+        const response = await getApplicationExperience(prevData.APPLICATION_ID);
         // console.log(response.data.data);
         setExperience(response.data.data);
         setFetching(false)
@@ -306,6 +309,22 @@ const ApplicationReview = ({ prevData, announcement }) => {
                                 <div className="card w-100 p-0" key={exp.EXPERIANCE_ID}>
                                     <CCardHeader className='fw-bolder d-flex'>
                                         {exp.ORGANIZATION_NAME}
+
+                                        <div className="ms-auto">
+                                            <CButton variant='success' color='success' className='btn btn-outline-success btn-sm mx-1'
+                                                onClick={() => {
+                                                    navigate('/admin/application/update-experience', {
+                                                        state: {
+                                                            prevExp: exp,
+                                                            announcement: announcement
+                                                        }
+                                                    })
+                                                }
+                                                }
+                                            >
+                                                <CIcon icon={cilPen} size="md" />
+                                            </CButton>
+                                        </div>
                                     </CCardHeader>
 
                                     <div className="d-flex flex-column gap-2 p-3 small">
@@ -315,6 +334,14 @@ const ApplicationReview = ({ prevData, announcement }) => {
                                             </CCol>
                                             <CCol sm={9} className="fw-bold">
                                                 {exp.EMP_TYPE}
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className='border-top'>
+                                            <CCol sm={3} className="">
+                                                Job Title
+                                            </CCol>
+                                            <CCol sm={9} className="fw-bold">
+                                                {exp.JOB_TITLE || '-'}
                                             </CCol>
                                         </CRow>
                                         <CRow className='border-top'>

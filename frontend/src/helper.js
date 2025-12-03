@@ -61,3 +61,23 @@ export const getRoleNameById = (id) => {
 export const getNestedValue = (obj, key) => {
     return key.split('.').reduce((acc, part) => acc && acc[part], obj)
 }
+
+export const normalizeDate = (value) => {
+  if (!value) return value;
+
+  // If it's already a Date object
+  if (value instanceof Date) {
+    return value.toISOString().split("T")[0];
+  }
+
+  // If it's a number or something unexpected, convert to string
+  const str = String(value);
+
+  // If it contains time (T), remove it
+  if (str.includes("T")) {
+    return str.split("T")[0];
+  }
+
+  // Already in YYYY-MM-DD
+  return str;
+};

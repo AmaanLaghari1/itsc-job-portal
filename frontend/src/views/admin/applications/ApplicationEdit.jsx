@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import * as API from '../../../api/ApplicationRequest'
 import Alert from '../../../components/Alert'
 import * as Yup from 'yup'
-import ApplicationConfirm from '../../dashboard/ApplicationConfirm'
 import ApplicationReview from './ApplicationReview'
 
 const ApplicationEdit = () => {
