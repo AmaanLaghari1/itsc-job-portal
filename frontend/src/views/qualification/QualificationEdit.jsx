@@ -71,23 +71,32 @@ const QualificationEdit = () => {
         degree_program: Yup.string().required('Level required'),
         discipline_id: Yup.string().required('Discipline required'),
         organization_id: Yup.string().required('Organization required'),
-        roll_no: Yup.string().required('Roll No./Seat No. required'),
+        // roll_no: Yup.string().required('Roll No./Seat No. required'),
         is_result_declare: Yup.string().required(), // make sure this exists in form values
-        obtained_marks: Yup.string().when('is_result_declare', (is_result_declare, schema) => {
-            return is_result_declare == 'Y'
-                ? schema.required('Obtained Marks required')
-                : schema;
-        }),
-        total_marks: Yup.string().when('is_result_declare', (is_result_declare, schema) => {
-            return is_result_declare == 'Y'
-                ? schema.required('Total Marks required')
-                : schema;
-        }),
-        grading_as: Yup.string().when('is_result_declare', (is_result_declare, schema) => {
-            return is_result_declare == 'Y'
-                ? schema.required('Grading As required')
-                : schema;
-        }),
+        obtained_marks: Yup.string().when(
+            ['degree_program', 'is_result_declare'],
+            (data, schema) => {
+                if (data[0] == 8) return schema;
+                if (data[1] === 'Y') return schema.required('Obtained Marks required');
+                return schema;
+            }
+        ),
+        total_marks: Yup.string().when(
+            ['degree_program', 'is_result_declare'],
+            (data, schema) => {
+                if (data[0] == 8) return schema;
+                if (data[1] === 'Y') return schema.required('Total Marks required');
+                return schema;
+            }
+        ),
+        grading_as: Yup.string().when(
+            ['degree_program', 'is_result_declare'],
+            (data, schema) => {
+                if (data[0] == 8) return schema;
+                if (data[1] === 'Y') return schema.required('Grading As required');
+                return schema;
+            }
+        ),
         cgpa: Yup.string().when('grading_as', (grading_as, schema) => {
             return grading_as == 'C'
                 ? schema.required('CGPA required')

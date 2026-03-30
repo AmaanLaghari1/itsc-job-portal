@@ -5,6 +5,7 @@ import Alert from '../../components/Alert'
 import * as API from '../../api/ExperienceRequest.js'
 import * as Yup from 'yup'
 import ExperienceForm from './ExperienceForm.jsx'
+import { normalizeDate } from '../../helper.js'
 
 const ExperienceAdd = () => {
     const auth = useSelector(state => state.auth.authData)
@@ -30,7 +31,7 @@ const ExperienceAdd = () => {
     const validationRules = Yup.object({
         organization_name: Yup.string().required('Organization name required'),
         job_title: Yup.string().required('Job title required'),
-        job_description: Yup.string().required('Job description required'),
+        // job_description: Yup.string().required('Job description required'),
         emp_type: Yup.string().required('Employment type required'),
         // contact_no: Yup.string().required('Contact No. required'),
         address: Yup.string().required('Address required'),
@@ -44,16 +45,14 @@ const ExperienceAdd = () => {
     const handleSubmit = async (values, {setSubmitting, resetForm}) => {
         setSubmitting(false)
         setLoading(true)
-        const formattedValues = {
-            ...values,
-            start_date: values.start_date ? new Date(values.start_date).toISOString().split('T')[0] : '',
-            end_date: values.end_date ? new Date(values.end_date).toISOString().split('T')[0] : '',
-        };
+        values.start_date = normalizeDate(values.start_date);
+        values.end_date = normalizeDate(values.end_date);
 
         try {
-            const response = await API.createExperience(formattedValues)
+            const response = await API.createExperience(values)
             // console.log(response)
             dispatch({ type: "EXPERIENCE_COMPLETENESS_SUCCESS", payload: response?.data?.experience_completeness });
+            resetForm()
             Alert({status: true, text: response?.data?.message || 'Experience added successfully'})
             navigate('/experience')
         }

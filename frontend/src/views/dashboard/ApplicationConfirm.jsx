@@ -158,6 +158,7 @@ const ApplicationConfirm = () => {
             <CCard className="shadow shadow-lg my-5 border-0">
                 <div className="text-center">
                     <h1 className="display-4">Review Application</h1>
+                    <h5 className="fw-bold">{announcement?.ANNOUNCEMENT_TITLE}</h5>
                 </div>
                 <CCardBody>
                     <p>
@@ -347,7 +348,7 @@ const ApplicationConfirm = () => {
 
                         {
                             fetching ? <CSpinner className='align-slef-start my-3' color='primary' /> :
-                                filteredQualifications.map((qualification, index) => (
+                                qualifications.map((qualification, index) => (
                                     <div key={index}>
                                         <CCardHeader className='fw-bolder d-flex align-items-center'>
                                             {qualification.degree.DEGREE_TITLE || 'Qualification ' + (index + 1)}

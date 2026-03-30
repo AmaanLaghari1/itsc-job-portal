@@ -20,6 +20,11 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => ['*'],
+    // Allow ONLY this origin
+    //'allowed_origins' => [
+    //    'https://careers.usindh.edu.pk',
+    //    'https://careers.usindh.edu.pk/',
+    //],,
 
     'allowed_origins_patterns' => [],
 

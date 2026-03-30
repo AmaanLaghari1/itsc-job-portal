@@ -69,3 +69,21 @@ export const downloadApplicationsReport = async (payload) => {
     }
   );
 };
+
+export const downloadApplicationExperienceReport = async (payload) => {
+  return API.post(`report/experience`,
+    payload,
+    {
+      responseType: "blob",   // IMPORTANT for PDF
+    }
+  );
+};
+
+export const downloadCandidatesReport = async (payload) => {
+  return API.post(`report/candidates`,
+    payload,
+    {
+      responseType: "blob",   // IMPORTANT for PDF
+    }
+  );
+};

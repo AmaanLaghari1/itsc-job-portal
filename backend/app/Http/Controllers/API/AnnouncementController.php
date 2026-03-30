@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 
 class AnnouncementController extends Controller
@@ -20,7 +21,13 @@ class AnnouncementController extends Controller
     public function index()
     {
         try {
-            $allRecords = Announcement::with('program')->with('qualification_requirements.degree')->with('department')->orderBy('START_DATE', 'desc')->get();
+            $allRecords = Cache::remember('announcements_all', 60, function () {
+                return Announcement::with('program')
+                    ->with('qualification_requirements.degree')
+                    ->with('department')
+                    ->orderBy('START_DATE', 'desc')
+                    ->get();
+            });
 
             return response()->json([
                 'status' => true,
@@ -28,7 +35,7 @@ class AnnouncementController extends Controller
                 'message' => 'All records retrieved'
             ], 200);
 
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage()
@@ -375,5 +382,72 @@ class AnnouncementController extends Controller
             ], 500);
         }
     }
+
+    public function downloadApplicationExperienceReport(Request $request, PdfService $pdfService)
+    {
+        try {
+
+            $validation = Validator::make($request->all(), [
+                'announcement_ids' => 'required',
+                'announcement_ids.*' => 'integer'
+            ])->stopOnFirstFailure();
+
+            if ($validation->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => $validation->errors()->first()
+                ], 422);
+            }
+
+            $announcementIds = $request->announcement_ids;
+
+            // Generate PDF
+            $pdfContent = $pdfService->generateExperienceReportPdf($announcementIds);
+
+            // Return file as download
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="applications-report.pdf"'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error_message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function downloadCandidatesReport(Request $request, PdfService $pdfService)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'announcement_ids' => 'required',
+                'announcement_ids.*' => 'integer'
+            ])->stopOnFirstFailure();
+
+            if($validation->fails()){
+                return response()->json([
+                    'status' => 'error',
+                    'errors' => $validation->errors()->first()
+                ], 401);
+            }
+
+            $announcementIds = $request->announcement_ids;
+
+            $pdfContent = $pdfService->generateCandidateReportPdf($announcementIds);
+
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="candidate-report.pdf"'
+            ], 200);
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 }

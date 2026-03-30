@@ -11,14 +11,34 @@ export const createApplication = (formdata) => {
     })
 }
 
-export const applicationRequirement = (formdata) => {
-    return API.post("application_requirement", formdata, {
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json"
-        }
-    })
-}
+// export const applicationRequirement = (formdata) => {
+//     return API.post("application_requirement", formdata, {
+//         headers: {
+//             "Access-Control-Allow-Origin": "*",
+//             "Content-Type": "application/json"
+//         }
+//     })
+// }
+
+// ApplicationRequest.js
+export const applicationRequirement = async (formdata) => {
+  try {
+    const res = await API.post("application_requirement", formdata);
+    return res.data;
+  } catch (error) {
+    if (error.response?.status === 403) {
+      // Expected case → user not eligible
+      return {
+        success: false,
+        message: error.response?.data?.error_message || "Not eligible",
+      };
+    }
+
+    // Unexpected errors only
+    console.error("Unexpected error:", error);
+    throw error;
+  }
+};
 
 export const getApplicationById = (id) => {
     return API.get("get/"+id, {

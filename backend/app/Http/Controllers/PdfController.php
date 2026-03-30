@@ -83,4 +83,9 @@ class PdfController extends Controller
         return $pdfContent;
     }
 
+    public function generateCandidatesReport(PDFService $pdfService, $id){
+        $pdfContent = $pdfService->generateCandidateReportPdf([$id]);
+        return $pdfContent;
+    }
+
 }

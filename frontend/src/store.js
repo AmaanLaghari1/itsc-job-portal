@@ -1,16 +1,16 @@
 import { legacy_createStore as createStore, combineReducers, compose, applyMiddleware } from 'redux';
-import { thunk } from 'redux-thunk'; // ✅ Fix import
+import { thunk } from 'redux-thunk';
 import authReducer from './reducers/authReducer';
 import UserReducer from './reducers/UserReducer';
 import profileReducer from './reducers/profileReducer';
 import rolesReducer from './reducers/rolesReducer';
-import storage from 'redux-persist/lib/storage'; // ✅ Use localStorage for persistence
+import storage from 'redux-persist/lib/storage'; // Use localStorage for persistence
 import { persistStore, persistReducer } from 'redux-persist';
 import applicationFilterSlice from './slicers/applicationFilterSlice';
 
 const initialState = {
   sidebarShow: true,
-  theme: 'light', // ✅ Ensure light mode is the default
+  theme: 'light', // Ensure light mode is the default
   role: 1
 };
 
@@ -32,7 +32,7 @@ const authPersistConfig = {
   storage, // Saves auth state in localStorage
 };
 
-// ✅ Persist UI state (including theme)
+// Persist UI state (including theme)
 const uiPersistConfig = {
   key: 'ui',
   storage, // Saves UI state (including theme) in localStorage
@@ -43,7 +43,7 @@ const rootReducer = combineReducers({
   user: persistReducer({ key: 'user', storage }, UserReducer), // Persisted user state
   profile: persistReducer({ key: 'profile', storage }, profileReducer), // Persisted user state
   roles: persistReducer({key: 'roles', storage}, rolesReducer),
-  ui: persistReducer(uiPersistConfig, changeState), // ✅ Persist UI state (fixes theme issue)
+  ui: persistReducer(uiPersistConfig, changeState), // Persist UI state (fixes theme issue)
   applicationFilter: applicationFilterSlice,
 });
 

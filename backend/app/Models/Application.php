@@ -63,14 +63,13 @@ class Application extends Model
     }
 
     // Accessor to format APPLY_DATE to d-M-Y format
-    public function getApplyDateAttribute($value)
+    public function getAPPLYDATEAttribute($value)
     {
-        // Ensure the date is in the correct timezone before formatting
-        // Optional: Set to application timezone if needed
-        $timezone = config('app.timezone');  // Default application timezone
-        $value->setTimezone($timezone);
+        $timezone = config('app.timezone');
 
-        return $value->format('d-M-Y'); // Format to d-M-Y
+        return Carbon::parse($value)
+            ->setTimezone($timezone)
+            ->format('d-m-Y');
     }
 
     public function qualifications(){

@@ -37,3 +37,20 @@ export const getUser = () => {
 }
 
 export const uploadImg = (data) => API.post('/upload-img/', data)
+
+export const addResearchPublication = (formData) => {
+    return API.post('add_research_publication', formData, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "multipart/form-data"
+        }
+    })
+}
+
+export const getResearchPublications = (user_id) => {
+    return API.get(`get_research_publications/${user_id}`, {
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
+    })
+}

@@ -1,12 +1,12 @@
 import React from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import routes from '../routes'
-
 import { CBreadcrumb, CBreadcrumbItem } from '@coreui/react'
 
 const AppBreadcrumb = () => {
   const currentLocation = useLocation().pathname
+  const navigate = useNavigate()
 
   const getRouteName = (pathname, routes) => {
     const currentRoute = routes.find((route) => route.path === pathname)
@@ -22,7 +22,7 @@ const AppBreadcrumb = () => {
         breadcrumbs.push({
           pathname: currentPathname,
           name: routeName,
-          active: index + 1 === array.length ? true : false,
+          active: index + 1 === array.length,
         })
       return currentPathname
     })
@@ -32,19 +32,34 @@ const AppBreadcrumb = () => {
   const breadcrumbs = getBreadcrumbs(currentLocation)
 
   return (
-    <CBreadcrumb className="my-0 text-decoration-none">
-      <CBreadcrumbItem href={import.meta.env.VITE_BASE_URL} className='text-decoration-none'>Home</CBreadcrumbItem>
-      {breadcrumbs.map((breadcrumb, index) => {
-        return (
+    <div className="d-flex align-items-center">
+      <button
+        onClick={() => navigate(-1)}
+        className="btn btn-sm btn-outline-primary me-3"
+      >
+        ← Back
+      </button>
+
+      <CBreadcrumb className="my-0 text-decoration-none">
+        <CBreadcrumbItem
+          href={import.meta.env.VITE_BASE_URL}
+          className="text-decoration-none"
+        >
+          Home
+        </CBreadcrumbItem>
+
+        {breadcrumbs.map((breadcrumb, index) => (
           <CBreadcrumbItem
-            {...(breadcrumb.active ? { active: true } : { href: breadcrumb.pathname })}
             key={index}
+            {...(breadcrumb.active
+              ? { active: true }
+              : { href: breadcrumb.pathname })}
           >
             {breadcrumb.name}
           </CBreadcrumbItem>
-        )
-      })}
-    </CBreadcrumb>
+        ))}
+      </CBreadcrumb>
+    </div>
   )
 }
 

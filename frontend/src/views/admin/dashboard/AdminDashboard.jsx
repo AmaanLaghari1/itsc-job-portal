@@ -10,6 +10,8 @@ import { CButton } from "@coreui/react";
 // import './Data-table.css';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import CIcon from "@coreui/icons-react";
+import { cilArrowThickBottom, cilPlus } from "@coreui/icons";
 
 const AdminDashboard = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -151,6 +153,86 @@ const AdminDashboard = () => {
     setLoading(false)
   };
 
+  const generateCandidatesReport = async () => {
+    setLoading(true)
+    try {
+      if (selectableRows.length === 0) {
+        Alert({
+          status: false,
+          text: "Please select at least one announcement to generate a report.",
+        });
+        setLoading(false)
+        return;
+      }
+
+      // Extract selected announcement IDs
+      const announcementIds = selectableRows.map(r => r.ANNOUNCEMENT_ID);
+
+      // Request PDF from backend
+      const response = await API.downloadCandidatesReport({
+        announcement_ids: announcementIds
+      });
+
+      // Create PDF blob
+      const fileURL = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+
+      // Trigger download
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.download = "candidates_report.pdf";
+      link.click();
+      link.remove();
+
+    } catch (error) {
+      console.error(error);
+      Alert({
+        status: false,
+        text: "Failed to download candidates report.",
+      });
+    }
+    setLoading(false)
+  };
+
+  const generateApplicationExperienceReport = async () => {
+    setLoading(true)
+    try {
+      if (selectableRows.length === 0) {
+        Alert({
+          status: false,
+          text: "Please select at least one announcement to generate a report.",
+        });
+        setLoading(false)
+        return;
+      }
+
+      // Extract selected announcement IDs
+      const announcementIds = selectableRows.map(r => r.ANNOUNCEMENT_ID);
+
+      // Request PDF from backend
+      const response = await API.downloadApplicationExperienceReport({
+        announcement_ids: announcementIds
+      });
+
+      // Create PDF blob
+      const fileURL = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+
+      // Trigger download
+      const link = document.createElement("a");
+      link.href = fileURL;
+      link.download = "applications_experience_report.pdf";
+      link.click();
+      link.remove();
+
+    } catch (error) {
+      console.error(error);
+      Alert({
+        status: false,
+        text: "Failed to download experience report.",
+      });
+    }
+    setLoading(false)
+  };
+
   const columns = [
     {
       name: "ID",
@@ -256,23 +338,42 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       <Link to="/admin/announcement/add" className="btn btn-primary btn-sm me-2">
-        Add New +
+        Add New <CIcon icon={cilPlus} />
       </Link>
       <CButton
         size="sm"
-        variant="warning"
+        variant="secondary"
         onClick={() => generateReport()}
       >
-        Announcements Report
+        Application Statistics <CIcon icon={cilArrowThickBottom}  />
       </CButton>
       <CButton
         size="sm"
-        variant="danger"
+        variant="secondary"
         disabled={loading}
         className="mx-2 text-light"
         onClick={() => generateApplicationsReport()}
       >
-        Applications Report
+        Scrutiny Report <CIcon icon={cilArrowThickBottom}  />
+      </CButton>
+      <CButton
+        size="sm"
+        variant="secondary"
+        disabled={loading}
+        className="text-light"
+        onClick={() => generateApplicationExperienceReport()}
+      >
+        Experience Report <CIcon icon={cilArrowThickBottom}  />
+      </CButton>
+
+      <CButton
+        size="sm"
+        variant="secondary"
+        disabled={loading}
+        className="mx-2 text-light"
+        onClick={() => generateCandidatesReport()}
+      >
+        Candidates Report <CIcon icon={cilArrowThickBottom}  />
       </CButton>
 
       <DynamicDataTable

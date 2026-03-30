@@ -14,6 +14,10 @@ class PdfService
 
     protected $applicationReportPdf;
 
+    protected $experienceReportPDF;
+
+    protected $candidateInfoReportPDF;
+
     public function __construct($applicationId = null)
     {
         $this->challanPDF = new ChallanPDF('L', 'mm', 'A4');
@@ -21,6 +25,9 @@ class PdfService
 //        $this->applicationReportPdf = new ApplicationReportPDF('L', 'mm', 'Legal');
         $this->applicationReportPdf = new ApplicationReportPDF('L', 'mm', 'A3');
         $this->applicationReportPdf->AliasNbPages();     // Enable {nb}
+
+        $this->experienceReportPDF = new ExperienceReportPDF('P', 'mm', 'A3');
+        $this->candidateInfoReportPDF = new CandidateInfoPDF('P', 'mm', 'A4');
     }
 
     public function generatePdf($applicationData)
@@ -232,110 +239,6 @@ class PdfService
         $this->applicationReportPdf->SetMargins(15, 10, 15);
         $this->applicationReportPdf->SetAutoPageBreak(true, 15);
 
-//        foreach ($reportData as $report) {
-//
-//            $this->applicationReportPdf->AddPage('L', 'A3');
-//            $this->applicationReportPdf->SetTitle('Career Applications Report');
-//
-//            /** ---------------- HEADER ------------------- **/
-//            $this->applicationReportPdf->Image(public_path('images/usindh_logo.png'), 15, 5, 20, 20);
-//
-//            $this->applicationReportPdf->SetFont('Arial', 'B', 16);
-//            $this->applicationReportPdf->SetXY(15, 10);
-//            $this->applicationReportPdf->Cell(0, 10, 'UNIVERSITY OF SINDH', 0, 1, 'C');
-//
-//            $this->applicationReportPdf->SetFont('Arial', 'B', 10);
-//            $this->applicationReportPdf->setY(25);
-//
-//            // Ref No
-//            $this->applicationReportPdf->Cell(100, 7, 'Ref No. ' . ($report->REF_NO ?? ''), 0, 1, 'L');
-//
-//            // Printed date
-//            $this->applicationReportPdf->setY(25);
-//            $this->applicationReportPdf->Cell(0, 7, 'Printed: ' . Carbon::now()->format('d-m-Y'), 0, 1, 'R');
-//
-//            /** ---------------- SUB TITLE ------------------- **/
-//            $this->applicationReportPdf->SetFont('Arial', 'B', 12);
-//            $this->applicationReportPdf->MultiCell(0, 7, 'Position Applied For: ' . ($report->ANNOUNCEMENT_TITLE ?? ''), 0, 'C');
-//
-//            /** ---------------- TABLE DATA ------------------- **/
-//
-//            $qualHeader = [
-//                'No.',
-//                'Name',
-//                "Father's Name",
-//                'Cast',
-//                'Gender',
-//                'Age',
-//                'SSC',
-//                'HSC',
-//                'BS',
-//                'MPhil/MS',
-//                'PhD',
-//                'Domicile District',
-//                'Remarks'
-//            ];
-//
-//            $applications = $report->applications; // already an array (Eloquent relation)
-//
-//            $qualData = [];
-//
-//            foreach ($applications as $index => $application) {
-//
-//                $user = $application->user;
-//                $qualifications = $user->qualifications ?? [];
-//
-//                $ssc = $this->applicationReportPdf->extractQualificationValue($qualifications, 'MATRICULATION/O-LEVEL (10TH GRADE)');
-//                $hsc = $this->applicationReportPdf->extractQualificationValue($qualifications, 'INTERMIDIATE/A-LEVEL (12TH GRADE)');
-//                $bs  = $this->applicationReportPdf->extractQualificationValue($qualifications, 'BACHELOR / MASTER (16 YEAR)');
-//                $ms  = $this->applicationReportPdf->extractQualificationValue($qualifications, 'M.Phil / MS (18 YEAR)');
-//                $phd = $this->applicationReportPdf->extractQualificationValue($qualifications, 'PHD');
-//
-//                $age = null;
-//                if ($user->DATE_OF_BIRTH) {
-//                    $age = Carbon::parse($user->DATE_OF_BIRTH)->diffInYears(Carbon::parse($report->END_DATE));
-//                }
-//
-//                $qualData[] = [
-//                    $index + 1,
-//                    $user->FIRST_NAME ?? '',
-//                    $user->FNAME ?? '',
-//                    $user->LAST_NAME ?? '',
-//                    $user->GENDER == 'M' ? 'MALE' : 'FEMALE',
-//                    $age,
-//                    $ssc,
-//                    $hsc,
-//                    $bs,
-//                    $ms,
-//                    $phd,
-//                    $user->district->DISTRICT_NAME ?? '',
-//                    ''
-//                ];
-//            }
-//
-//            /** Widths: 13 columns **/
-//            $qualColWidths = [
-//                10,  // No
-//                30,  // Name
-//                40,  // Father's Name
-//                25,  // Cast
-//                25,  // Gender
-//                15,  // Age
-//                20,  // SSC
-//                20,  // HSC
-//                40,  // BS
-//                40,  // MS
-//                40,  // PhD
-//                40,  // District
-//                42   // Remarks
-//            ];
-//
-//            $alignments = [
-//                'C', 'L', 'L', 'L', 'C', 'C', 'L', 'L', 'L', 'L', 'L', 'L', 'L'
-//            ];
-//
-//            $this->applicationReportPdf->FancyTable($qualHeader, $qualData, $qualColWidths, $alignments);
-//        }
 
         foreach ($reportData as $report) {
             // Pass dynamic data to PDF header
@@ -449,5 +352,205 @@ class PdfService
 //        exit();
     }
 
+    public function generateExperienceReportPdf($announcementIds)
+    {
+        $reportData = $this->experienceReportPDF->requiredData($announcementIds);
+
+        // Must call before AddPage() for {nb}
+        $this->experienceReportPDF->AliasNbPages();
+        $this->experienceReportPDF->SetMargins(15, 10, 15);
+        $this->experienceReportPDF->SetAutoPageBreak(true, 15);
+
+
+        foreach ($reportData as $report) {
+            // Pass dynamic data to PDF header
+            $this->experienceReportPDF->ref_no = $report->REF_NO;
+            $this->experienceReportPDF->announcement_title = $report->ANNOUNCEMENT_TITLE;
+
+            $this->experienceReportPDF->AddPage('P', 'A3');
+            $this->experienceReportPDF->SetTitle('Career Applications Experience Report');
+
+            // Draw subtitle centered under header
+            $this->experienceReportPDF->SetFont('Arial', 'B', 12);
+            $this->experienceReportPDF->MultiCell(0, 7, 'Position Applied For: ' . $report->ANNOUNCEMENT_TITLE, 0, 'C');
+
+            //            /** ---------------- TABLE DATA ------------------- **/
+
+            $qualHeader = [
+                'No.',
+                'Name',
+                "Father's Name",
+                'Surname',
+                'Experience Duration',
+                'Current Experience'
+            ];
+
+            $applications = $report->applications; // already an array (Eloquent relation)
+
+            $qualData = [];
+
+            if(count($applications) == 0){
+                $this->experienceReportPDF->Ln(10);
+                $this->experienceReportPDF->setFont('Arial', '', 9);
+                $this->experienceReportPDF->Cell(0, 7, 'No applications found for this position.', 0, 1, 'C');
+            }
+            else{
+                foreach ($applications as $index => $application) {
+
+                    $user = $application->user;
+                    $experiences = $user->experiences ?? [];
+
+                    $totalDays = 0;
+
+                    foreach ($experiences as $experience) {
+                        $start_date = Carbon::parse($experience->START_DATE);
+                        $end_date = $experience->END_DATE
+                            ? Carbon::parse($experience->END_DATE)
+                            : Carbon::now(); // if still working
+
+                        $totalDays += $end_date->diffInDays($start_date);
+                    }
+
+                    $duration = Carbon::now()->addDays($totalDays)->diff(Carbon::now());
+
+                    $experienceDurationText =
+                        $duration->y . ' Years, ' .
+                        $duration->m . ' Months, ' .
+                        $duration->d . ' Days';
+
+                    // ------------------ CURRENT EXPERIENCE (MOST RECENT JOB) --------------------
+
+                    $currentExpText = 'N/A';
+                    $currentJobTitle = '';
+                    $currentJobDesc = '';
+
+                    if ($experiences->count() > 0) {
+
+                        // Sort by END_DATE or fallback to START_DATE
+                        $latestExperience = $experiences
+                            ->sortByDesc(function ($e) {
+                                return $e->END_DATE
+                                    ? Carbon::parse($e->END_DATE)
+                                    : Carbon::now();   // null END_DATE → most recent
+                            })
+                            ->first();
+
+
+                        $cStart = Carbon::parse($latestExperience->START_DATE);
+                        $cEnd = $latestExperience->END_DATE
+                            ? Carbon::parse($latestExperience->END_DATE)
+                            : Carbon::now();
+
+                        $cDuration = $cEnd->diff($cStart);
+
+                        $currentExpText =
+                            $cDuration->y . ' Years, ' .
+                            $cDuration->m . ' Months, ' .
+                            $cDuration->d . ' Days';
+
+                        $currentJobTitle = $latestExperience->JOB_TITLE ?? 'N/A';
+                        $currentJobDesc  = $latestExperience->JOB_DESCRIPTION ?? 'N/A';
+                    }
+
+                    // Combine for PDF column:
+                    $currentExperience = $duration->y == 0 && $duration->m == 0 && $duration->d == 0 ? 'N/A' :
+                        "Title: $currentJobTitle\n" .
+                        "Description: $currentJobDesc\n" .
+                        "Duration: $currentExpText";
+
+                    $qualData[] = [
+                        $index + 1,
+                        $user->FIRST_NAME ?? '',
+                        $user->FNAME ?? '',
+                        $user->LAST_NAME ?? '',
+                        $duration->y == 0 && $duration->m == 0 && $duration->d == 0 ? 'N/A' : $experienceDurationText,
+                        $currentExperience??'N/A'
+                    ];
+                }
+            }
+
+            if(count($applications) > 0) {
+
+                /** Widths: 13 columns **/
+                $qualColWidths = [
+                    10,  // No
+                    35,  // Name
+                    40,  // Father's Name
+                    25,  // Surname
+                    55, // Experience Duration
+                    100 // Current Experience
+                ];
+
+                $alignments = [
+                    'C', 'L', 'L', 'L', 'L', 'L'
+                ];
+
+
+                // Table Header
+                $this->experienceReportPDF->TableHeader($qualHeader, $qualColWidths);
+
+                // Then call FancyTable
+                $this->experienceReportPDF->FancyTable($qualHeader, $qualData, $qualColWidths, $alignments);
+            }
+        }
+
+        // Send PDF to browser
+//        $this->applicationReportPdf->Output('I', 'report.pdf');
+        return $this->experienceReportPDF->Output('S');
+//        exit();
+    }
+
+    public function generateCandidateReportPdf($announcementIds){
+        $reportData = $this->candidateInfoReportPDF->requiredData($announcementIds);
+
+        // Must call before AddPage() for {nb}
+        $this->candidateInfoReportPDF->AliasNbPages();
+        $this->candidateInfoReportPDF->SetMargins(15, 10, 15);
+        $this->candidateInfoReportPDF->SetAutoPageBreak(true, 15);
+
+
+        $qualColWidths = [
+            10, // Sno
+            40,  // Name
+            45,  // Email
+            25,  // CNIC
+            30, // Mobile No.
+            30 // Apply Date
+        ];
+
+        $alignments = [
+            'C', 'L', 'L', 'L', 'L', 'L'
+        ];
+
+        foreach ($reportData as $announcement){
+            $this->candidateInfoReportPDF->AddPage('P', 'A4');
+            $this->candidateInfoReportPDF->SetTitle('Candidate Information Report');
+            $this->candidateInfoReportPDF->setFont('Arial', 'B', 12);
+            $this->candidateInfoReportPDF->MultiCell(0, 7, $announcement->ANNOUNCEMENT_TITLE, 0, 'C');
+
+                foreach ($announcement->applications as $i => $application) {
+                    $user = $application->user;
+                    $tableHeaders = ['SNo.', 'Name', 'Email', 'CNIC No.', 'Mobile No.', 'Application Date'];
+
+                    $tableData[] = [
+                        $i + 1,
+                        $user->FIRST_NAME ?? '',
+                        $user->EMAIL ?? '',
+                        $user->CNIC_NO ?? '',
+                        $user->MOBILE_NO ?? '',
+                        $application->APPLY_DATE ?? ''
+                    ];
+
+                }
+                    $this->candidateInfoReportPDF->TableHeader($tableHeaders, $qualColWidths);
+                    $this->candidateInfoReportPDF->FancyTable($tableHeaders, $tableData, $qualColWidths, $alignments);
+
+            $this->candidateInfoReportPDF->Ln(10);
+
+        }
+
+        return $this->candidateInfoReportPDF->Output('S', 'report.pdf');
+
+    }
 
 }

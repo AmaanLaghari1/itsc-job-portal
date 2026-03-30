@@ -3,6 +3,7 @@ import { Field, ErrorMessage, useFormikContext } from 'formik'
 import DateView from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import { CFormCheck } from '@coreui/react';
+import { normalizeDate } from '../helper';
 
 function FormControl(props) {
     const {control, ...rest} = props
@@ -18,17 +19,41 @@ function FormControl(props) {
 }
 
 const Input = (props) => {
-    const {label, name, type, required, ...rest} = props
+    const { label, name, type, required, setFieldValue, ...rest } = props;
+
     return (
         <div>
-            <label className='fw-bold' htmlFor={name}>{label}{required ? <span className='text-danger mb-0 fw-bold'>*</span>: ''}</label>
-            <Field className='form-control mt-0' type={type} name={name} id={name} {...rest} />
+            <label className='fw-bold' htmlFor={name}>
+                {label}
+                {required ? <span className='text-danger mb-0 fw-bold'>*</span> : ''}
+            </label>
+
+            {type === "file" ? (
+                <input
+                    className='form-control mt-0'
+                    type="file"
+                    name={name}
+                    id={name}
+                    onChange={(event) => {
+                        setFieldValue(name, event.currentTarget.files[0]);
+                    }}
+                />
+            ) : (
+                <Field
+                    className='form-control mt-0'
+                    type={type}
+                    name={name}
+                    id={name}
+                    {...rest}
+                />
+            )}
+
             <div className="text-danger small">
                 <ErrorMessage name={name} />
             </div>
         </div>
-    )
-}
+    );
+};
 
 const Textarea = (props) => {
     const {label, name, required, ...rest} = props
@@ -62,8 +87,8 @@ const Radio = (props) => {
                                         id={opt.key} 
                                         label={opt.value} 
                                         {...field} 
-                                        value={opt.key} // ✅ Ensure correct value
-                                        checked={field.value == opt.key} // ✅ Ensure correct selection
+                                        value={opt.key} 
+                                        checked={field.value == opt.key} 
                                     />
                                 </div>
                             );
@@ -148,24 +173,19 @@ const DateInput = props => {
                         const {setFieldValue} = form
                         return (
                             <div>
-                                <DateView 
-                                className='form-control w-100' 
-                                id={name} 
-                                value={field.value} 
-                                {...rest} 
-                                {...field} 
-                                selected={field.value} 
-                                onChange={val =>  setFieldValue(name, val)} 
-                                shouldCloseOnSelect={true} 
-                                showTimeInput={false} 
+                                <DateView
+                                className="form-control w-100"
+                                id={name}
+                                selected={field.value ? new Date(field.value) : null}
+                                onChange={(val) => setFieldValue(name, val)}
                                 showYearDropdown
                                 showMonthDropdown
                                 yearDropdownItemNumber={70}
                                 scrollableYearDropdown
-                                maxDate={maxDateDisabled ? '' : maxDate}
-                                minDate={new Date("01/01/1900")}
+                                minDate={new Date("1900-01-01")}
+                                maxDate={maxDateDisabled ? null : maxDate}
                                 dateFormat="dd-MM-yyyy"
-                                customInput={<ReadOnlyInput />}  
+                                customInput={<ReadOnlyInput />}
                                 />
                             </div>
                         )

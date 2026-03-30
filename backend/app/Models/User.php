@@ -188,9 +188,9 @@ class User extends Authenticatable implements JWTSubject
             'DISCIPLINE_ID',
             'USER_ID',
             'ORGANIZATION_ID',
-            'IS_RESULT_DECLARE',
+//            'IS_RESULT_DECLARE',
             // 'MAJOR',
-            'ROLL_NO',
+//            'ROLL_NO',
         ];
 
         $qualifications = $this->qualifications;

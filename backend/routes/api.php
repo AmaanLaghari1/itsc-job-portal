@@ -34,14 +34,13 @@ Route::group(['middleware' => 'api'], function ($router) {
 
 });
 
-
-Route::get('login-check/{token}', [AuthController::class, 'checkLoggedIn']);
-
-
-Route::get('districts/{provinceId?}', [UserController::class, 'getDistricts']);
-Route::get('cities', [UserController::class, 'getCities']);
-Route::get('provinces/{countryId?}', [UserController::class, 'getProvinces']);
-Route::get('countries/{countryId?}', [UserController::class, 'getCountries']);
+//Route::middleware(['jwt.verify', 'throttle:60,1'])->group(function () {
+//Route::middleware(['throttle:60,1'])->group(function () {
+    Route::get('districts/{provinceId?}', [UserController::class, 'getDistricts']);
+    Route::get('cities', [UserController::class, 'getCities']);
+    Route::get('provinces/{countryId?}', [UserController::class, 'getProvinces']);
+    Route::get('countries/{countryId?}', [UserController::class, 'getCountries']);
+//});
 
 Route::prefix('user')->group(function() {
     Route::get('get', [UserController::class, 'index']);
@@ -51,6 +50,8 @@ Route::prefix('user')->group(function() {
     Route::delete('delete/{id}', [UserController::class, 'destroy']);
     Route::post('upload-img', [UserController::class, 'uploadImg']);
     Route::get('get-user-detail/{countryId?}/{provinceId?}/{districtId?}/{cityId?}', [UserController::class, 'getUserDetails']);
+    Route::post('add_research_publication', [UserController::class, 'addResearchAndPublication']);
+    Route::get('get_research_publications/{userId}', [UserController::class, 'getResearchAndPublication']);
 });
 
 Route::prefix('qualification')->group(function() {
@@ -80,6 +81,8 @@ Route::prefix('announcement')->group(function() {
     Route::delete('delete/{id}', [AnnouncementController::class, 'destroy']);
     Route::post('report/get', [AnnouncementController::class, 'generateReport']);
     Route::post('/report/applications', [AnnouncementController::class, 'downloadApplicationsReport']);
+    Route::post('/report/experience', [AnnouncementController::class, 'downloadApplicationExperienceReport']);
+    Route::post('report/candidates', [AnnouncementController::class, 'downloadCandidatesReport']);;
 });
 
 Route::get('/announcement/get/recent_announcements', [AnnouncementController::class, 'getSixMonthOldAnnouncements']);

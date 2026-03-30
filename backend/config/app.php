@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Karachi',
 
     /*
     |--------------------------------------------------------------------------
@@ -184,7 +184,7 @@ return [
         /*
         * Package Service Providers...
         */
-        
+
         /*
         * Application Service Providers...
         */

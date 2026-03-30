@@ -62,7 +62,7 @@ const AppHeaderDropdown = () => {
         <CDropdownDivider />
 
         <CDropdownItemPlain>
-          <CButton variant="danger" size="sm" onClick={handleLogout}>
+          <CButton variant="danger" className='text-light' size="sm" onClick={handleLogout}>
             <CIcon icon={cilArrowThickFromRight} className="me-2" />
             LOGOUT
           </CButton>

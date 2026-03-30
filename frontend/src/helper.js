@@ -62,22 +62,33 @@ export const getNestedValue = (obj, key) => {
     return key.split('.').reduce((acc, part) => acc && acc[part], obj)
 }
 
-export const normalizeDate = (value) => {
+export const normalizeDateOld = (value) => {
   if (!value) return value;
 
-  // If it's already a Date object
+  // If it's already a Date object, ensure it's in the local date format
   if (value instanceof Date) {
-    return value.toISOString().split("T")[0];
+    // Use local date
+    const localDate = new Date(value.getTime() - value.getTimezoneOffset() * 60000);
+    return localDate.toISOString().split("T")[0];
   }
 
-  // If it's a number or something unexpected, convert to string
+  // If it's a string with date and time (e.g., ISO format), split and return only the date
   const str = String(value);
-
-  // If it contains time (T), remove it
   if (str.includes("T")) {
     return str.split("T")[0];
   }
 
-  // Already in YYYY-MM-DD
+  // If it's already in YYYY-MM-DD format, return it as is
   return str;
+};
+
+export const normalizeDate = (date) => {
+  if (!date) return '';
+
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`; // API format
 };

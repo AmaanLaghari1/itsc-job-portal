@@ -34,5 +34,6 @@ Route::get('/test', function () {
 Route::get('/pdf/{id?}', [PdfController::class, 'generateChallan']);
 Route::get('/application-pdf/{id?}', [PdfController::class, 'generateApplication']);
 
+Route::get('/test-pdf/{id?}', [PdfController::class, 'generateCandidatesReport']);
 
 

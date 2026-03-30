@@ -7,22 +7,22 @@ import CIcon from '@coreui/icons-react'
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../helper.js";
 
-const AnnouncementCard = ({announcement}) => {
-const auth = useSelector((state) => state.auth.authData);
-  const [isEligible, setIsEligible] = useState(false);
-  const hasFetched = useRef(false); // <- flag to control single API call
-  const [restrictTxt, setRestrictText] = useState('')
-  const navigate = useNavigate()
+const AnnouncementCard = ({ announcement }) => {
+    const auth = useSelector((state) => state.auth.authData);
+    const [isEligible, setIsEligible] = useState(false);
+    const hasFetched = useRef(false); // <- flag to control single API call
+    const [restrictTxt, setRestrictText] = useState('')
+    const navigate = useNavigate()
 
     const checkEligibility = async (formData) => {
-        try {
-            const response = await API.applicationRequirement(formData);
-            // console.log(response);
-            setIsEligible(true)
-        } catch (error) {
-            // console.log(error);
-            setRestrictText(error.response?.data.error_message)
+        const response = await API.applicationRequirement(formData);
+
+        if (response?.success === false) {
             setIsEligible(false);
+            setRestrictText(response.message);
+        } else {
+            setIsEligible(true);
+            setRestrictText('');
         }
     };
 
@@ -45,15 +45,15 @@ const auth = useSelector((state) => state.auth.authData);
         <CCard className="shadow shadow-sm my-3" key={announcement.ANNOUNCEMENT_ID}>
             <CCardBody>
                 <CCardTitle className='fw-bolder'>
-                    {announcement.ANNOUNCEMENT_TITLE??'NA'}
+                    {announcement.ANNOUNCEMENT_TITLE ?? 'NA'}
                 </CCardTitle>
                 <div>
                     <span className="fw-bold">Position: </span>
-                    {announcement.POSITION_NAME??'NA'}
+                    {announcement.POSITION_NAME ?? 'NA'}
                 </div>
                 <div>
                     <span className="fw-bold">Department: </span>
-                    {announcement?.department.DEPT_NAME??'NA'}
+                    {announcement?.department.DEPT_NAME ?? 'NA'}
                 </div>
 
                 <div className="border-bottom border-1 mb-2 border-secondary-subtle"></div>
@@ -85,12 +85,13 @@ const auth = useSelector((state) => state.auth.authData);
                             isEligible &&
                             <CButton color="primary" className='btn-sm rounded-5 shadow shadow-sm px-3 mt-3'
                                 onClick={
-                                    () => { navigate('/confirm-application', {
-                                        state: {
-                                        announcement: announcement,
+                                    () => {
+                                        navigate('/confirm-application', {
+                                            state: {
+                                                announcement: announcement,
+                                            }
+                                        })
                                     }
-                                    })
-                                }
                                 }
                             >
                                 Apply Now <CIcon icon={cilArrowRight} />
@@ -98,12 +99,12 @@ const auth = useSelector((state) => state.auth.authData);
                         }
                     </div>
                 </div>
-                    {
-                        restrictTxt && 
-                        <strong className="fw-bold text-danger">
-                            <CIcon icon={cilBan} /> {restrictTxt}
-                        </strong>
-                    }
+                {
+                    restrictTxt &&
+                    <strong className="fw-bold text-danger">
+                        <CIcon icon={cilBan} /> {restrictTxt}
+                    </strong>
+                }
             </CCardBody>
         </CCard>
     )

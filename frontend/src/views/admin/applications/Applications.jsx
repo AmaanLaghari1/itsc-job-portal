@@ -1,83 +1,119 @@
-import { useNavigate } from "react-router-dom"
-import DynamicDataTable from "../../../components/data_table/DynamicDataTable"
+import { useNavigate } from "react-router-dom";
+import DynamicDataTable from "../../../components/data_table/DynamicDataTable";
 import { useEffect, useMemo, useState } from "react";
 import { getDeptWithAnnouncement } from "../../../api/UtilRequest.js";
 import { formatDate, mapOptions } from "../../../helper";
 import CustomSelect from "../../../components/CustomSelect.jsx";
 import { Formik, Form } from "formik";
-import * as Yup from 'yup'
-import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedDeptId, setSelectedAnnouncementId } from "../../../slicers/applicationFilterSlice.js";
-import { getAnnouncement } from "../../../api/AnnouncementRequest.js";
+import * as Yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSelectedDeptId,
+  setSelectedAnnouncementId,
+} from "../../../slicers/applicationFilterSlice.js";
 import { getApplicationByAnnouncementId } from "../../../api/ApplicationRequest.js";
+import { getAnnouncement } from "../../../api/AnnouncementRequest.js";
 
 const Applications = () => {
-    const [applications, setApplications] = useState([])
-    const navigate = useNavigate()
-    const [deptData, setDeptData] = useState([])
-    const [announcement, setAnnouncements] = useState([])
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const [deptData, setDeptData] = useState([]);
+  const [announcement, setAnnouncements] = useState([]);
+  const [applications, setApplications] = useState([]);
 
-    const getAllAnnouncements = async () => {
-      try {
-        const response = await getAnnouncement()
-        setAnnouncements(response.data?.data)
-      } catch (error) {
-        
-      }
-    }
+  const selectedDeptId = useSelector(
+    (state) => state.applicationFilter.selectedDeptId
+  );
+  const selectedAnnouncementId = useSelector(
+    (state) => state.applicationFilter.selectedAnnouncementId
+  );
 
-    const dispatch = useDispatch();
-
-    const selectedDeptId = useSelector(
-      (state) => state.applicationFilter.selectedDeptId
-    );
-    const selectedAnnouncementId = useSelector(
-      (state) => state.applicationFilter.selectedAnnouncementId
-    );
-
-
+  /* ----------------------------------
+     Load departments once
+  ---------------------------------- */
   useEffect(() => {
-    const fetchAndSet = async () => {
+    const fetchDepartments = async () => {
       try {
         const response = await getDeptWithAnnouncement();
-        setDeptData(response.data);
-
-        if (selectedDeptId) {
-          const selectedDept = response.data.find(item => item.DEPT_ID == selectedDeptId);
-          if (selectedDept) {
-            setAnnouncements(selectedDept.announcements);
-
-            if (selectedAnnouncementId) {
-              const selectedAnnouncement = selectedDept.announcements.find(
-                (a) => a.ANNOUNCEMENT_ID == selectedAnnouncementId
-              );
-              if (selectedAnnouncement) {
-                setApplications(selectedAnnouncement.applications);
-              }
-            }
-          }
-        }
-
+        setDeptData(response.data || []);
       } catch (error) {
-        console.error('Error loading dept/announcement data', error);
+        console.error("Error loading departments", error);
       }
     };
 
-    fetchAndSet();
-    getAllAnnouncements()
+    const getAllAnnouncements = async () => { 
+      try { 
+        const response = await getAnnouncement() 
+        setAnnouncements(response.data?.data) 
+      } catch (error) {
+        console.log(error)
+      } 
+  }
+
+    fetchDepartments();
+    getAllAnnouncements();
   }, []);
 
-    
-  const deptOptions = useMemo(() =>
-    mapOptions(deptData, 'DEPT_ID', 'DEPT_NAME')
-  )
-    
-  const announcementOptions = useMemo(() =>
-    mapOptions(announcement, 'ANNOUNCEMENT_ID', 'ANNOUNCEMENT_TITLE')
-  )
-  // console.log(announcement)
+  /* ----------------------------------
+     Load announcements when dept changes
+  ---------------------------------- */
+  useEffect(() => {
+    if (!selectedDeptId || deptData.length === 0) return;
 
+    const selectedDept = deptData.find(
+      (d) => d.DEPT_ID == selectedDeptId
+    );
+
+    if (selectedDept) {
+      setAnnouncements(selectedDept.announcements || []);
+    } else {
+      setAnnouncements([]);
+    }
+  }, [selectedDeptId, deptData]);
+
+  /* ----------------------------------
+     Load applications when announcement changes
+  ---------------------------------- */
+  useEffect(() => {
+    if (!selectedAnnouncementId) return;
+
+    const fetchApplications = async () => {
+      try {
+        const response = await getApplicationByAnnouncementId(
+          selectedAnnouncementId
+        );
+        setApplications(response.data || []);
+      } catch (error) {
+        console.error("Error loading applications", error);
+        setApplications([]);
+      }
+    };
+
+    fetchApplications();
+  }, [selectedAnnouncementId]);
+
+  /* ----------------------------------
+     Select options
+  ---------------------------------- */
+  const deptOptions = useMemo(
+    () => mapOptions(deptData, "DEPT_ID", "DEPT_NAME"),
+    [deptData]
+  );
+
+  const announcementOptions = useMemo(
+    () =>
+      mapOptions(
+        announcement,
+        "ANNOUNCEMENT_ID",
+        "ANNOUNCEMENT_TITLE"
+      ),
+    [announcement]
+  );
+
+  /* ----------------------------------
+     Table columns
+  ---------------------------------- */
   const columns = [
     {
       name: "ID",
@@ -87,82 +123,76 @@ const Applications = () => {
     },
     {
       name: "Candidate Name",
-      selector: (row) => row.FIRST_NAME +' '+ row.LAST_NAME,
+      selector: (row) => `${row.FIRST_NAME} ${row.LAST_NAME}`,
       sortable: true,
       width: "250px",
-      style: {
-        minWidth: "250px",
-        maxWidth: "300px",
-      },
     },
     {
       name: "CNIC No.",
       selector: (row) => row.CNIC_NO,
       sortable: true,
-      wrap: true,
-      style: {
-        minWidth: "150px",
-      },
+      width: "150px",
     },
     {
       name: "Paid Amount",
-      selector: (row) => row.PAID_AMOUNT??'-',
+      selector: (row) => row.PAID_AMOUNT ?? "-",
       sortable: true,
       width: "130px",
     },
     {
       name: "Apply Date",
-      selector: (row) => row.APPLY_DATE??'-',
+      selector: (row) => row.APPLY_DATE ?? "-",
       sortable: true,
-      style: {
-        minWidth: "100px",
-      },
     },
     {
       name: "Paid Date",
-      selector: (row) => row.PAID_DATE ? formatDate(row.PAID_DATE) :'-',
+      selector: (row) =>
+        row.PAID_DATE ? formatDate(row.PAID_DATE) : "-",
       sortable: true,
       width: "130px",
     },
     {
       name: "Status",
-      selector: (row) => row.APPLICATION_STATUS == 1? 'Applied' : (row.APPLICATION_STATUS == 2 ? 'Unpaid' : (row.APPLICATION_STATUS == 4 ? 'Shortlisted' : (row.APPLICATION_STATUS == 3 ? 'Recieved' : 'Rejected'))),
+      selector: (row) =>
+        row.APPLICATION_STATUS == 1
+          ? "Applied"
+          : row.APPLICATION_STATUS == 2
+          ? "Unpaid"
+          : row.APPLICATION_STATUS == 3
+          ? "Received"
+          : row.APPLICATION_STATUS == 4
+          ? "Shortlisted"
+          : "Rejected",
       sortable: true,
-      width: "100px",
+      width: "120px",
     },
     {
       name: "Actions",
       cell: (row) => (
-        <div className="d-flex align-items-center flex-wrap gap-1">
-          <button className="btn btn-outline-warning btn-sm"
-          onClick={() => {
-            navigate('/admin/application/edit',
-              {
-                state: {
+        <div className="d-flex gap-1">
+          <button
+            className="btn btn-outline-warning btn-sm"
+            onClick={() =>
+              navigate("/admin/application/edit", {
+                state: { 
                   prevData: row,
-                  announcement: announcement.filter(item => item.ANNOUNCEMENT_ID === row.ANNOUNCEMENT_ID),
-                }
-              }
-
-            )
-          }}
+                  announcement: announcement.filter(item => item.ANNOUNCEMENT_ID === row.ANNOUNCEMENT_ID)
+                 },
+              })
+            }
           >
             View
           </button>
-          <button className="btn btn-outline-success btn-sm"
-          onClick={() => {
-            navigate('/admin/application/update-user',
-              {
-                state: {
-                  prevData: row
-                }
-              }
-            )
-          }}
+          <button
+            className="btn btn-outline-success btn-sm"
+            onClick={() =>
+              navigate("/admin/application/update-user", {
+                state: { prevData: row },
+              })
+            }
           >
             Update User
           </button>
-          <button className="btn btn-outline-danger btn-sm">Delete</button>
         </div>
       ),
       ignoreRowClick: true,
@@ -170,93 +200,70 @@ const Applications = () => {
     },
   ];
 
+  /* ----------------------------------
+     Handlers
+  ---------------------------------- */
   const handleDeptChange = (selectedOption, setFieldValue) => {
-    setFieldValue('dept_id', selectedOption?.key || '')
-    const deptId = selectedOption?.key || '';
-    const selectedDept = deptData.filter(item => item.DEPT_ID == selectedOption.key)
+    const deptId = selectedOption?.key || "";
+    setFieldValue("dept_id", deptId);
     dispatch(setSelectedDeptId(deptId));
-    setAnnouncements(selectedDept[0].announcements)
-  }
-  
-  const handleAnnouncementChange = async (selectedOption, setFieldValue) => {
-  setFieldValue('announcement_id', selectedOption?.key || '')
-  const announcementId = selectedOption?.key || '';
-  const selectedAnnouncement = announcement.find(
-    item => item.ANNOUNCEMENT_ID == selectedOption?.key
-  );
-  dispatch(setSelectedAnnouncementId(announcementId));
-  try {
-    const response = await getApplicationByAnnouncementId(announcementId)
-    // console.log(response)
-    setApplications(response.data)
-  } catch (error) {
-    
-  }
+    dispatch(setSelectedAnnouncementId(""));
+    setApplications([]);
+  };
 
-  if (selectedAnnouncement && selectedAnnouncement.applications) {
-    setApplications(selectedAnnouncement.applications);
-  } else {
-    // setApplications([]); // fallback to empty array
-  }
-};
+  const handleAnnouncementChange = (selectedOption, setFieldValue) => {
+    const announcementId = selectedOption?.key || "";
+    setFieldValue("announcement_id", announcementId);
+    dispatch(setSelectedAnnouncementId(announcementId));
+  };
 
-const filteredData = Array.isArray(applications) ? applications.map(item => item) : [];
-
-  
   return (
     <div className="admin-dashboard">
       <Formik
         enableReinitialize
         initialValues={{
-          dept_id: selectedDeptId,
-          announcement_id: selectedAnnouncementId
+          dept_id: selectedDeptId || "",
+          announcement_id: selectedAnnouncementId || "",
         }}
         validationSchema={Yup.object({})}
       >
-
-        {
-          ({setFieldValue}) => (
-            <Form>
-              <div className="row">
-                <div className="form-group col-6 my-2">
-                  <CustomSelect
-                  className="form-control bg-primary text-light"
+        {({ setFieldValue }) => (
+          <Form>
+            <div className="row">
+              <div className="col-6 my-2">
+                <CustomSelect
                   label="Select Department"
                   name="dept_id"
-                  options={deptOptions} // Options should be dynamically loaded if using async
-                  onChange={(selectedOption) => {
-                    handleDeptChange(selectedOption, setFieldValue)
-                    
-                  }}
-                  required={true}
-                  />
-                </div>
-                <div className="form-group col-6 my-2">
-                  <CustomSelect
-                  className="form-control bg-primary text-light"
+                  options={deptOptions}
+                  onChange={(opt) =>
+                    handleDeptChange(opt, setFieldValue)
+                  }
+                />
+              </div>
+
+              <div className="col-6 my-2">
+                <CustomSelect
                   label="Select Announcement"
                   name="announcement_id"
-                  options={announcementOptions || []} // Options should be dynamically loaded if using async
-                  onChange={(selectedOption) => {
-                    handleAnnouncementChange(selectedOption, setFieldValue)
-                  }}
-                  required={true}
-                  />
-                </div>
+                  options={announcementOptions}
+                  onChange={(opt) =>
+                    handleAnnouncementChange(opt, setFieldValue)
+                  }
+                  required
+                />
               </div>
-            </Form>
-          )
-        }
-
+            </div>
+          </Form>
+        )}
       </Formik>
 
       <DynamicDataTable
         title="Applications"
         columns={columns}
-        data={filteredData}
+        data={Array.isArray(applications) ? applications : []}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Applications
+export default Applications;

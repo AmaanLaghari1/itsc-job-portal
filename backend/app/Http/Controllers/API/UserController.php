@@ -361,4 +361,80 @@ class UserController extends Controller
             'data' => $data
         ], 200);
     }
+
+    public function addResearchAndPublication(Request $request){
+//        return response()->json($request->all());
+        try {
+            $validation = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'research_title' => 'required',
+                'research_journal' => 'required',
+                'research_edition' => 'required',
+                'upload_type' => 'required',
+//                'research_journal_file' => 'required_if:upload_type,2|file|mimes:pdf,doc,docx|max:2048',
+            ]);
+
+            if($validation->stopOnFirstFailure()->fails()){
+                return response()->json(
+                    [
+                        "status" => false,
+                        "message" => "Validation failed",
+                        "error_message" => $validation->errors()->first()
+                    ], 401
+                );
+            }
+
+            $data = [
+                'USER_ID' => $request->user_id,
+                'RESEARCH_TITLE' => $request->research_title??'',
+                'RESEARCH_JOURNAL' => $request->research_journal??'',
+                'RESEARCH_JOURNAL_EDITION' => $request->research_edition??'',
+                'RESEARCH_JOURNAL_LINK' => $request->research_journal_link??NULL,
+            ];
+
+//            Handle File Upload
+            if($request->hasFile('research_journal_file')){
+                $file = $request->file('research_journal_file');
+//                $fileName = time().'_'.$file->getClientOriginalName();
+                $path = Storage::disk('uploads')->put('research_journal_files', $file);
+//                $file->move(public_path('uploads/research_journal_file'), $fileName);
+                $data['RESEARCH_JOURNAL_FILE'] = $path;
+            }
+
+            DB::beginTransaction();
+            $newResearch = DB::table('research_publications')->insert($data);
+
+            if($newResearch){
+                DB::commit();
+                return response()->json(
+                    [
+                        "status" => true,
+                        "message" => "Research and Publication added successfully"
+                    ],
+                    200
+                );
+            }
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+    public function getResearchAndPublication($userId){
+        try {
+            $research = DB::table('research_publications')->where('USER_ID', $userId)->get();
+            return response()->json([
+                'data' => $research,
+                'status' => true
+            ], 200);
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
