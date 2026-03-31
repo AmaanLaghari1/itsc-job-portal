@@ -232,7 +232,7 @@ const Login = () => {
                                                 <label className='form-label fw-bold' htmlFor="cnic_no">
                                                     CNIC No.
                                                 </label>
-                                                <Field type="text" className="form-control border-0 border-bottom border-3 rounded-0" placeholder='41304******' name='cnic_no' id='cnic_no'
+                                                <Field type="text" className="form-control border-0 border-bottom border-3 rounded-0" placeholder='41304******' name='cnic_no' id='cnic_no' autoComplete='off'
                                                     onInput={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 13)}
                                                 />
                                                 <div className="small text-danger">
@@ -243,7 +243,7 @@ const Login = () => {
                                                 <label className='form-label fw-bold' htmlFor="password">
                                                     Password
                                                 </label>
-                                                <Field type="password" className="form-control border-0 border-bottom border-3 rounded-0" placeholder='********' name='password' id='password' />
+                                                <Field type="password" className="form-control border-0 border-bottom border-3 rounded-0" placeholder='********' name='password' id='password' autoComplete='off' />
                                                 <div className="small text-danger">
                                                     <ErrorMessage name='password' />
                                                 </div>

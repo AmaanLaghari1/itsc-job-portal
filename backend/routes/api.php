@@ -52,6 +52,8 @@ Route::prefix('user')->group(function() {
     Route::get('get-user-detail/{countryId?}/{provinceId?}/{districtId?}/{cityId?}', [UserController::class, 'getUserDetails']);
     Route::post('add_research_publication', [UserController::class, 'addResearchAndPublication']);
     Route::get('get_research_publications/{userId}', [UserController::class, 'getResearchAndPublication']);
+    Route::put('update_research_publication/{id}', [UserController::class, 'updateResearchAndPublication']);
+    Route::delete('delete_research_publication/{id}', [UserController::class, 'deleteResearchAndPublication']);
 });
 
 Route::prefix('qualification')->group(function() {

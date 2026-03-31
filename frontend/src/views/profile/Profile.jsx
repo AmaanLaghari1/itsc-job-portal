@@ -355,8 +355,6 @@ const Profile = () => {
                     )
                 }}
             </Formik>
-            
-            <ResearchAndPublicationAdd user_id={auth.user.USER_ID} />
         </div>
     )
 }

@@ -161,7 +161,8 @@ class PdfService
         $this->setFontStyle('');
         $this->applicationPDF->Cell(40, 7, 'Marital Status', 1, 0, 'L', true);
         $this->setFontStyle('B');
-        $this->applicationPDF->Cell(55, 7, $data['MARITAL_STATUS'], 1, 1, 'L', true);
+        $maritalStatus = $data['MARITAL_STATUS'] == 1 ? 'SINGLE' : ($data['MARITAL_STATUS'] == 2 ? 'MARRIED' : ($data['MARITAL_STATUS'] == 3 ? 'WIDOWED' : 'DIVORCED'));
+        $this->applicationPDF->Cell(55, 7, $maritalStatus, 1, 1, 'L', true);
         $this->setFontStyle('');
         $this->applicationPDF->Cell(40, 7, 'Country', 1, 0, 'L', true);
         $this->setFontStyle('B');

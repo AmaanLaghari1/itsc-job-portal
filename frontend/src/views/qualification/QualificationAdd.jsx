@@ -70,7 +70,7 @@ const QualificationAdd = () => {
         obtained_marks: Yup.string().when(
             ['degree_program', 'is_result_declare'],
             (data, schema) => {
-                if (data[0] == 8) return schema;
+                if (data[0] == 8 || data[0] == 9) return schema;
                 if (data[1] === 'Y') return schema.required('Obtained Marks required');
                 return schema;
             }
@@ -78,7 +78,7 @@ const QualificationAdd = () => {
         total_marks: Yup.string().when(
             ['degree_program', 'is_result_declare'],
             (data, schema) => {
-                if (data[0] == 8) return schema;
+                if (data[0] == 8 || data[0] == 9) return schema;
                 if (data[1] === 'Y') return schema.required('Total Marks required');
                 return schema;
             }
@@ -86,7 +86,7 @@ const QualificationAdd = () => {
         grading_as: Yup.string().when(
             ['degree_program', 'is_result_declare'],
             (data, schema) => {
-                if (data[0] == 8) return schema;
+                if (data[0] == 8 || data[0] == 9) return schema;
                 if (data[1] === 'Y') return schema.required('Grading As required');
                 return schema;
             }

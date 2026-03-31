@@ -33,15 +33,17 @@ export const ApplicationCard = ({application}) => {
                     </div>
 
                     <div className="d-flex justify-content-between align-items-center flex-wrap">
-                        <CCardText className='my-auto text-muted small fw-bold'>
-                            Applied on: {formatDate(application.APPLY_DATE)}
+                        <div>
+                            <CCardText className='my-auto text-muted small fw-bold'>
+                                Applied on: {formatDate(application.APPLY_DATE)}
+                            </CCardText>
                             {
                                 application.application_status?.APPLICATION_STATUS_ID === 2 &&
                                 <CCardText className='text-danger fst-italic'>
                                     Application form will be available after the payment is processed.
                                 </CCardText>
                             }
-                        </CCardText>
+                        </div>
                         <div className="d-flex flex-wrap gap-2 my-2">
                             {
                                 application.application_status?.APPLICATION_STATUS_ID !== 1 ?

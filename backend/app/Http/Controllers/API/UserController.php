@@ -437,4 +437,64 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    public function updateResearchAndPublication(Request $request, $id){
+        try {
+            $validation = Validator::make($request->all(), [
+                'research_title' => 'required',
+                'research_journal' => 'required',
+                'research_edition' => 'required',
+            ]);
+
+            if($validation->stopOnFirstFailure()->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation failed',
+                    'error_message' => $validation->errors()->first()
+                ], 401);
+            }
+
+            $data = [
+                'RESEARCH_TITLE' => $request->research_title??'',
+                'RESEARCH_JOURNAL' => $request->research_journal??'',
+                'RESEARCH_JOURNAL_EDITION' => $request->research_edition??'',
+                'RESEARCH_JOURNAL_LINK' => $request->research_journal_link??NULL,
+            ];
+
+            DB::beginTransaction();
+            $record = DB::table('research_publications')->where('RESEARCH_PUBLICATION_ID', $id)->update($data);
+
+            if($record){
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Research and Publication updated successfully'
+                ], 200);
+            }
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+    public function deleteResearchAndPublication($id){
+        try {
+            $record = DB::table('research_publications')->where('RESEARCH_PUBLICATION_ID', $id)->delete();
+
+            if($record){
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Research and Publication deleted successfully'
+                ], 200);
+            }
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
 }

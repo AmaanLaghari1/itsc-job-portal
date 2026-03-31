@@ -62,6 +62,12 @@ const _nav = data => {
           color: data.completeness.experience == 100 ? 'success' : 'danger',
           text: roundOff(data.completeness.experience) + '%',
         },
+      },
+      {
+        component: CNavItem,
+        name: 'Research & Publications',
+        to: '/research-publications',
+        icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
       }
     ]
   } else if (currentRole == 3 || currentRole == 2 || currentRole == 1) {

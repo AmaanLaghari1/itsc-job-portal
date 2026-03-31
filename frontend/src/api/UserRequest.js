@@ -54,3 +54,20 @@ export const getResearchPublications = (user_id) => {
         }
     })
 }
+
+export const deleteResearchPublication = (id) => {
+    return API.delete(`delete_research_publication/${id}`, {
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
+    })
+}
+
+export const updateResearchPublication = (id, formData) => {
+    return API.put(`update_research_publication/${id}`, formData, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
