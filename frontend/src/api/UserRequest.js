@@ -71,3 +71,37 @@ export const updateResearchPublication = (id, formData) => {
         }
     })
 }
+
+export const addDesignProject = (formData) => {
+    return API.post('add_design_project', formData, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "multipart/form-data"
+        }
+    })
+}
+
+export const getDesignProjects = (user_id) => {
+    return API.get(`get_design_projects/${user_id}`, {
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
+    })
+}
+
+export const deleteDesignProject = (id) => {
+    return API.delete(`delete_design_project/${id}`, {
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
+    })
+}
+
+export const updateDesignProject = (id, formData) => {
+    return API.put(`update_design_project/${id}`, formData, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}

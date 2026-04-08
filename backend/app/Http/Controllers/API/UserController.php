@@ -367,10 +367,13 @@ class UserController extends Controller
         try {
             $validation = Validator::make($request->all(), [
                 'user_id' => 'required',
-                'research_title' => 'required',
+                'research_title' => 'required|max:2000',
                 'research_journal' => 'required',
                 'research_edition' => 'required',
                 'upload_type' => 'required',
+                'author_no' => 'required',
+                'issn_no' => 'required',
+                'publication_year' => 'required',
 //                'research_journal_file' => 'required_if:upload_type,2|file|mimes:pdf,doc,docx|max:2048',
             ]);
 
@@ -390,6 +393,10 @@ class UserController extends Controller
                 'RESEARCH_JOURNAL' => $request->research_journal??'',
                 'RESEARCH_JOURNAL_EDITION' => $request->research_edition??'',
                 'RESEARCH_JOURNAL_LINK' => $request->research_journal_link??NULL,
+                'AUTHOR_NO' => $request->author_no??'',
+                'ISSN_NO' => $request->issn_no??'',
+                'PUBLICATION_YEAR' => $request->publication_year??'',
+                'CORRESPONDING_AUTHOR' => $request->corresponding_author??'',
             ];
 
 //            Handle File Upload
@@ -425,7 +432,9 @@ class UserController extends Controller
 
     public function getResearchAndPublication($userId){
         try {
-            $research = DB::table('research_publications')->where('USER_ID', $userId)->get();
+            $research = DB::table('research_publications')->where('USER_ID', $userId)
+                ->orderBy('RESEARCH_PUBLICATION_ID', 'desc')
+                ->get();
             return response()->json([
                 'data' => $research,
                 'status' => true
@@ -441,9 +450,12 @@ class UserController extends Controller
     public function updateResearchAndPublication(Request $request, $id){
         try {
             $validation = Validator::make($request->all(), [
-                'research_title' => 'required',
+                'research_title' => 'required|max:2000',
                 'research_journal' => 'required',
                 'research_edition' => 'required',
+                'author_no' => 'required',
+                'issn_no' => 'required',
+                'publication_year' => 'required',
             ]);
 
             if($validation->stopOnFirstFailure()->fails()){
@@ -459,6 +471,10 @@ class UserController extends Controller
                 'RESEARCH_JOURNAL' => $request->research_journal??'',
                 'RESEARCH_JOURNAL_EDITION' => $request->research_edition??'',
                 'RESEARCH_JOURNAL_LINK' => $request->research_journal_link??NULL,
+                'AUTHOR_NO' => $request->author_no??'',
+                'ISSN_NO' => $request->issn_no??'',
+                'PUBLICATION_YEAR' => $request->publication_year??'',
+                'CORRESPONDING_AUTHOR' => $request->corresponding_author??'',
             ];
 
             DB::beginTransaction();
@@ -497,4 +513,135 @@ class UserController extends Controller
             ], 404);
         }
     }
+
+//    Design Project Exhibitions
+    public function addDesignProjectExhibition(Request $request){
+        try {
+            $validation = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'title' => 'required|max:2000',
+                'client' => 'required',
+                'date' => 'required',
+                'venue' => 'required'
+            ]);
+
+            if($validation->stopOnFirstFailure()->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation failed',
+                    'error_message' => $validation->errors()->first()
+                ], 401);
+            }
+
+            $data = [
+                'USER_ID' => $request->user_id??'',
+                'TITLE' => $request->title??'',
+                'CLIENT' => $request->client??'',
+                'DATE' => $request->date??'',
+                'VENUE' => $request->venue??'',
+                'NATURE_OF_PROJECT' => $request->nature??'',
+            ];
+
+            DB::beginTransaction();
+            $newRec = DB::table('design_project_exhibitions')->insert($data);
+
+            if($newRec){
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Design Project Exhibition added successfully'
+                ], 200);
+            }
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'error' => $e->getMessage(),
+                'error_message' => 'Something went wrong. Please try again later.'
+            ], 500);
+        }
+    }
+
+    public function getDesignProjects($userId){
+        try {
+            $research = DB::table('design_project_exhibitions')->where('USER_ID', $userId)
+                ->orderBy('DATE', 'desc')
+                ->get();
+            return response()->json([
+                'data' => $research,
+                'status' => true
+            ], 200);
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteDesignProject($id){
+        try {
+            $record = DB::table('design_project_exhibitions')->where('PROJECT_ID', $id)->delete();
+
+            if($record){
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Project deleted successfully'
+                ], 200);
+            }
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
+
+    public function updateDesignProject(Request $request, $id){
+        try {
+            $validation = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'title' => 'required|max:2000',
+                'client' => 'required',
+                'date' => 'required',
+                'venue' => 'required'
+            ]);
+
+            if($validation->stopOnFirstFailure()->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation failed',
+                    'error_message' => $validation->errors()->first()
+                ], 401);
+            }
+
+            $data = [
+                'USER_ID' => $request->user_id??'',
+                'TITLE' => $request->title??'',
+                'CLIENT' => $request->client??'',
+                'DATE' => $request->date??'',
+                'VENUE' => $request->venue??'',
+                'NATURE_OF_PROJECT' => $request->nature??'',
+            ];
+
+            DB::beginTransaction();
+            $record = DB::table('design_project_exhibitions')->where('PROJECT_ID', $id)->update($data);
+
+            if($record){
+                DB::commit();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Project updated successfully'
+                ], 200);
+            }
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
+
 }

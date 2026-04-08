@@ -6,6 +6,7 @@ use App\Services\ApplicationPDF;
 use Carbon\Carbon;
 use FPDF;
 use App\Services\ChallanPDF;
+use Illuminate\Support\Facades\Date;
 
 class PdfService
 {
@@ -189,7 +190,7 @@ class PdfService
 //        Qualification Section
         $qualHeader = ['Degree Program', 'Board/University', 'Passing Year', 'Obtained Marks', 'Total Marks'];
         $qualData = $data['qualifications'];
-        $qualColWidths = [50, 75, 20, 25, 20]; // ✅ 5 columns
+        $qualColWidths = [50, 75, 20, 25, 20]; // 5 columns
         $this->SectionTitle('Qualifications');
         $this->setFontStyle('B', 'Times', 8);
         $this->applicationPDF->FancyTable($qualHeader, $qualData, $qualColWidths);;
@@ -207,10 +208,62 @@ class PdfService
         $expColWidths = [50, 50, 25, 25, 40];
         $this->setFontStyle('B', 'Times', 8);
         $this->applicationPDF->FancyTable($expHeader, $data['experience'], $expColWidths);
+            $estimatedHeight = 20; // adjust based on layout
+            $this->checkPageBreak($estimatedHeight);
         $this->applicationPDF->fieldWithLabel('Total Experience', $data['total_experience'], 50, 0, 7, 1, 'L');
         }
     }
 
+    function checkPageBreak($height)
+    {
+        $pageHeight = $this->applicationPDF->GetPageHeight();
+
+        // assume bottom margin ~15
+        if ($this->applicationPDF->GetY() + $height > ($pageHeight - 15)) {
+            $this->applicationPDF->AddPage();
+        }
+    }
+
+    public function designProjectExhibitionSection($data){
+        if(count($data) > 0){
+            $this->applicationPDF->addPage();
+            $this->applicationPDF->setTitle('University of Sindh');
+            $this->applicationPDF->SetFont('Arial', 'B', 12);
+            $this->applicationPDF->Cell(0, 7, 'Design Projects / Exhibitions', 0, 1, 'L');
+
+            $this->applicationPDF->Ln(5);
+            $this->applicationPDF->SetFont('Arial', '', 10);
+
+            foreach ($data as $row) {
+                $estimatedHeight = 40; // adjust based on layout
+                $this->checkPageBreak($estimatedHeight);
+
+                $this->applicationPDF->SetFont('Arial', '', 10);
+                $this->applicationPDF->fieldWithLabel('Project / Exhibition Title', $row->TITLE, 45, 0, 7, 1, 'L');
+                $header = [
+                    'Client / Sponsor',
+                    'Nature of Project / Exhibition',
+                    'Date',
+                    'Venue'
+                ];
+
+                $values = [
+                    [
+                        $row->CLIENT,
+                        $row->NATURE_OF_PROJECT,
+                        Date::make($row->DATE)->format('d-m-Y'),
+                        $row->VENUE,
+                    ]
+                ];
+
+                $colWidths = [45, 90, 25, 30];
+
+                $this->applicationPDF->FancyTable($header, $values, $colWidths, $headerStyle='');
+
+                $this->applicationPDF->Ln(2);
+            }
+        }
+    }
     public function generateApplicationPdf($applicationData)
     {
 //        dd($applicationData->toArray());
@@ -226,6 +279,52 @@ class PdfService
         $this->applicationPDF->setTitle('University of Sindh');
 
         $this->applicationContent($requiredData);
+
+        if(count($requiredData['RESEARCH_PUBLICATIONS']) > 0){
+            $this->applicationPDF->addPage();
+            $this->applicationPDF->setTitle('University of Sindh');
+            $this->applicationPDF->SetFont('Arial', 'B', 12);
+            $this->applicationPDF->Cell(0, 7, 'Research Publications', 0, 1, 'L');
+
+            $this->applicationPDF->Ln(5);
+            $this->applicationPDF->SetFont('Arial', '', 10);
+
+            foreach ($requiredData['RESEARCH_PUBLICATIONS'] as $publication) {
+                $estimatedHeight = 50; // adjust based on layout
+                $this->checkPageBreak($estimatedHeight);
+
+                $this->applicationPDF->SetFont('Arial', '', 10);
+                $this->applicationPDF->fieldWithLabel('Research Title', $publication->RESEARCH_TITLE, 30, 0, 7, 1, 'L');
+                $header = [
+                    'ISSN No.',
+                    'Author No.',
+                    'Corresponding Author',
+                    'Research Journal Name',
+                    'Publication Year'
+                ];
+
+                $values = [
+                    [
+                        $publication->ISSN_NO,
+                        $publication->AUTHOR_NO,
+                        $publication->CORRESPONDING_AUTHOR == 1 ? 'Yes' : 'No',
+                        $publication->RESEARCH_JOURNAL,
+                        $publication->PUBLICATION_YEAR??'-'
+                    ]
+                ];
+
+                $colWidths = [30, 25, 30, 75, 30];
+
+                $this->applicationPDF->FancyTable($header, $values, $colWidths, $headerStyle='');
+
+                $this->applicationPDF->fieldWithLabel('Source', $publication->RESEARCH_JOURNAL_LINK??'NA', 30, 0, 7, 1, 'L');
+
+
+                $this->applicationPDF->Ln(2);
+            }
+        }
+
+        $this->designProjectExhibitionSection($requiredData['PROJECT_EXHIBITIONS']);
 
         $this->applicationPDF->Output('I', $applicationData->toArray()['APPLICATION_ID'].'.pdf');
         exit;
@@ -528,6 +627,7 @@ class PdfService
             $this->candidateInfoReportPDF->SetTitle('Candidate Information Report');
             $this->candidateInfoReportPDF->setFont('Arial', 'B', 12);
             $this->candidateInfoReportPDF->MultiCell(0, 7, $announcement->ANNOUNCEMENT_TITLE, 0, 'C');
+            $tableData = [];
 
                 foreach ($announcement->applications as $i => $application) {
                     $user = $application->user;

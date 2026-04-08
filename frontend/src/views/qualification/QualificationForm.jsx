@@ -51,7 +51,7 @@ const QualificationForm = ({ initialValues, validationRules, handleSubmit, loadi
     const programs = useMemo(() => {
         return dropdownData.programs.map(program => program)
     })
-        .filter((program) => program.DEGREE_ID != 1 && program.DEGREE_ID != 10)
+    .filter((program) => program.DEGREE_ID != 1 && program.DEGREE_ID != 10)
 
     const programOptions = useMemo(() =>
         mapOptions(programs, 'DEGREE_ID', 'DEGREE_TITLE')
@@ -142,6 +142,7 @@ const QualificationForm = ({ initialValues, validationRules, handleSubmit, loadi
                                     />
                                 </div>
                             </div>
+                            
                             <div className="col-md-6">
                                 <div className="form-group my-2">
                                     <CustomSelect
@@ -228,7 +229,7 @@ const QualificationForm = ({ initialValues, validationRules, handleSubmit, loadi
                                             required={true}
                                         />
                                         <div className="small text-muted">
-                                            (Optional in case of PhD and Postdoc)
+                                            (Optional in case of MPhil/PhD/Postdoc)
                                         </div>
                                     </div>
                                 </div>
@@ -245,7 +246,7 @@ const QualificationForm = ({ initialValues, validationRules, handleSubmit, loadi
                                             required={true}
                                         />
                                         <div className="small text-muted">
-                                            (Optional in case of PhD and Postdoc)
+                                            (Optional in case of MPhil/PhD/Postdoc)
                                         </div>
                                     </div>
                                 </div>
@@ -298,7 +299,7 @@ const QualificationForm = ({ initialValues, validationRules, handleSubmit, loadi
                                             <ErrorMessage name="grading_as" />
                                         </div>
                                         <div className="small text-muted">
-                                            (Optional in case of PhD and Postdoc)
+                                            (Optional in case of MPhil/PhD/Postdoc)
                                         </div>
                                     </div>
                                 </div>

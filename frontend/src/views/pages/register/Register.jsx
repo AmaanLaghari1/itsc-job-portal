@@ -9,6 +9,8 @@ import { useState } from 'react'
 import * as Yup from 'yup'
 import { Link, useNavigate } from 'react-router-dom'
 import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
+import CIcon from "@coreui/icons-react"
+import { cilEyedropper } from "@coreui/icons"
 
 const Register = () => {
     const theme = useSelector(state => state.ui.theme)
@@ -171,6 +173,7 @@ const Register = () => {
                                                     </label>
                                                     <span className="text-danger fw-bold">*</span>
                                                     <Field type="password" className="form-control form-control-sm border-0 border-bottom border-3 rounded-0" placeholder='********' name='password' id='password' />
+                                                    {/* <CIcon icon={cilEyedropper} className="position-absolute" style={{ right: '15px', top: '38px' }} /> */}
                                                     <div className="small text-danger">
                                                         <ErrorMessage name='password' />
                                                     </div>

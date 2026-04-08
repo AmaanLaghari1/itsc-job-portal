@@ -106,12 +106,12 @@ class ApplicationPDF extends FPDF
     // -------------------------------
     // FIXED TABLE FUNCTION (stable)
     // -------------------------------
-    function FancyTable($header, $data, $colWidths)
+    function FancyTable($header, $data, $colWidths, $headerStyle='B')
     {
         // ---------------------
         // Draw Header
         // ---------------------
-        $this->SetFont('Arial', 'B', 10);
+        $this->SetFont('Arial', $headerStyle, 10);
 
         $nb = [];
         foreach ($header as $i => $col) {
@@ -249,6 +249,16 @@ class ApplicationPDF extends FPDF
         $application = Application::with(['qualifications', 'experiences'])
             ->find($data['APPLICATION_ID']);
 
+        $researchData = DB::table('research_publications')
+            ->where('USER_ID', $data['USER_ID'])
+            ->orderBy('PUBLICATION_YEAR', 'desc')
+            ->get()->toArray();
+
+        $projectsData = DB::table('design_project_exhibitions')
+            ->where('USER_ID', $data['USER_ID'])
+            ->orderBy('DATE', 'desc')
+            ->get()->toArray();
+
         $countryName = DB::table('countries')->where('COUNTRY_ID', $data['COUNTRY_ID'])->value('COUNTRY_NAME');
         $provinceName = DB::table('provinces')->where('PROVINCE_ID', $data['PROVINCE_ID'])->value('PROVINCE_NAME');
         $districtName = DB::table('districts')->where('DISTRICT_ID', $data['DISTRICT_ID'])->value('DISTRICT_NAME');
@@ -310,6 +320,8 @@ class ApplicationPDF extends FPDF
             "total_experience" => $sumTotalExperience,
             "PROFILE_IMAGE" => $data['PROFILE_IMAGE'] ?? '',
             "REF_NO" => $data['announcement']['REF_NO'] ?? '',
+            "RESEARCH_PUBLICATIONS" => $researchData,
+            "PROJECT_EXHIBITIONS" => $projectsData
         ];
     }
 

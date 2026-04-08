@@ -17,13 +17,15 @@ if (!function_exists("formatRequestData")) {
         foreach ($data as $key => $value) {
             $value = removeLeadingZeroes($value);
 
-            // Skip if value is empty string or null
-            if ($value === '' || is_null($value)) {
-                continue;
+            // convert empty string to NULL
+            if ($value === '') {
+                $value = null;
             }
 
-            // Preserve original value for 'email'; otherwise convert to uppercase
-            $requestData[strtoupper($key)] = $key !== 'email' && $key !== 'password' && $key !== 'profile_image' ? strtoupper($value) : $value;
+            $requestData[strtoupper($key)] =
+                ($key !== 'email' && $key !== 'password' && $key !== 'profile_image' && !is_null($value))
+                    ? strtoupper($value)
+                    : $value;
         }
 
         return $requestData;

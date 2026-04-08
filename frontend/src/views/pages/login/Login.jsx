@@ -76,8 +76,6 @@ const Login = () => {
         setLoading(false)
     }
 
-    // console.log(announcements)
-
     return (
         <div>
             <div style={{ zIndex: 1 }} className="container-fluid">

@@ -7,7 +7,7 @@ const CustomSelect = ({
   label,
   name,
   options,
-  required=false,
+  required = false,
   className = "",
   defaultValue = null, // Allow setting default value dynamically
   onSearchChange,
@@ -28,21 +28,21 @@ const CustomSelect = ({
       color: theme == 'dark' ? "#fff" : "#000", // Ensures text remains white
     }),
     menu: (provided) => ({
-        ...provided,
-        background: theme == 'dark' ? "#1a1d21" : "#fff", // Change dropdown background color
-      }),
-      option: (provided, { isSelected, isFocused }) => ({
-        ...provided,
-        // background: theme == 'dark' ? "#1a1d21" : "#fff", // Change dropdown background color
-        // background: isSelected ? "#3a3f44" : isFocused ? "#2a2f34" :  theme == 'dark' ? "#1a1d21" : "#fff", // Change hover & selected color
-        background: isSelected 
+      ...provided,
+      background: theme == 'dark' ? "#1a1d21" : "#fff", // Change dropdown background color
+    }),
+    option: (provided, { isSelected, isFocused }) => ({
+      ...provided,
+      // background: theme == 'dark' ? "#1a1d21" : "#fff", // Change dropdown background color
+      // background: isSelected ? "#3a3f44" : isFocused ? "#2a2f34" :  theme == 'dark' ? "#1a1d21" : "#fff", // Change hover & selected color
+      background: isSelected
         ? "#f9b115"
-        : isFocused 
+        : isFocused
           ? "#c8b222"
           : (theme === 'dark' ? "#1a1d21" : "#fff"),
-        color: theme == 'dark' ? "#fff" : "#000", // Change text color
-        padding: "10px",
-        cursor: "pointer",
+      color: theme == 'dark' ? "#fff" : "#000", // Change text color
+      padding: "10px",
+      cursor: "pointer",
     }),
   };
 
@@ -51,27 +51,39 @@ const CustomSelect = ({
   return (
     <div className={className}>
       <label className="form-label fw-bold" htmlFor={name}>
-        {label} {required && <span className="text-danger fw-bold">*</span>}
+        {label}{required && <span className="text-danger fw-bold">*</span>}
       </label>
 
       <Field name={name}>
         {({ field, form }) => {
-          const selectedValue =
-            options.find((opt) => opt.key == field.value) || defaultValue;
+          const isMulti = rest.isMulti;
+
+          const selectedValue = isMulti
+            ? options.filter((opt) => (field.value || []).includes(opt.key))
+            : options.find((opt) => opt.key == field.value) || null;
 
           return (
             <Select
               cacheOptions
               id={name}
               name={name}
-              options={options}
+              options={options || []}
+              isOptionDisabled={(option) => option.key === ''}
               getOptionLabel={(option) => option.value}
               getOptionValue={(option) => option.key}
               getOptionSelected={(option, value) => option.key === value.key}
               value={selectedValue} // Set default dynamically
-              onChange={(selectedOption) =>
-                form.setFieldValue(name, selectedOption?.key || "")
-              }
+              onChange={(selectedOption) => {
+                if (isMulti) {
+                  const values = selectedOption
+                    ? selectedOption.map((opt) => opt.key)
+                    : [];
+                  form.setFieldValue(name, values);
+                } else {
+                  form.setFieldValue(name, selectedOption?.key || "");
+                }
+              }}
+              isMulti={isMulti} // Pass isMulti prop if provided
               onInputChange={(newValue, { action }) => {
                 setInputValue(newValue);
                 if (action === "input-change" && onSearchChange) {

@@ -33,7 +33,7 @@ const Experience = () => {
 
   return (
     <div>
-        <h1>Experience</h1>
+        <h1>Academic / Professional Experience</h1>
         <Link to={import.meta.env.VITE_BASE_URL+'experience-add'}>
             <button className='btn btn-success text-light'>
                 Add New <CIcon icon={cilPlus} />

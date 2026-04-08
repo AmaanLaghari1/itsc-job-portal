@@ -1,1 +1,0 @@
-import{j as e}from"./index-vJnlPKwu.js";import n from"./purify.es-CQJ0hv7W.js";const o=({htmlContent:r})=>{const t=n.sanitize(r);return e.jsx("div",{dangerouslySetInnerHTML:{__html:t}})};export{o as H};

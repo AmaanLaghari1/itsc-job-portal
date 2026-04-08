@@ -29,6 +29,7 @@ const ExperienceAdd = React.lazy(() => import('./views/experience/ExperienceAdd'
 const ExperienceEdit = React.lazy(() => import('./views/experience/ExperienceEdit'))
 const Users = React.lazy(() => import('./views/users/Users'))
 const ResearchAndPublicationAdd = React.lazy(() => import('./views/profile/ResearchAndPublicationAdd'))
+const DesignProjects = React.lazy(() => import('./views/profile/design-projects/DesignProject'))
 
 const routes = [
   // Protected Routes
@@ -62,6 +63,7 @@ const routes = [
   { path: '/experience-edit', name: 'Edit Experience', element: ExperienceEdit },
   { path: '/users', name: 'Users', element: Users },
   { path: '/research-publications', name: 'Research & Publications', element: ResearchAndPublicationAdd },
+  { path: '/design-projects', name: 'Design Projects / Exhibitions', element: DesignProjects },
 ]
 
 export default routes

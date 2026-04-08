@@ -54,6 +54,10 @@ Route::prefix('user')->group(function() {
     Route::get('get_research_publications/{userId}', [UserController::class, 'getResearchAndPublication']);
     Route::put('update_research_publication/{id}', [UserController::class, 'updateResearchAndPublication']);
     Route::delete('delete_research_publication/{id}', [UserController::class, 'deleteResearchAndPublication']);
+    Route::post('add_design_project', [UserController::class, 'addDesignProjectExhibition']);
+    Route::get('get_design_projects/{userId}', [UserController::class, 'getDesignProjects']);
+    Route::delete('delete_design_project/{id}', [UserController::class, 'deleteDesignProject']);
+    Route::put('update_design_project/{id}', [UserController::class, 'updateDesignProject']);
 });
 
 Route::prefix('qualification')->group(function() {

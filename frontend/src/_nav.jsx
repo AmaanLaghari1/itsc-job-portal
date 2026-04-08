@@ -9,7 +9,8 @@ import {
   cilGroup,
   cilLibrary,
   cilLibraryBuilding,
-  cilTask
+  cilTask,
+  cilDescription
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 import { roundOff } from './helper'
@@ -68,6 +69,12 @@ const _nav = data => {
         name: 'Research & Publications',
         to: '/research-publications',
         icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Design Project / Exhibition',
+        to: '/design-projects',
+        icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
       }
     ]
   } else if (currentRole == 3 || currentRole == 2 || currentRole == 1) {
