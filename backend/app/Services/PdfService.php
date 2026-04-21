@@ -319,7 +319,6 @@ class PdfService
 
                 $this->applicationPDF->fieldWithLabel('Source', $publication->RESEARCH_JOURNAL_LINK??'NA', 30, 0, 7, 1, 'L');
 
-
                 $this->applicationPDF->Ln(2);
             }
         }

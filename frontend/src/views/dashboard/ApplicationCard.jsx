@@ -46,11 +46,13 @@ export const ApplicationCard = ({application}) => {
                         </div>
                         <div className="d-flex flex-wrap gap-2 my-2">
                             {
-                                application.application_status?.APPLICATION_STATUS_ID !== 1 ?
-                                    <a href={import.meta.env.VITE_BACKEND_URL+"pdf/"+btoa(application.APPLICATION_ID)} className="btn btn-sm btn-outline-danger rounded-pill px-3" download='itsc_application'>
-                                        Download Challan
-                                    </a>
-                                :
+                                application.announcement.APPLICATION_FEE !== null &&
+                                <a href={import.meta.env.VITE_BACKEND_URL+"pdf/"+btoa(application.APPLICATION_ID)} className="btn btn-sm btn-outline-danger rounded-pill px-3" download='itsc_application'>
+                                    Download Challan
+                                </a>
+                            }
+                            {
+                                application.application_status?.APPLICATION_STATUS_ID === 1 &&
                                     <a href={import.meta.env.VITE_BACKEND_URL+"application-pdf/"+btoa(application.APPLICATION_ID)} className="btn btn-sm btn-outline-success rounded-pill px-3" download='itsc_application'>
                                         Download Form
                                     </a>

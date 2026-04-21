@@ -108,8 +108,14 @@ class ApplicationPDF extends FPDF
     // -------------------------------
     function FancyTable($header, $data, $colWidths, $headerStyle='B')
     {
+        $lineHeight = 6;
+
+        if($this->GetY() + $lineHeight > $this->PageBreakTrigger) {
+            $this->AddPage();
+        }
+
         // ---------------------
-        // Draw Header
+        // HEADER HEIGHT CALC
         // ---------------------
         $this->SetFont('Arial', $headerStyle, 10);
 
@@ -117,72 +123,71 @@ class ApplicationPDF extends FPDF
         foreach ($header as $i => $col) {
             $nb[$i] = $this->NbLines($colWidths[$i], $col);
         }
+        $headerHeight = $lineHeight * max($nb);
 
-        $headerHeight = 6 * max($nb);
+        // Store initial X
+        $tableStartX = $this->GetX();
 
-        $startX = $this->GetX();
-        $startY = $this->GetY();
-        $x = $startX;
-        $y = $startY;
+        // Function to draw header (reuse!)
+        $drawHeader = function() use ($header, $colWidths, $headerHeight, $lineHeight, $headerStyle, $tableStartX) {
+            $this->SetFont('Arial', $headerStyle, 10);
 
-        foreach ($header as $i => $col) {
-            $this->SetXY($x, $y);
-            $this->Rect($x, $y, $colWidths[$i], $headerHeight);
-            $this->MultiCell($colWidths[$i], 6, $col, 0, 'C');
-            $x += $colWidths[$i];
-        }
+            $x = $tableStartX;
+            $y = $this->GetY();
 
-        $this->SetXY($startX, $startY + $headerHeight);
+            foreach ($header as $i => $col) {
+                $this->SetXY($x, $y);
+                $this->Rect($x, $y, $colWidths[$i], $headerHeight);
+                $this->MultiCell($colWidths[$i], $lineHeight, $col, 0, 'C');
+                $x += $colWidths[$i];
+            }
+
+            $this->SetXY($tableStartX, $y + $headerHeight);
+        };
+
+        // Draw initial header
+        $drawHeader();
 
         // ---------------------
-        // TABLE BODY
+        // BODY
         // ---------------------
         $this->SetFont('Arial', '', 9);
 
         foreach ($data as $row) {
 
-            // Compute row height
+            // Calculate row height
             $nbLines = [];
             foreach ($row as $i => $cell) {
                 $nbLines[$i] = $this->NbLines($colWidths[$i], $cell);
             }
+            $rowHeight = $lineHeight * max($nbLines);
 
-            $rowHeight = 6 * max($nbLines);
-
-            // Page break check
+            // PAGE BREAK CHECK
             if ($this->GetY() + $rowHeight > $this->PageBreakTrigger) {
                 $this->AddPage();
 
-                // Draw header again
-                $this->SetFont('Arial', 'B', 10);
+                // Reset X properly after page break
+                $this->SetX($tableStartX);
 
-                $x = $this->GetX();
-                $y = $this->GetY();
+                // Redraw header
+                $drawHeader();
 
-                foreach ($header as $i => $col) {
-                    $this->SetXY($x, $y);
-                    $this->Rect($x, $y, $colWidths[$i], $headerHeight);
-                    $this->MultiCell($colWidths[$i], 6, $col, 0, 'C');
-                    $x += $colWidths[$i];
-                }
-
-                $this->SetXY($startX, $y + $headerHeight);
                 $this->SetFont('Arial', '', 9);
             }
 
             // Draw row
-            $x = $this->GetX();
+            $x = $tableStartX;
             $y = $this->GetY();
 
             foreach ($row as $i => $cell) {
                 $this->SetXY($x, $y);
                 $this->Rect($x, $y, $colWidths[$i], $rowHeight);
-                $this->MultiCell($colWidths[$i], 6, $cell, 0, 'L');
+                $this->MultiCell($colWidths[$i], $lineHeight, $cell, 0, 'L');
                 $x += $colWidths[$i];
             }
 
-            // Move cursor to next row (fixed drift)
-            $this->SetXY($startX, $y + $rowHeight);
+            // Move to next line correctly
+            $this->SetXY($tableStartX, $y + $rowHeight);
         }
     }
 

@@ -8,7 +8,8 @@ const DynamicDataTable = ({
   data,
   title,
   selectableRows = false,
-  onSelectedRowsChange = () => {}, // default no-op
+  onSelectedRowsChange = () => {},
+  loading = false
 }) => {
   const [searchText, setSearchText] = useState("");
   const theme = useSelector((state) => state.ui.theme);
@@ -41,23 +42,6 @@ const DynamicDataTable = ({
         borderTop: "1px solid #444",
         minHeight: "56px",
       },
-      pageButtonsStyle: {
-        borderRadius: "4px",
-        margin: "0 2px",
-        color: "#fff",
-        fill: "#fff",
-        backgroundColor: "#222",
-        "&:hover": {
-          backgroundColor: "#333",
-          color: "#fff",
-          fill: "#fff",
-        },
-        "&:disabled": {
-          cursor: "not-allowed",
-          color: "#666",
-          fill: "#666",
-        },
-      },
     },
     rows: {
       style: {
@@ -67,8 +51,6 @@ const DynamicDataTable = ({
       },
       highlightOnHoverStyle: {
         backgroundColor: "#222",
-        color: "#fff",
-        cursor: "pointer",
       },
     },
     cells: {
@@ -112,6 +94,13 @@ const DynamicDataTable = ({
         selectableRows={selectableRows}
         onSelectedRowsChange={onSelectedRowsChange}
         customStyles={theme === "dark" ? customStyles : {}}
+
+        progressPending={loading}
+        progressComponent={
+          <div style={{ padding: "20px", color: "#999" }}>
+            Loading data...
+          </div>
+        }
       />
     </div>
   );

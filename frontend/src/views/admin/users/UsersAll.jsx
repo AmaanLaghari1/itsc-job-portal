@@ -14,6 +14,7 @@ import { updateUserPassword } from "../../../api/AuthRequest.js";
 import Alert from "../../../components/Alert.js";
 
 const UsersAll = () => {
+  const [loader, showLoader] = useState(false);
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -34,13 +35,16 @@ const UsersAll = () => {
   };
 
   const fetchData = async () => {
+    showLoader(true);
     try {
       const response = await getUser();
       setUsers(response.data.data);
       setFilteredUsers(response.data.data);
     } catch (error) {
       // Handle error
+      console.log(error)
     }
+    showLoader(false);
   };
 
   const handleChangePwd = async (user) => {
@@ -171,6 +175,7 @@ const UsersAll = () => {
         title="Users"
         columns={columns}
         data={filteredUsers}
+        loading={loader}
       />
 
       <Modal

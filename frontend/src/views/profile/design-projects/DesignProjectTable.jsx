@@ -43,25 +43,25 @@ const DesignProjectTable = ({ designProjects, setDesignProjects, getDesignProjec
             <CTable color='success' hover striped bordered responsive align='middle'>
                 <CTableHead>
                     <CTableRow>
-                        <CTableHeaderCell className="small">
+                        <CTableHeaderCell className="small fw-bold">
                             #
                         </CTableHeaderCell>
-                        <CTableHeaderCell className="small">
+                        <CTableHeaderCell className="small fw-bold">
                             Title
                         </CTableHeaderCell>
-                        <CTableHeaderCell className="small">
+                        <CTableHeaderCell className="small fw-bold">
                             Client / Sponsor
                         </CTableHeaderCell>
-                        <CTableHeaderCell className="small">
+                        <CTableHeaderCell className="small fw-bold">
                             Nature of Project / Exhibition
                         </CTableHeaderCell>
-                        <CTableHeaderCell className="small">
+                        <CTableHeaderCell className="small fw-bold">
                             Date
                         </CTableHeaderCell>
-                        <CTableHeaderCell className="small">
+                        <CTableHeaderCell className="small fw-bold">
                             Venue
                         </CTableHeaderCell>
-                        <CTableHeaderCell className="small">
+                        <CTableHeaderCell className="small fw-bold">
                             Actions
                         </CTableHeaderCell>
                     </CTableRow>

@@ -78,6 +78,12 @@ const UserExperienceInfo = () => {
       label: 'Job Description'
     },
     {
+      id: 'JOB_TITLE',
+      displayKey: 'JOB_TITLE',
+      dataKey: 'JOB_TITLE',
+      label: 'Job Title'
+    },
+    {
       id: 'SALARY',
       displayKey: 'SALARY',
       dataKey: 'SALARY',
