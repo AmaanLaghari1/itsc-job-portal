@@ -103,4 +103,14 @@ class Announcement extends Model
 
         return $check;
     }
+
+    public function scopeLatestWithExpiredLast($query)
+    {
+        return $query->orderByRaw("
+        CASE
+            WHEN END_DATE IS NOT NULL AND END_DATE < NOW() THEN 1
+            ELSE 0
+        END
+        ")->orderBy('START_DATE', 'desc');
+    }
 }

@@ -12,7 +12,9 @@ class ApplicationExperienceController extends Controller
     //
     public function getUserApplicationExperience($id){
         try {
-            $record = ApplicationExperience::where('APPLICATION_ID', $id)->get();
+            $record = ApplicationExperience::where('APPLICATION_ID', $id)
+                ->orderByDesc('EXPERIANCE_ID')
+                ->get();
 
             if(is_null($record)){
                 return response()->json([

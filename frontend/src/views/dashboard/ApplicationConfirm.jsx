@@ -155,7 +155,11 @@ const ApplicationConfirm = () => {
     return (
         <div>
 
-            <CCard className="shadow shadow-lg my-5 border-0">
+            <div className="alert alert-warning fs-3">
+                <span className="fw-bolder fs-3">Warning! </span> Any changes made to your profile, qualifications or experience after this point will not be reflected in this application.
+            </div>
+
+            <CCard className="shadow shadow-lg mb-5 border-0">
                 <div className="text-center">
                     <h1 className="display-4">Review Application</h1>
                     <h5 className="fw-bold">{announcement?.ANNOUNCEMENT_TITLE}</h5>
@@ -240,7 +244,7 @@ const ApplicationConfirm = () => {
                                                     </CRow>
                                                     <CRow>
                                                         <CCol sm={2} className="border-bottom border-1 p-2 ">
-                                                           Father's Name
+                                                            Father's Name
                                                         </CCol>
                                                         <CCol sm={10} className="border-bottom border-1 fw-bold p-2 ">
                                                             {auth.user.FNAME || ''}
@@ -385,30 +389,30 @@ const ApplicationConfirm = () => {
 
                                             <CRow className='border-top'>
                                                 <CCol sm={3}>Major Subject</CCol>
-                                                <CCol sm={9} className="fw-bold">{qualification.MAJOR || '-'}</CCol>
+                                                <CCol sm={9} className="fw-bold">{qualification.MAJOR || <span className="text-muted">N/A</span>}</CCol>
                                             </CRow>
 
                                             <CRow className='border-top'>
                                                 <CCol sm={3}>Roll No.</CCol>
-                                                <CCol sm={3} className="fw-bold">{qualification.ROLL_NO || '-'}</CCol>
+                                                <CCol sm={3} className="fw-bold">{qualification.ROLL_NO || <span className="text-muted">N/A</span>}</CCol>
                                                 <CCol sm={3}>
                                                     {qualification.GRADING_AS == 'G' ? 'Grade' : 'CGPA'}
                                                 </CCol>
-                                                <CCol sm={3} className="fw-bold">{qualification.GRADE || qualification.CGPA || '-'}</CCol>
+                                                <CCol sm={3} className="fw-bold">{qualification.GRADE || qualification.CGPA || <span className="text-muted">N/A</span>}</CCol>
                                             </CRow>
 
                                             <CRow className='border-top'>
                                                 <CCol sm={3}>Obtained Marks</CCol>
-                                                <CCol sm={3} className="fw-bold">{qualification.OBTAINED_MARKS || '-'}</CCol>
+                                                <CCol sm={3} className="fw-bold">{qualification.OBTAINED_MARKS || <span className="text-muted">N/A</span>}</CCol>
                                                 <CCol sm={3}>Total Marks</CCol>
-                                                <CCol sm={3} className="fw-bold">{qualification.TOTAL_MARKS || '-'}</CCol>
+                                                <CCol sm={3} className="fw-bold">{qualification.TOTAL_MARKS || <span className="text-muted">N/A</span>}</CCol>
                                             </CRow>
 
                                             <CRow className='border-top'>
                                                 <CCol sm={3}>Passing Year</CCol>
-                                                <CCol sm={3} className="fw-bold">{qualification.PASSING_YEAR || '-'}</CCol>
+                                                <CCol sm={3} className="fw-bold">{qualification.PASSING_YEAR || <span className="text-muted">N/A</span>}</CCol>
                                                 <CCol sm={3}>Result Declaration Date</CCol>
-                                                <CCol sm={3} className="fw-bold">{formatDate(qualification.RESULT_DATE) || '-'}</CCol>
+                                                <CCol sm={3} className="fw-bold">{formatDate(qualification.RESULT_DATE) || <span className="text-muted">N/A</span>}</CCol>
                                             </CRow>
                                         </div>
 
@@ -463,10 +467,18 @@ const ApplicationConfirm = () => {
                                                     </CRow>
                                                     <CRow className='border-top'>
                                                         <CCol sm={3} className="">
+                                                            Job Title
+                                                        </CCol>
+                                                        <CCol sm={9} className="fw-bold">
+                                                            {exp.JOB_TITLE ?? <span className="text-muted">N/A</span>}
+                                                        </CCol>
+                                                    </CRow>
+                                                    <CRow className='border-top'>
+                                                        <CCol sm={3} className="">
                                                             Job Description
                                                         </CCol>
                                                         <CCol sm={9} className="fw-bold">
-                                                            {exp.JOB_DESCRIPTION}
+                                                            {exp.JOB_DESCRIPTION || <span className="text-muted">N/A</span>}
                                                         </CCol>
                                                     </CRow>
                                                     <CRow className='border-top'>
@@ -474,7 +486,7 @@ const ApplicationConfirm = () => {
                                                             Salary
                                                         </CCol>
                                                         <CCol sm={9} className="fw-bold">
-                                                            {exp.SALARY ?? '-'}
+                                                            {exp.SALARY ?? <span className="text-muted">N/A</span>}
                                                         </CCol>
                                                     </CRow>
                                                     <CRow className='border-top'>
@@ -482,15 +494,15 @@ const ApplicationConfirm = () => {
                                                             Employer Contact No.
                                                         </CCol>
                                                         <CCol sm={9} className="fw-bold">
-                                                            {exp.CONTACT_NO}
+                                                            {exp.CONTACT_NO || <span className="text-muted">N/A</span>}
                                                         </CCol>
                                                     </CRow>
 
                                                     <CRow className='border-top'>
                                                         <CCol sm={3} className="">Start Date</CCol>
-                                                        <CCol sm={3} className='fw-bold'>{formatDate(exp.START_DATE) || '-'}</CCol>
+                                                        <CCol sm={3} className='fw-bold'>{formatDate(exp.START_DATE) || <span className="text-muted">N/A</span>}</CCol>
                                                         <CCol sm={3} className="">End Date</CCol>
-                                                        <CCol sm={3} className='fw-bold'>{exp.IS_JOB_CONTINUE === 'Y' ? 'Currently Working' : formatDate(exp.END_DATE) || '-'}</CCol>
+                                                        <CCol sm={3} className='fw-bold'>{exp.IS_JOB_CONTINUE === 'Y' ? 'Currently Working' : formatDate(exp.END_DATE) || <span className="text-muted">N/A</span>}</CCol>
                                                     </CRow>
 
                                                     {
@@ -499,7 +511,7 @@ const ApplicationConfirm = () => {
                                                             <CCol sm={3} className="">Reason for leaving</CCol>
 
                                                             <CCol sm={9} className="fw-bold">
-                                                                {exp.REASON_FOR_LEAVING || '-'}
+                                                                {exp.REASON_FOR_LEAVING || <span className="text-muted">N/A</span>}
                                                             </CCol>
                                                         </CRow>
                                                     }
@@ -507,7 +519,7 @@ const ApplicationConfirm = () => {
                                                         <CCol sm={3} className="">Address</CCol>
 
                                                         <CCol sm={9} className="fw-bold">
-                                                            {exp.ADDRESS || '-'}
+                                                            {exp.ADDRESS || <span className="text-muted">N/A</span>}
                                                         </CCol>
                                                     </CRow>
 

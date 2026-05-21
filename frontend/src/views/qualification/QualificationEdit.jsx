@@ -5,6 +5,7 @@ import QualificationForm from './QualificationForm.jsx'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
+import { normalizeDate } from '../../helper.js'
 
 const QualificationEdit = () => {
     const auth = useSelector(state => state.auth.authData)
@@ -20,7 +21,7 @@ const QualificationEdit = () => {
 
         const formattedValues = {
             ...values,
-            result_date: values.result_date ? new Date(values.result_date).toISOString().split('T')[0] : '',
+            result_date: values.result_date ? normalizeDate(values.result_date) : '',
             institute_id: values.organization_id || 0,
             cgpa: values.cgpa == '' ? 0 : values.cgpa,
             // obtained_marks: values.is_result_declare == 'N' ? '' : values.obtained_marks,

@@ -1,4 +1,4 @@
-import { Form, Formik } from 'formik'
+import { ErrorMessage, Form, Formik } from 'formik'
 import { useRef, useEffect, useState } from 'react'
 import FormControl from '../../components/FormControl'
 import Alert from '../../components/Alert'
@@ -134,12 +134,17 @@ const Profile = () => {
         religion: Yup.string().required('Religion is required!'),
         country_id: Yup.string().required('Country is required!'),
         province_id: Yup.string().required('Province is required!'),
-        district_id: Yup.string().required('District is required!')
+        district_id: Yup.string().required('District is required!'),
+        profile_image: Yup.mixed().test('fileType', 'Unsupported File Format, Please upload a valid image file (JPEG, PNG, JPG)', value => {
+            if (!value) return true; // Allow empty value (no change)
+            const supportedFormats = ['image/jpeg', 'image/png', 'image/jpg'];
+            return supportedFormats.includes(value.type);
+        })
     });
 
     const submitHandler = async (values, { setFieldValue, resetForm }) => {
         setLoading(true);
-        values.date_of_birth = values.date_of_birth ? new Date(values.date_of_birth).toISOString().split('T')[0] : null;
+        values.date_of_birth = values.date_of_birth ? normalizeDate(values.date_of_birth) : null;
 
         if (values.profile_image &&
             typeof values.profile_image === 'object' &&
@@ -234,6 +239,9 @@ const Profile = () => {
                                 }}
                                 ref={changePicRef}
                             />
+
+                            <ErrorMessage name='profile_image' component='div' className='text-danger' />
+
                             <div className="form-group">
                                 <div className="row">
                                     <div className="col-sm-6 my-2">

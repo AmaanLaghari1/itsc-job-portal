@@ -185,32 +185,32 @@ class PdfService
         $this->applicationPDF->fieldWithLabel('Permanent Address', $data['PERMANENT_ADDRESS'], 40, 0, 7, 1, 'L');
 
 
-        //        Space
+        // Space
         $this->applicationPDF->Ln(5);
 //        Qualification Section
-        $qualHeader = ['Degree Program', 'Board/University', 'Passing Year', 'Obtained Marks', 'Total Marks'];
+        $qualHeader = ['Degree Program', 'Discipline', 'Board/University', 'Passing Year', 'Obt Marks', 'Total Marks'];
         $qualData = $data['qualifications'];
-        $qualColWidths = [50, 75, 20, 25, 20]; // 5 columns
+        $qualColWidths = [45, 40, 60, 15, 15, 15]; // 6 columns
         $this->SectionTitle('Qualifications');
         $this->setFontStyle('B', 'Times', 8);
         $this->applicationPDF->FancyTable($qualHeader, $qualData, $qualColWidths);;
 
-        //        Space
+        // Space
         $this->applicationPDF->Ln(5);
 
 //        Experience Section
         if(count($data['experience']) > 0){
         $this->SectionTitle('Experience');
-        $expHeader = ['Organization Name', 'Employment Type', 'Start Date', 'End Date', 'Total Experience'];
+        $expHeader = ['Organization Name', 'Designation', 'Employment Type', 'Start Date', 'End Date', 'Total Experience'];
         $expData = [
             ['University of Sindh', 'B.Sc. in Computer Science', '2019', '2021', 2 .'years'. ' '. '1' .'month'. ' '. '1' .'day']
         ];
-        $expColWidths = [50, 50, 25, 25, 40];
+        $expColWidths = [45, 35, 30, 20, 20, 40];
         $this->setFontStyle('B', 'Times', 8);
         $this->applicationPDF->FancyTable($expHeader, $data['experience'], $expColWidths);
             $estimatedHeight = 20; // adjust based on layout
             $this->checkPageBreak($estimatedHeight);
-        $this->applicationPDF->fieldWithLabel('Total Experience', $data['total_experience'], 50, 0, 7, 1, 'L');
+        $this->applicationPDF->fieldWithLabel('Total Experience', $data['total_experience'], 45, 0, 7, 1, 'L');
         }
     }
 

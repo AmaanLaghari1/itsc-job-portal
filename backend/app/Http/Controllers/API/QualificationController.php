@@ -287,7 +287,8 @@ class QualificationController extends Controller
     public function getByUserId($userId=null){
         try {
             if($userId){
-                $data = Qualification::where('USER_ID', $userId)->with(['user', 'discipline'])->get();
+                $data = Qualification::where('USER_ID', $userId)->with(['user', 'discipline'])
+                    ->get();
                 foreach ($data as $qualification) {
                     $qualification->institute = DB::table('institute')
                         ->where('INSTITUTE_ID', $qualification->INSTITUTE_ID)

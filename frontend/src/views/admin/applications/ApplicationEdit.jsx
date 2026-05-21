@@ -5,6 +5,7 @@ import * as API from '../../../api/ApplicationRequest'
 import Alert from '../../../components/Alert'
 import * as Yup from 'yup'
 import ApplicationReview from './ApplicationReview'
+import { normalizeDate } from '../../../helper'
 
 const ApplicationEdit = () => {
     const [loading, setLoading] = useState(false)
@@ -32,8 +33,8 @@ const ApplicationEdit = () => {
     const submitHandler = async (values, {setSubmitting}) => {
         setLoading(true)
         setSubmitting(false)
-        values.apply_date = new Date(values.apply_date).toISOString().split('T')[0];
-        values.paid_date = values.paid_date ? new Date(values.paid_date).toISOString().split('T')[0] : null;
+        values.apply_date = normalizeDate(values.apply_date);
+        values.paid_date = values.paid_date ? normalizeDate(values.paid_date) : null;
         try {
             const response = await API.updateApplication(values, prevData.APPLICATION_ID)
             Alert({

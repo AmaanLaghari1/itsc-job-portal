@@ -27,8 +27,9 @@ class PdfController extends Controller
                 'CHALLAN_NO' => env('SECTION_ACCOUNT_ID') . sprintf("%07d", $id),
                 'REF_NO' => $data->APPLICATION_ID,
 //                'AMOUNT' => $data->announcement->APPLICATION_FEE,
-                'AMOUNT_AsFTER_DUE_DATE' => $data->announcement->APPLICATION_FEE,
+                'AMOUNT_AFTER_DUE_DATE' => $data->announcement->APPLICATION_FEE,
                 'DUE_DATE' => $data->announcement->END_DATE
+//                'DUE_DATE' => "2026-06-03"
             );
         }
         else {
@@ -57,13 +58,14 @@ class PdfController extends Controller
 
 //        dd($params);
 
-
         $response = postCURL(env('PAYMENT_URL'), $params);
 
-        if($response['response_code'] == 502) {
-            dd($response);
-            die('Please try again after some time!');
-        }
+        return response()->json($response);
+
+//        if($response['response_code'] == 502) {
+//            dd($response);
+//            die('Please try again after some time!');
+//        }
 
 //        dd($response);
         $pdfContent = $pdfService->generatePdf($data);

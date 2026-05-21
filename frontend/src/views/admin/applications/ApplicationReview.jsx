@@ -341,7 +341,7 @@ const ApplicationReview = ({ prevData, announcement }) => {
                                                 Job Title
                                             </CCol>
                                             <CCol sm={9} className="fw-bold">
-                                                {exp.JOB_TITLE || '-'}
+                                                {exp.JOB_TITLE ?? 'N/A'}
                                             </CCol>
                                         </CRow>
                                         <CRow className='border-top'>
@@ -357,7 +357,7 @@ const ApplicationReview = ({ prevData, announcement }) => {
                                                 Salary
                                             </CCol>
                                             <CCol sm={9} className="fw-bold">
-                                                {exp.SALARY ?? '-'}
+                                                {exp.SALARY ?? 'N/A'}
                                             </CCol>
                                         </CRow>
                                         <CRow className='border-top'>
@@ -382,7 +382,7 @@ const ApplicationReview = ({ prevData, announcement }) => {
                                                 <CCol sm={3} className="">Reason for leaving</CCol>
 
                                                 <CCol sm={9} className="fw-bold">
-                                                    {exp.REASON_FOR_LEAVING || '-'}
+                                                    {exp.REASON_FOR_LEAVING || 'N/A'}
                                                 </CCol>
                                             </CRow>
                                         }
@@ -390,7 +390,7 @@ const ApplicationReview = ({ prevData, announcement }) => {
                                             <CCol sm={3} className="">Address</CCol>
 
                                             <CCol sm={9} className="fw-bold">
-                                                {exp.ADDRESS || '-'}
+                                                {exp.ADDRESS || 'N/A'}
                                             </CCol>
                                         </CRow>
 

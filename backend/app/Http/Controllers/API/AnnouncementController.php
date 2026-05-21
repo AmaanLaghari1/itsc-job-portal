@@ -22,10 +22,8 @@ class AnnouncementController extends Controller
     {
         try {
             $allRecords = Cache::remember('announcements_all', 60, function () {
-                return Announcement::with('program')
-                    ->with('qualification_requirements.degree')
-                    ->with('department')
-                    ->orderBy('START_DATE', 'desc')
+                return Announcement::with(['program', 'qualification_requirements.degree', 'department'])
+                    ->latestWithExpiredLast()
                     ->get();
             });
 

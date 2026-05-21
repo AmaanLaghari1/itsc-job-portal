@@ -5,6 +5,7 @@ import Alert from '../../components/Alert'
 import * as API from '../../api/ExperienceRequest.js'
 import * as Yup from 'yup'
 import ExperienceForm from './ExperienceForm.jsx'
+import { normalizeDate } from '../../helper.js'
 
 const ExperienceEdit = () => {
     const auth = useSelector(state => state.auth.authData)
@@ -48,8 +49,8 @@ const ExperienceEdit = () => {
         setLoading(true)
         const formattedValues = {
             ...values,
-            start_date: values.start_date ? new Date(values.start_date).toISOString().split('T')[0] : '',
-            end_date: values.end_date ? new Date(values.end_date).toISOString().split('T')[0] : '',
+            start_date: values.start_date ? normalizeDate(values.start_date) : '',
+            end_date: values.end_date ? normalizeDate(values.end_date) : '',
         };
 
         try {

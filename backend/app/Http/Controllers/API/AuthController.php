@@ -169,7 +169,7 @@ class AuthController extends Controller
         ], 200);
     }
 
-        public function changePassword(Request $request){
+    public function changePassword(Request $request){
         $validation = Validator::make(
             $request->all(),
             [
@@ -355,7 +355,7 @@ public function verifyEmail(Request $request)
 
         DB::commit();
 
-        // ✅ Issue JWT instead of Sanctum token
+        // Issue JWT instead of Sanctum token
         $token = Auth::guard('api')->login($user);
 
         return $this->respondWithToken($token, $user);

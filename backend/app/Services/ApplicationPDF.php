@@ -130,7 +130,7 @@ class ApplicationPDF extends FPDF
 
         // Function to draw header (reuse!)
         $drawHeader = function() use ($header, $colWidths, $headerHeight, $lineHeight, $headerStyle, $tableStartX) {
-            $this->SetFont('Arial', $headerStyle, 10);
+            $this->SetFont('Arial', $headerStyle, 9);
 
             $x = $tableStartX;
             $y = $this->GetY();
@@ -151,7 +151,7 @@ class ApplicationPDF extends FPDF
         // ---------------------
         // BODY
         // ---------------------
-        $this->SetFont('Arial', '', 9);
+        $this->SetFont('Arial', '', 8);
 
         foreach ($data as $row) {
 
@@ -275,6 +275,7 @@ class ApplicationPDF extends FPDF
             ->map(function ($item) {
                 return [
                     $item->degree()->DEGREE_TITLE,
+                    $item->discipline->DISCIPLINE_NAME??'N/A',
                     strtoupper($item->institute->INSTITUTE_NAME),
                     $item->PASSING_YEAR,
                     $item->OBTAINED_MARKS,
@@ -289,6 +290,7 @@ class ApplicationPDF extends FPDF
 
             return [
                 $item->ORGANIZATION_NAME,
+                $item->JOB_TITLE??'N/A',
                 $item->EMP_TYPE,
                 $startDate,
                 $endDate,

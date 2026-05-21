@@ -11,12 +11,15 @@ import {
   setSelectedDeptId,
   setSelectedAnnouncementId,
 } from "../../../slicers/applicationFilterSlice.js";
-import { getApplicationByAnnouncementId } from "../../../api/ApplicationRequest.js";
+import { getApplicationByAnnouncementId, deleteApplication } from "../../../api/ApplicationRequest.js";
 import { getAnnouncement } from "../../../api/AnnouncementRequest.js";
+import AlertConfirm from "../../../components/AlertConfirm.js";
+import Alert from "../../../components/Alert.js";
 
 const Applications = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userRole = useSelector((state) => state.roles.selectedRole);
 
   const [deptData, setDeptData] = useState([]);
   const [announcement, setAnnouncements] = useState([]);
@@ -42,14 +45,14 @@ const Applications = () => {
       }
     };
 
-    const getAllAnnouncements = async () => { 
-      try { 
-        const response = await getAnnouncement() 
-        setAnnouncements(response.data?.data) 
+    const getAllAnnouncements = async () => {
+      try {
+        const response = await getAnnouncement()
+        setAnnouncements(response.data?.data)
       } catch (error) {
         console.log(error)
-      } 
-  }
+      }
+    }
 
     fetchDepartments();
     getAllAnnouncements();
@@ -157,12 +160,12 @@ const Applications = () => {
         row.APPLICATION_STATUS == 1
           ? "Applied"
           : row.APPLICATION_STATUS == 2
-          ? "Unpaid"
-          : row.APPLICATION_STATUS == 3
-          ? "Received"
-          : row.APPLICATION_STATUS == 4
-          ? "Shortlisted"
-          : "Rejected",
+            ? "Unpaid"
+            : row.APPLICATION_STATUS == 3
+              ? "Received"
+              : row.APPLICATION_STATUS == 4
+                ? "Shortlisted"
+                : "Rejected",
       sortable: true,
       width: "120px",
     },
@@ -174,10 +177,10 @@ const Applications = () => {
             className="btn btn-outline-warning btn-sm"
             onClick={() =>
               navigate("/admin/application/edit", {
-                state: { 
+                state: {
                   prevData: row,
                   announcement: announcement.filter(item => item.ANNOUNCEMENT_ID === row.ANNOUNCEMENT_ID)
-                 },
+                },
               })
             }
           >
@@ -193,6 +196,31 @@ const Applications = () => {
           >
             Update User
           </button>
+          {
+            (userRole === 1 || userRole === 2) &&
+            <button
+              className="btn btn-outline-danger btn-sm"
+              onClick={async () => {
+                const confirmed = await AlertConfirm({
+                  title: 'Delete item?',
+                  text: 'This action cannot be undone.',
+                });
+                if (confirmed) {
+                  try {
+                    const response = await deleteApplication(row.APPLICATION_ID);
+                    setApplications(applications.filter(app => app.APPLICATION_ID !== row.APPLICATION_ID));
+                    Alert({ status: true, text: 'Application deleted successfully' })
+                  } catch (error) {
+                    console.log(error)
+                    Alert({ status: false, text: 'Failed to delete application' })
+                  }
+                }
+              }
+              }
+            >
+              Delete
+            </button>
+          }
         </div>
       ),
       ignoreRowClick: true,

@@ -182,7 +182,9 @@ class ExperienceController extends Controller
     public function getByUserId($userId=null){
         try {
             if($userId){
-                $data = Experience::where('USER_ID', $userId)->with('user')->get();
+                $data = Experience::where('USER_ID', $userId)->with('user')
+                    ->orderByDesc('EXPERIANCE_ID')
+                    ->get();
             }
             else {
                 $data = DB::table('experiances')->get();

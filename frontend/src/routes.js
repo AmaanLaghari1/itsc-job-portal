@@ -7,6 +7,8 @@ const ApplicationEdit = React.lazy(() => import('./views/admin/applications/Appl
 const ApplicationUpdateUser = React.lazy(() => import('./views/admin/applications/ApplicationUpdateUser'))
 const AnnouncementEdit = React.lazy(() => import('./views/admin/announcements/AnnouncementEdit'))
 const UsersAll = React.lazy(() => import('./views/admin/users/UsersAll'))
+const UserAdd = React.lazy(() => import('./views/admin/users/UserAdd'))
+const UserEdit = React.lazy(() => import('./views/admin/users/UserEdit'))
 const ProgramManage = React.lazy(() => import('./views/admin/configurations/programs/ProgramManage'))
 const Institutes = React.lazy(() => import('./views/admin/configurations/institutes/Institutes'))
 const InstituteAdd = React.lazy(() => import('./views/admin/configurations/institutes/InstituteAdd'))
@@ -41,6 +43,8 @@ const routes = [
   { path: '/admin/application/edit', name: 'Application Review', element: ApplicationEdit },
   { path: '/admin/application/update-user', name: 'Application Update User', element: ApplicationUpdateUser },
   { path: '/admin/users', name: 'All Users', element: UsersAll },
+  { path: '/admin/user/add', name: 'Add User', element: UserAdd },
+  { path: '/admin/user/edit', name: 'Edit User', element: UserEdit },
   { path: '/admin/program/manage', name: 'Programs Management', element: ProgramManage },
   { path: '/admin/institute', name: 'All Institutes', element: Institutes },
   { path: '/admin/institute/add', name: 'Add Institute', element: InstituteAdd },

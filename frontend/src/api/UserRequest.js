@@ -28,6 +28,14 @@ export const getUserById = (id) => {
     })
 }
 
+export const deleteUser = (id) => {
+    return API.delete("delete/"+id, {
+        headers: {
+            "Access-Control-Allow-Origin": "*"
+        }
+    })
+}
+
 export const getUser = () => {
     return API.get("get", {
         headers: {

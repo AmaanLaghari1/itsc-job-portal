@@ -1,17 +1,20 @@
 import DynamicDataTable from "../../../components/data_table/DynamicDataTable";
 import { useEffect, useState } from "react";
-import { getUser } from "../../../api/UserRequest.js";
+import { deleteUser, getUser } from "../../../api/UserRequest.js";
 import { getFullname } from "../../../helper.js";
 import { Formik, Form } from "formik";
 import * as Yup from 'yup';
 import Modal from "../../../components/Modal.jsx";
 import AssignRole from "./AssignRole.jsx";
-import { CBadge, CSpinner } from "@coreui/react";
+import { CBadge, CButton, CSpinner } from "@coreui/react";
 import FormControl from "../../../components/FormControl.jsx";
 import { useSelector } from "react-redux";
 import AlertConfirm from "../../../components/AlertConfirm.js";
 import { updateUserPassword } from "../../../api/AuthRequest.js";
 import Alert from "../../../components/Alert.js";
+import { useNavigate } from "react-router-dom";
+import { cilPlus } from "@coreui/icons";
+import CIcon from "@coreui/icons-react";
 
 const UsersAll = () => {
   const [loader, showLoader] = useState(false);
@@ -22,6 +25,7 @@ const UsersAll = () => {
   const [visible, setVisible] = useState(false);
   const [action, setAction] = useState(""); // For toggling between "role" and "password"
   const currentRole = useSelector(state => state.roles.selectedRole);
+  const navigate = useNavigate()
 
   const handleView = (item, actionType) => {
     setVisible(true);
@@ -77,6 +81,22 @@ const UsersAll = () => {
     }
   };
 
+  const handleDelete = async (userId) => {
+    const confirm = await AlertConfirm({
+      title: 'Delete User',
+      text: "Are you sure you want to delete this user? This action cannot be undone.",
+    });
+    if (!confirm) return;
+    try {
+      const response = await deleteUser(userId);
+      Alert({ status: true, text: 'User deleted successfully!' })
+      setFilteredUsers(prev => prev.filter(user => user.USER_ID !== userId));
+    } catch (error) {
+      console.log(error)
+      Alert({ status: false, text: 'Failed to delete the user.' });
+    }
+  }
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -103,20 +123,24 @@ const UsersAll = () => {
       name: "Actions",
       cell: (row) => (
         currentRole === 1 || currentRole === 2 ? (
-          <div className="d-flex align-items-center flex-wrap gap-1">
-            <button className="btn btn-outline-success btn-sm" onClick={() => handleView(row, 'role')}>
+          <div className="d-flex align-items-center gap-1">
+            <button className="btn btn-outline-success btn-sm my-2" onClick={() => handleView(row, 'role')}>
               Edit Role
             </button>
-            <button className="btn btn-outline-secondary btn-sm" onClick={() => handleChangePwd(row)}
+            <button className="btn btn-outline-secondary btn-sm my-2" onClick={() => handleChangePwd(row)}
               disabled={loading}
             >
               Update Password
+            </button>
+            <button className="btn btn-outline-danger btn-sm my-2" onClick={() => handleDelete(row.USER_ID)}
+            >
+              Delete
             </button>
           </div>
         ) : '-'
       ),
       ignoreRowClick: true,
-      width: "220px",
+      width: "260px",
     },
   ];
 
@@ -170,6 +194,16 @@ const UsersAll = () => {
           </Form>
         )}
       </Formik>
+
+      <CButton
+      variant="primary"
+      onClick={() => {
+        navigate('/admin/user/add')
+      }}
+      size="sm"
+      >
+        Add New <CIcon icon={cilPlus} />
+      </CButton>
 
       <DynamicDataTable
         title="Users"

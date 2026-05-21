@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\UserRoleRelation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -44,40 +45,35 @@ class UserController extends Controller
         $validation = Validator::make(
             $request->all(),
             [
-                "role" => 'required',
-                "full_name" => "required",
-                "surname" => "required",
-                "father_name" => "required",
-                "cnic_no" => "required|unique:users,cnic_no",
-                "email" => "required|unique:users,email",
-                "password" => "required|min:8",
+                "email" => "required|unique:users_reg,email",
+                'password' => 'required|min:6|confirmed',
+                'password_confirmation' => 'required|min:6',
+                "cnic_no" => "required|unique:users_reg,cnic_no",
+                "first_name" => "required",
+                "fname" => "required",
+                "mobile_no" => "required",
             ]
         );
 
-        if($validation->fails()){
+        if($validation->stopOnFirstFailure()->fails()){
             return response()->json(
                 [
                     "status" => false,
                     "message" => "Validation failed.",
-                    "data" => ["errors" => $validation->messages()],
+                    "error_message" => $validation->errors()->first()
                 ],
                 401
             );
         }
 
-        $newUser = User::create(
-            [
-                "full_name" => $request->full_name,
-                "surname" => $request->surname,
-                "father_name" => $request->father_name,
-                "cnic_no" => $request->cnic_no,
-                "email" => $request->email,
-                "password" => $request->password,
-            ]
-        );
+        $requestData = formatRequestData($request->all());
+
+        DB::beginTransaction();
+        $newUser = User::create($requestData);
 
         if($newUser){
-//            $role = UserRoleRelation::create(['role_id' => $request->role, 'user_id' => $newUser->id]);
+            UserRoleRelation::create(['ROLE_ID' => 4, 'USER_ID' => $newUser->USER_ID]);
+            DB::commit();
             return response()->json([
                 'status' => true,
                 'message' => 'User created successfully.',
@@ -85,9 +81,10 @@ class UserController extends Controller
             ] , 200);
         }
         else {
-        return response()->json([
-            'status' => false,
-            'message' => 'Failed to create the user.',
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to create the user.',
             ] , 500);
         }
     }
@@ -248,13 +245,17 @@ class UserController extends Controller
         //
         $user = User::find($id);
 
+        DB::beginTransaction();
+
         if($user->delete()){
+            DB::commit();
             return response()->json([
                 'status' => true,
                 'message' => 'User deleted successfully.',
                 ] , 200);
             }
         else {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to delete the user.',

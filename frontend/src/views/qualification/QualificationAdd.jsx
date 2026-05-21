@@ -28,7 +28,7 @@ const QualificationAdd = () => {
 
         try {
             const response = await API.createQualification(formattedValues)
-            console.log(response)
+            // console.log(response)
             dispatch({ type: "QUALIFICATION_COMPLETENESS_SUCCESS", payload: response?.data?.qualification_completeness });
             Alert({ status: true, text: response?.data?.message || 'Qualification added successfully' })
             navigate('/qualifications')
