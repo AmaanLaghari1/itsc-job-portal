@@ -278,8 +278,8 @@ class ApplicationPDF extends FPDF
                     $item->discipline->DISCIPLINE_NAME??'N/A',
                     strtoupper($item->institute->INSTITUTE_NAME),
                     $item->PASSING_YEAR,
-                    $item->OBTAINED_MARKS,
-                    $item->TOTAL_MARKS,
+                    $item->degree()->DEGREE_ID == 7 ? $item->CGPA . ' cgpa' : $item->OBTAINED_MARKS??'N/A',
+                    $item->TOTAL_MARKS??'N/A',
                 ];
             });
 

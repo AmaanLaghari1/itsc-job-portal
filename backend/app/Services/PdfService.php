@@ -295,6 +295,7 @@ class PdfService
 
                 $this->applicationPDF->SetFont('Arial', '', 10);
                 $this->applicationPDF->fieldWithLabel('Research Title', $publication->RESEARCH_TITLE, 30, 0, 7, 1, 'L');
+                $this->applicationPDF->fieldWithLabel('Journal Category', $publication->RESEARCH_JOURNAL_EDITION??'N/A', 30, 0, 7, 1, 'L');
                 $header = [
                     'ISSN No.',
                     'Author No.',
