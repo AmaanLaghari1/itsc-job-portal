@@ -112,6 +112,7 @@ Route::prefix('application')->group(function() {
     Route::put('qualifications/update/{id}', [ApplicationQualificationController::class, 'updateUserApplicationQualifications']);
     Route::get('experience/get/{id}', [ApplicationExperienceController::class, 'getUserApplicationExperience']);
     Route::put('experience/update/{id}', [ApplicationExperienceController::class, 'updateUserApplicationExperience']);
+    Route::post('get_by_cnic', [ApplicationController::class, 'getApplicationByCNIC']);
 });
 
 // routes/api.php

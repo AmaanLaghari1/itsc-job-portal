@@ -261,7 +261,7 @@ class ApplicationPDF extends FPDF
 
         $projectsData = DB::table('design_project_exhibitions')
             ->where('USER_ID', $data['USER_ID'])
-            ->orderBy('DATE', 'desc')
+            ->orderBy('START_DATE', 'desc')
             ->get()->toArray();
 
         $countryName = DB::table('countries')->where('COUNTRY_ID', $data['COUNTRY_ID'])->value('COUNTRY_NAME');

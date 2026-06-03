@@ -163,3 +163,12 @@ export const getUserApplicationExperience = (applicationId) => {
         }
     })
 }
+
+export const getApplicationByCNIC = (formData) => {
+    return API.post("get_by_cnic", formData, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}

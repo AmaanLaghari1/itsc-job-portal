@@ -70,7 +70,7 @@ class PdfService
 //        $this->applicationPDF->SetTextColor(0);
     }
 
-    public function setFontStyle($style='', $font='Times', $size=10, $align='L')
+    public function setFontStyle($style='', $font='Times', $size=8, $align='L')
     {
         $this->applicationPDF->setFont($font, $style, $size, $align);
     }
@@ -120,8 +120,63 @@ class PdfService
         $this->SectionTitle('Personal Information');
         $y = $this->applicationPDF->GetY();
 //        $this->applicationPDF->Image(base_path('../resource/uploads/' . $data['PROFILE_IMAGE']), 161, $y+1, 39, 40);
-        $this->applicationPDF->Image(dirname(base_path()) . '/resource/uploads/' . $data['PROFILE_IMAGE'], 161, $y+1, 39, 40);
-//        $this->LineLabel('Surname');
+        $imagePath = dirname(base_path()) . '/resource/uploads/' . $data['PROFILE_IMAGE'];
+
+        try {
+
+            $image = new \Imagick($imagePath);
+
+            // Remove PNG interlacing
+            $image->setImageInterlaceScheme(\Imagick::INTERLACE_NO);
+
+            // Optional: flatten transparency onto white background
+            if ($image->getImageAlphaChannel()) {
+                $background = new \Imagick();
+                $background->newImage(
+                    $image->getImageWidth(),
+                    $image->getImageHeight(),
+                    'white'
+                );
+                $background->compositeImage(
+                    $image,
+                    \Imagick::COMPOSITE_OVER,
+                    0,
+                    0
+                );
+                $background->setImageFormat('png');
+                $image = $background;
+            }
+
+            $tempFile = storage_path('app/temp_profile_' . uniqid() . '.png');
+
+            $image->writeImage($tempFile);
+            $image->clear();
+            $image->destroy();
+
+            $this->applicationPDF->Image(
+                $tempFile,
+                161,
+                $y + 1,
+                39,
+                40
+            );
+
+            @unlink($tempFile);
+
+        } catch (\Exception $e) {
+
+            \Log::error('Image processing failed: ' . $e->getMessage());
+
+            // Optional fallback
+            $this->applicationPDF->Image(
+                $imagePath,
+                161,
+                $y + 1,
+                39,
+                40
+            );
+        }
+        //        $this->LineLabel('Surname');
 
         $this->setFontStyle('');
         $this->applicationPDF->Cell(40, 7, 'Name', 1, 0, 'L', true);
@@ -190,7 +245,7 @@ class PdfService
 //        Qualification Section
         $qualHeader = ['Degree Program', 'Discipline', 'Board/University', 'Passing Year', 'Obt Marks', 'Total Marks'];
         $qualData = $data['qualifications'];
-        $qualColWidths = [45, 40, 60, 15, 15, 15]; // 6 columns
+        $qualColWidths = [45, 40, 55, 20, 15, 15]; // 6 columns
         $this->SectionTitle('Qualifications');
         $this->setFontStyle('B', 'Times', 8);
         $this->applicationPDF->FancyTable($qualHeader, $qualData, $qualColWidths);;
@@ -200,17 +255,18 @@ class PdfService
 
 //        Experience Section
         if(count($data['experience']) > 0){
-        $this->SectionTitle('Experience');
-        $expHeader = ['Organization Name', 'Designation', 'Employment Type', 'Start Date', 'End Date', 'Total Experience'];
-        $expData = [
-            ['University of Sindh', 'B.Sc. in Computer Science', '2019', '2021', 2 .'years'. ' '. '1' .'month'. ' '. '1' .'day']
-        ];
-        $expColWidths = [45, 35, 30, 20, 20, 40];
-        $this->setFontStyle('B', 'Times', 8);
-        $this->applicationPDF->FancyTable($expHeader, $data['experience'], $expColWidths);
+            $this->SectionTitle('Experience');
+            $expHeader = ['Organization Name', 'Designation', 'Employment Type', 'Start Date', 'End Date', 'Total Experience'];
+            $expData = [
+                ['University of Sindh', 'B.Sc. in Computer Science', '2019', '2021', 2 .'years'. ' '. '1' .'month'. ' '. '1' .'day']
+            ];
+            $expColWidths = [45, 35, 30, 20, 20, 40];
+            $this->setFontStyle('B', 'Times', 6);
             $estimatedHeight = 20; // adjust based on layout
             $this->checkPageBreak($estimatedHeight);
-        $this->applicationPDF->fieldWithLabel('Total Experience', $data['total_experience'], 45, 0, 7, 1, 'L');
+            $this->applicationPDF->FancyTable($expHeader, $data['experience'], $expColWidths);
+            $this->checkPageBreak($estimatedHeight);
+            $this->applicationPDF->fieldWithLabel('Total Experience', $data['total_experience'], 45, 0, 7, 1, 'L');
         }
     }
 
@@ -243,20 +299,24 @@ class PdfService
                 $header = [
                     'Client / Sponsor',
                     'Nature of Project / Exhibition',
-                    'Date',
+                    'Start Date',
+                    'End Date',
                     'Venue'
                 ];
+
+                $endDate = $row->END_DATE ? Date::make($row->END_DATE)->format('d-m-Y') : 'N/A';
 
                 $values = [
                     [
                         $row->CLIENT,
                         $row->NATURE_OF_PROJECT,
-                        Date::make($row->DATE)->format('d-m-Y'),
+                        Date::make($row->START_DATE)->format('d-m-Y'),
+                        $endDate,
                         $row->VENUE,
                     ]
                 ];
 
-                $colWidths = [45, 90, 25, 30];
+                $colWidths = [45, 75, 20, 20, 30];
 
                 $this->applicationPDF->FancyTable($header, $values, $colWidths, $headerStyle='');
 
@@ -414,36 +474,36 @@ class PdfService
                 }
             }
 
-           if(count($applications) > 0) {
+            if(count($applications) > 0) {
 
-               /** Widths: 13 columns **/
-               $qualColWidths = [
-                   10,  // No
-                   30,  // Name
-                   35,  // Father's Name
-                   25,  // Surname
-                   20,  // Gender
-                   15,  // Age
-                   20,  // SSC
-                   35,  // HSC
-                   40,  // BS
-                   40,  // MS
-                   40,  // PhD
-                   40,  // District
-                   40   // Remarks
-               ];
+                /** Widths: 13 columns **/
+                $qualColWidths = [
+                    10,  // No
+                    30,  // Name
+                    35,  // Father's Name
+                    25,  // Surname
+                    20,  // Gender
+                    15,  // Age
+                    20,  // SSC
+                    35,  // HSC
+                    40,  // BS
+                    40,  // MS
+                    40,  // PhD
+                    40,  // District
+                    40   // Remarks
+                ];
 
-               $alignments = [
-                   'C', 'L', 'L', 'L', 'L', 'C', 'L', 'L', 'L', 'L', 'L', 'L', 'L'
-               ];
+                $alignments = [
+                    'C', 'L', 'L', 'L', 'L', 'C', 'L', 'L', 'L', 'L', 'L', 'L', 'L'
+                ];
 
 
-               // Table Header
-               $this->applicationReportPdf->TableHeader($qualHeader, $qualColWidths);
+                // Table Header
+                $this->applicationReportPdf->TableHeader($qualHeader, $qualColWidths);
 
-               // Then call FancyTable
-               $this->applicationReportPdf->FancyTable($qualHeader, $qualData, $qualColWidths, $alignments);
-           }
+                // Then call FancyTable
+                $this->applicationReportPdf->FancyTable($qualHeader, $qualData, $qualColWidths, $alignments);
+            }
         }
 
         // Send PDF to browser
@@ -629,22 +689,22 @@ class PdfService
             $this->candidateInfoReportPDF->MultiCell(0, 7, $announcement->ANNOUNCEMENT_TITLE, 0, 'C');
             $tableData = [];
 
-                foreach ($announcement->applications as $i => $application) {
-                    $user = $application->user;
-                    $tableHeaders = ['SNo.', 'Name', 'Email', 'CNIC No.', 'Mobile No.', 'Application Date'];
+            foreach ($announcement->applications as $i => $application) {
+                $user = $application->user;
+                $tableHeaders = ['SNo.', 'Name', 'Email', 'CNIC No.', 'Mobile No.', 'Application Date'];
 
-                    $tableData[] = [
-                        $i + 1,
-                        $user->FIRST_NAME ?? '',
-                        $user->EMAIL ?? '',
-                        $user->CNIC_NO ?? '',
-                        $user->MOBILE_NO ?? '',
-                        $application->APPLY_DATE ?? ''
-                    ];
+                $tableData[] = [
+                    $i + 1,
+                    $user->FIRST_NAME ?? '',
+                    $user->EMAIL ?? '',
+                    $user->CNIC_NO ?? '',
+                    $user->MOBILE_NO ?? '',
+                    $application->APPLY_DATE ?? ''
+                ];
 
-                }
-                    $this->candidateInfoReportPDF->TableHeader($tableHeaders, $qualColWidths);
-                    $this->candidateInfoReportPDF->FancyTable($tableHeaders, $tableData, $qualColWidths, $alignments);
+            }
+            $this->candidateInfoReportPDF->TableHeader($tableHeaders, $qualColWidths);
+            $this->candidateInfoReportPDF->FancyTable($tableHeaders, $tableData, $qualColWidths, $alignments);
 
             $this->candidateInfoReportPDF->Ln(10);
 

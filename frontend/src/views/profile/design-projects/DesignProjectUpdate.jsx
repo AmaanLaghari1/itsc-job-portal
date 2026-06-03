@@ -13,7 +13,8 @@ const DesignProjectUpdate = ({previousData, onUpdate, handleCloseModal}) => {
         title: previousData?.TITLE || "",
         client: previousData?.CLIENT || "",
         nature: previousData?.NATURE_OF_PROJECT || "",
-        date: previousData?.DATE ? normalizeDate(previousData.DATE) : "",
+        start_date: previousData?.START_DATE ? normalizeDate(previousData.START_DATE) : "",
+        end_date: previousData?.END_DATE ? normalizeDate(previousData.END_DATE) : "",
         venue: previousData?.VENUE || ""
     }
 
@@ -21,7 +22,8 @@ const DesignProjectUpdate = ({previousData, onUpdate, handleCloseModal}) => {
         title: Yup.string().required("Title is required"),
         client: Yup.string().required("Client / Sponsor is required"),
         nature: Yup.string().required("Nature of Project / Exhibition is required"),
-        date: Yup.date().required("Date is required"),
+        start_date: Yup.date().required("Start date is required"),
+        end_date: Yup.date().nullable().optional(),
         venue: Yup.string().required("Venue is required")
     })
 

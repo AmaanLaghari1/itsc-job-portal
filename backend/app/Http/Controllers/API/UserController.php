@@ -522,7 +522,7 @@ class UserController extends Controller
                 'user_id' => 'required',
                 'title' => 'required|max:2000',
                 'client' => 'required',
-                'date' => 'required',
+                'start_date' => 'required',
                 'venue' => 'required'
             ]);
 
@@ -538,7 +538,8 @@ class UserController extends Controller
                 'USER_ID' => $request->user_id??'',
                 'TITLE' => $request->title??'',
                 'CLIENT' => $request->client??'',
-                'DATE' => $request->date??'',
+                'START_DATE' => $request->start_date??'',
+                'END_DATE' => $request->end_date,
                 'VENUE' => $request->venue??'',
                 'NATURE_OF_PROJECT' => $request->nature??'',
             ];
@@ -567,7 +568,7 @@ class UserController extends Controller
     public function getDesignProjects($userId){
         try {
             $research = DB::table('design_project_exhibitions')->where('USER_ID', $userId)
-                ->orderBy('DATE', 'desc')
+                ->orderBy('START_DATE', 'desc')
                 ->get();
             return response()->json([
                 'data' => $research,
@@ -605,7 +606,7 @@ class UserController extends Controller
                 'user_id' => 'required',
                 'title' => 'required|max:2000',
                 'client' => 'required',
-                'date' => 'required',
+                'start_date' => 'required',
                 'venue' => 'required'
             ]);
 
@@ -621,7 +622,8 @@ class UserController extends Controller
                 'USER_ID' => $request->user_id??'',
                 'TITLE' => $request->title??'',
                 'CLIENT' => $request->client??'',
-                'DATE' => $request->date??'',
+                'START_DATE' => $request->start_date??'',
+                'END_DATE' => $request->end_date,
                 'VENUE' => $request->venue??'',
                 'NATURE_OF_PROJECT' => $request->nature??'',
             ];

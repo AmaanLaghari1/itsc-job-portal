@@ -18,7 +18,8 @@ const DesignProject = () => {
         title: "",
         client: "",
         nature: "",
-        date: "",
+        start_date: "",
+        end_date: "",
         venue: ""
     }
 
@@ -26,7 +27,7 @@ const DesignProject = () => {
         title: Yup.string().required("Title is required"),
         client: Yup.string().required("Client / Sponsor is required"),
         nature: Yup.string().required("Nature of Project / Exhibition is required"),
-        date: Yup.date().required("Date is required"),
+        start_date: Yup.date().required("Start Date is required"),
         venue: Yup.string().required("Venue is required"),
     })
 

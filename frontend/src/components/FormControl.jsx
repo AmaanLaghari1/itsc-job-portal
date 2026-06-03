@@ -177,7 +177,8 @@ const DateInput = props => {
                                 className="form-control w-100"
                                 id={name}
                                 selected={field.value ? new Date(field.value) : null}
-                                onChange={(val) => setFieldValue(name, val)}
+                                // onChange={(val) => setFieldValue(name, val)}
+                                onChange={(val) => setFieldValue(name, val || null)}
                                 showYearDropdown
                                 showMonthDropdown
                                 yearDropdownItemNumber={70}

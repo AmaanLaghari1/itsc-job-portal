@@ -572,4 +572,31 @@ class ApplicationController extends Controller
             ], 500);
         }
     }
+
+    public function getApplicationByCNIC(Request $request){
+        try {
+            $validation = Validator::make($request->all(), [
+                'cnic_no' => 'required'
+            ])->stopOnFirstFailure();
+
+            if($validation->fails()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 401);
+            }
+
+            $records = Application::where('CNIC_NO', $request->cnic_no)->get();
+
+            return response()->json($records, 200);
+        }
+        catch (\Exception $e){
+            \Log::error($e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

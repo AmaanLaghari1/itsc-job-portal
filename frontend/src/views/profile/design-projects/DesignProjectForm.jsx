@@ -49,9 +49,17 @@ const DesignProjectForm = ({ initialValues, validationSchema, handleSubmit }) =>
                                 <FormControl
                                     control="input"
                                     type="date"
-                                    label="Date"
-                                    name="date"
+                                    label="Start Date"
+                                    name="start_date"
                                     required={true}
+                                />
+                            </div>
+                            <div className="col-sm-6 my-2">
+                                <FormControl
+                                    control="input"
+                                    type="date"
+                                    label="End Date"
+                                    name="end_date"
                                 />
                             </div>
                             <div className="col-sm-6 my-2">

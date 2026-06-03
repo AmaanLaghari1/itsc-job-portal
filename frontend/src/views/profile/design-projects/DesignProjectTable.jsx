@@ -56,7 +56,10 @@ const DesignProjectTable = ({ designProjects, setDesignProjects, getDesignProjec
                             Nature of Project / Exhibition
                         </CTableHeaderCell>
                         <CTableHeaderCell className="small fw-bold">
-                            Date
+                            Start Date
+                        </CTableHeaderCell>
+                        <CTableHeaderCell className="small fw-bold">
+                            End Date
                         </CTableHeaderCell>
                         <CTableHeaderCell className="small fw-bold">
                             Venue
@@ -84,7 +87,10 @@ const DesignProjectTable = ({ designProjects, setDesignProjects, getDesignProjec
                                         {project.NATURE_OF_PROJECT ?? '-'}
                                     </CTableDataCell>
                                     <CTableDataCell className="small">
-                                        {formatDate(project.DATE) ?? '-'}
+                                        {formatDate(project.START_DATE) ?? '-'}
+                                    </CTableDataCell>
+                                    <CTableDataCell className="small">
+                                        {project.END_DATE ? formatDate(project.END_DATE) ?? '-' : '-'}
                                     </CTableDataCell>
                                     <CTableDataCell className="small">
                                         {project.VENUE ?? '-'}
@@ -106,7 +112,7 @@ const DesignProjectTable = ({ designProjects, setDesignProjects, getDesignProjec
                             ))
                         ) : (
                             <CTableRow>
-                                <CTableDataCell colSpan="7" className="text-center">
+                                <CTableDataCell colSpan="8" className="text-center">
                                     No design projects found.
                                 </CTableDataCell>
                             </CTableRow>

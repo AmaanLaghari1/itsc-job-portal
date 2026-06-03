@@ -11,10 +11,12 @@ import {
   setSelectedDeptId,
   setSelectedAnnouncementId,
 } from "../../../slicers/applicationFilterSlice.js";
-import { getApplicationByAnnouncementId, deleteApplication } from "../../../api/ApplicationRequest.js";
+import { getApplicationByAnnouncementId, deleteApplication, getApplicationByCNIC } from "../../../api/ApplicationRequest.js";
 import { getAnnouncement } from "../../../api/AnnouncementRequest.js";
 import AlertConfirm from "../../../components/AlertConfirm.js";
 import Alert from "../../../components/Alert.js";
+import FormControl from "../../../components/FormControl.jsx";
+import { CButton } from "@coreui/react";
 
 const Applications = () => {
   const navigate = useNavigate();
@@ -247,6 +249,8 @@ const Applications = () => {
 
   return (
     <div className="admin-dashboard">
+      <div className="card p-1 mb-2">
+        <div className="card-body p-0">
       <Formik
         enableReinitialize
         initialValues={{
@@ -258,7 +262,7 @@ const Applications = () => {
         {({ setFieldValue }) => (
           <Form>
             <div className="row">
-              <div className="col-6 my-2">
+              <div className="col-sm-4 my-2">
                 <CustomSelect
                   label="Select Department"
                   name="dept_id"
@@ -269,7 +273,7 @@ const Applications = () => {
                 />
               </div>
 
-              <div className="col-6 my-2">
+              <div className="col-sm-4 my-2">
                 <CustomSelect
                   label="Select Announcement"
                   name="announcement_id"
@@ -280,10 +284,86 @@ const Applications = () => {
                   required
                 />
               </div>
+
+
             </div>
           </Form>
         )}
       </Formik>
+
+      
+          <Formik
+            initialValues={{
+              cnic_no: "",
+            }}
+            validationSchema={Yup.object({
+              cnic_no: Yup.string()
+                // .matches(
+                //   /^\d{5}-\d{7}-\d$/,
+                //   "CNIC must be in format 12345-1234567-1"
+                // )
+                .required("CNIC No. is required"),
+            })}
+            onSubmit={async (values, { setSubmitting }) => {
+              try {
+                const response = await getApplicationByCNIC({cnic_no: values.cnic_no});
+
+                // API returns single record
+                if (response?.data) {
+                  setApplications(
+                    Array.isArray(response.data)
+                      ? response.data
+                      : [response.data]
+                  );
+                } else {
+                  setApplications([]);
+                  Alert({
+                    status: false,
+                    text: "No application found",
+                  });
+                }
+              } catch (error) {
+                console.error(error);
+                setApplications([]);
+
+                Alert({
+                  status: false,
+                  text: "Application not found",
+                });
+              } finally {
+                setSubmitting(false);
+              }
+            }}
+          >
+            {({ isSubmitting, resetForm }) => (
+              <Form>
+                <div className="row align-items-end">
+                  <div className="col-sm-4">
+                    <FormControl
+                      control="input"
+                      label="Search by CNIC"
+                      name="cnic_no"
+                      placeholder="Enter CNIC No."
+                      required
+                    />
+                  </div>
+
+                  <div className="col-auto">
+                    <CButton
+                      color="primary"
+                      type="submit"
+                      disabled={isSubmitting}
+                    >
+                      Search
+                    </CButton>
+                  </div>
+
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </div>
 
       <DynamicDataTable
         title="Applications"
