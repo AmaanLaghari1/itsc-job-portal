@@ -251,47 +251,6 @@ const Applications = () => {
     <div className="admin-dashboard">
       <div className="card p-1 mb-2">
         <div className="card-body p-0">
-      <Formik
-        enableReinitialize
-        initialValues={{
-          dept_id: selectedDeptId || "",
-          announcement_id: selectedAnnouncementId || "",
-        }}
-        validationSchema={Yup.object({})}
-      >
-        {({ setFieldValue }) => (
-          <Form>
-            <div className="row">
-              <div className="col-sm-4 my-2">
-                <CustomSelect
-                  label="Select Department"
-                  name="dept_id"
-                  options={deptOptions}
-                  onChange={(opt) =>
-                    handleDeptChange(opt, setFieldValue)
-                  }
-                />
-              </div>
-
-              <div className="col-sm-4 my-2">
-                <CustomSelect
-                  label="Select Announcement"
-                  name="announcement_id"
-                  options={announcementOptions}
-                  onChange={(opt) =>
-                    handleAnnouncementChange(opt, setFieldValue)
-                  }
-                  required
-                />
-              </div>
-
-
-            </div>
-          </Form>
-        )}
-      </Formik>
-
-      
           <Formik
             initialValues={{
               cnic_no: "",
@@ -306,7 +265,7 @@ const Applications = () => {
             })}
             onSubmit={async (values, { setSubmitting }) => {
               try {
-                const response = await getApplicationByCNIC({cnic_no: values.cnic_no});
+                const response = await getApplicationByCNIC({ cnic_no: values.cnic_no });
 
                 // API returns single record
                 if (response?.data) {
@@ -362,6 +321,46 @@ const Applications = () => {
               </Form>
             )}
           </Formik>
+          <Formik
+            enableReinitialize
+            initialValues={{
+              dept_id: selectedDeptId || "",
+              announcement_id: selectedAnnouncementId || "",
+            }}
+            validationSchema={Yup.object({})}
+          >
+            {({ setFieldValue }) => (
+              <Form>
+                <div className="row">
+                  <div className="col-sm-4 my-2">
+                    <CustomSelect
+                      label="Select Department"
+                      name="dept_id"
+                      options={deptOptions}
+                      onChange={(opt) =>
+                        handleDeptChange(opt, setFieldValue)
+                      }
+                    />
+                  </div>
+
+                  <div className="col-sm-4 my-2">
+                    <CustomSelect
+                      label="Select Announcement"
+                      name="announcement_id"
+                      options={announcementOptions}
+                      onChange={(opt) =>
+                        handleAnnouncementChange(opt, setFieldValue)
+                      }
+                      required
+                    />
+                  </div>
+
+
+                </div>
+              </Form>
+            )}
+          </Formik>
+
         </div>
       </div>
 

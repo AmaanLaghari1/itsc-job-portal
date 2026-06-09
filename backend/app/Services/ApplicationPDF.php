@@ -278,12 +278,15 @@ class ApplicationPDF extends FPDF
                     $item->discipline->DISCIPLINE_NAME??'N/A',
                     strtoupper($item->institute->INSTITUTE_NAME),
                     $item->PASSING_YEAR,
-                    $item->degree()->DEGREE_ID == 7 ? $item->CGPA . ' cgpa' : $item->OBTAINED_MARKS??'N/A',
+                    $item->GRADE ? $item->GRADE : $item->CGPA??'N/A',
+                    $item->OBTAINED_MARKS??'N/A',
                     $item->TOTAL_MARKS??'N/A',
                 ];
             });
 
-        $experience = $application->experiences->map(function ($item) {
+        $experience = $application->experiences
+            ->where('IS_ADDITIONAL', 0)
+            ->map(function ($item) {
             $startDate = date('d-m-Y', strtotime($item->START_DATE));
             $endDate = empty($item->END_DATE) ? 'continued' : date('d-m-Y', strtotime($item->END_DATE));
             $totalExperience = $this->getTotalExperience($startDate, $endDate);
@@ -298,7 +301,23 @@ class ApplicationPDF extends FPDF
             ];
         });
 
-        $sumTotalExperience = $this->sumTotalExperience($application->experiences);
+        $additionalExp = $application->experiences->where('IS_ADDITIONAL', 1)->map(function ($item) {
+            $startDate = date('d-m-Y', strtotime($item->START_DATE));
+            $endDate = empty($item->END_DATE) ? 'continued' : date('d-m-Y', strtotime($item->END_DATE));
+            $totalExperience = $this->getTotalExperience($startDate, $endDate);
+
+            return [
+                $item->ORGANIZATION_NAME,
+                $item->JOB_TITLE??'N/A',
+                $item->EMP_TYPE,
+                $startDate,
+                $endDate,
+                "{$totalExperience->y} Years {$totalExperience->m} Months {$totalExperience->d} Days",
+            ];
+        });
+
+        $sumTotalExperience = $this->sumTotalExperience($application->experiences->where('IS_ADDITIONAL', 0));
+        $sumTotalAddExperience = $this->sumTotalExperience($application->experiences->where('IS_ADDITIONAL', 1));
 
         return [
             "APPLICATION_NO" => $data['APPLICATION_ID'] ?? '',
@@ -324,7 +343,9 @@ class ApplicationPDF extends FPDF
             "DISTRICT_NAME" => $districtName,
             "qualifications" => $qualifications,
             "experience" => $experience,
+            "additional_exp" => $additionalExp,
             "total_experience" => $sumTotalExperience,
+            "total_add_experience" => $sumTotalAddExperience,
             "PROFILE_IMAGE" => $data['PROFILE_IMAGE'] ?? '',
             "REF_NO" => $data['announcement']['REF_NO'] ?? '',
             "RESEARCH_PUBLICATIONS" => $researchData,

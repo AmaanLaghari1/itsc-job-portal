@@ -1,22 +1,32 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Alert from '../../components/Alert'
 import * as API from '../../api/ExperienceRequest.js'
 import * as Yup from 'yup'
 import ExperienceForm from './ExperienceForm.jsx'
 import { normalizeDate } from '../../helper.js'
+import {
+    EXPERIENCE_TYPES,
+    getExperienceType,
+    normalizeExperienceType,
+} from './ExperienceCategoryTabs.jsx'
 
 const ExperienceEdit = () => {
     const auth = useSelector(state => state.auth.authData)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const location = useLocation()
-    const { prevExp, return_url, announcement } = location.state || {}
+    const [searchParams, setSearchParams] = useSearchParams()
+    const { prevExp, return_url, announcement, activeExperienceType } = location.state || {}
+    const [experienceType, setExperienceType] = useState(
+        normalizeExperienceType(activeExperienceType || searchParams.get('type') || getExperienceType(prevExp)),
+    )
     const dispatch = useDispatch()
 
     const initialValues = {
         user_id: auth.user.USER_ID || prevExp.USER_ID,
+        experience_type: experienceType,
         organization_name: prevExp?.ORGANIZATION_NAME || '',
         job_description: prevExp?.JOB_DESCRIPTION || '',
         job_title: prevExp?.JOB_TITLE??'',
@@ -49,6 +59,7 @@ const ExperienceEdit = () => {
         setLoading(true)
         const formattedValues = {
             ...values,
+            experience_type: experienceType,
             start_date: values.start_date ? normalizeDate(values.start_date) : '',
             end_date: values.end_date ? normalizeDate(values.end_date) : '',
         };
@@ -65,7 +76,7 @@ const ExperienceEdit = () => {
                 })
                 return
             }
-            navigate('/experience')
+            navigate(experienceType === EXPERIENCE_TYPES.professional ? '/experience' : `/experience?type=${experienceType}`)
         }
         catch (error) {
             Alert({status: false, text: error.response?.data?.error_message || 'Some error occured'})
@@ -81,6 +92,12 @@ const ExperienceEdit = () => {
         validationRules={validationRules}
         handleSubmit={handleSubmit} 
         loading={loading}
+        showExperienceTabs={false}
+        activeExperienceType={experienceType}
+        onExperienceTypeChange={(type) => {
+            setExperienceType(type)
+            setSearchParams(type === EXPERIENCE_TYPES.professional ? {} : { type })
+        }}
         />
     </div>
   )

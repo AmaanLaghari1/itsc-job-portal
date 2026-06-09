@@ -239,34 +239,48 @@ class PdfService
         $this->applicationPDF->fieldWithLabel('Present Address', $data['HOME_ADDRESS'], 40, 0, 7, 1, 'L');
         $this->applicationPDF->fieldWithLabel('Permanent Address', $data['PERMANENT_ADDRESS'], 40, 0, 7, 1, 'L');
 
-
         // Space
         $this->applicationPDF->Ln(5);
 //        Qualification Section
-        $qualHeader = ['Degree Program', 'Discipline', 'Board/University', 'Passing Year', 'Obt Marks', 'Total Marks'];
+        $qualHeader = ['Degree Program', 'Discipline', 'Board/University', 'Passing Year', 'Grade / CGPA', 'Obt Marks', 'Total Marks'];
         $qualData = $data['qualifications'];
-        $qualColWidths = [45, 40, 55, 20, 15, 15]; // 6 columns
+        $qualColWidths = [40, 35, 50, 20, 15, 15, 15]; // 6 columns
         $this->SectionTitle('Qualifications');
-        $this->setFontStyle('B', 'Times', 8);
+        $this->setFontStyle('B', 'Times', 6);
         $this->applicationPDF->FancyTable($qualHeader, $qualData, $qualColWidths);;
 
         // Space
         $this->applicationPDF->Ln(5);
 
 //        Experience Section
+        $expHeader = ['Organization Name', 'Designation', 'Employment Type', 'Start Date', 'End Date', 'Total Experience'];
+        $expColWidths = [45, 35, 30, 20, 20, 40];
+        $this->setFontStyle('B', 'Times', 6);
+        $estimatedHeight = 20; // adjust based on layout
+
+
         if(count($data['experience']) > 0){
             $this->SectionTitle('Experience');
-            $expHeader = ['Organization Name', 'Designation', 'Employment Type', 'Start Date', 'End Date', 'Total Experience'];
+
             $expData = [
                 ['University of Sindh', 'B.Sc. in Computer Science', '2019', '2021', 2 .'years'. ' '. '1' .'month'. ' '. '1' .'day']
             ];
-            $expColWidths = [45, 35, 30, 20, 20, 40];
-            $this->setFontStyle('B', 'Times', 6);
-            $estimatedHeight = 20; // adjust based on layout
+
             $this->checkPageBreak($estimatedHeight);
             $this->applicationPDF->FancyTable($expHeader, $data['experience'], $expColWidths);
             $this->checkPageBreak($estimatedHeight);
             $this->applicationPDF->fieldWithLabel('Total Experience', $data['total_experience'], 45, 0, 7, 1, 'L');
+        }
+
+        $this->applicationPDF->Ln(5);
+
+        if(count($data['additional_exp']) > 0){
+            $this->SectionTitle('Additional Experience');
+
+            $this->checkPageBreak($estimatedHeight);
+            $this->applicationPDF->FancyTable($expHeader, $data['additional_exp'], $expColWidths);
+            $this->checkPageBreak($estimatedHeight);
+            $this->applicationPDF->fieldWithLabel('Total Additional Experience', $data['total_add_experience'], 45, 0, 7, 1, 'L');
         }
     }
 

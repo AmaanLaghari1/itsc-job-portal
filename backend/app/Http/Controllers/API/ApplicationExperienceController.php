@@ -72,4 +72,68 @@ class ApplicationExperienceController extends Controller
             ], 500);
         }
     }
+
+    public function addUserApplicationExperience(Request $request){
+        try {
+            if(empty($request->data)){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => 'Experience cannot be empty!'
+                ], 403);
+            }
+
+            DB::beginTransaction();
+            $record = ApplicationExperience::create($request->data);
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'data' => $record,
+                'message' => 'Experience added successfully...',
+            ], 200);
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            \Log::error("Application Experience add error: " . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'error_message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteUserApplicationExperience(Request $request){
+        try {
+            if(is_null($request->exp_id)){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => 'Experience not found!'
+                ]);
+            }
+
+            DB::beginTransaction();
+            $record = ApplicationExperience::find($request->exp_id);
+
+            if(is_null($record)){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => 'Experience not found!'
+                ]);
+            }
+
+            $record->delete();
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Experience deleted successfully...',
+            ]);
+        }
+        catch (\Exception $e){
+            \Log::error("Application Experience delete error: " . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'error_message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

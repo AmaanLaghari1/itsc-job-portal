@@ -2,19 +2,40 @@ import { Formik, Form, Field } from 'formik'
 import FormControl from '../../components/FormControl'
 import { CButton } from '@coreui/react'
 import CustomSelect from '../../components/CustomSelect'
+import ExperienceCategoryTabs from './ExperienceCategoryTabs'
 
-const ExperienceForm = ({ handleSubmit, initialValues, validationRules, loading }) => {
+const ExperienceForm = ({
+    handleSubmit,
+    initialValues,
+    validationRules,
+    loading,
+    showExperienceTabs = false,
+    activeExperienceType,
+    onExperienceTypeChange,
+}) => {
 
     return (
         <Formik
             initialValues={initialValues}
             validationSchema={validationRules}
             onSubmit={handleSubmit}
+            enableReinitialize
         >
             {
                 ({ setFieldValue, values }) => {
                     return (
                         <Form>
+                            {
+                                showExperienceTabs &&
+                                <ExperienceCategoryTabs
+                                    activeType={activeExperienceType || values.experience_type}
+                                    onChange={(type) => {
+                                        setFieldValue('experience_type', type)
+                                        onExperienceTypeChange?.(type)
+                                    }}
+                                />
+                            }
+                            <Field type="hidden" name="experience_type" />
                             <div className="row">
                                 <div className="col-md-6">
                                     <div className="form-group my-2">

@@ -172,3 +172,21 @@ export const getApplicationByCNIC = (formData) => {
         }
     })
 }
+
+export const addExperience = (formdata) => {
+    return API.post("experience/add", formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const deleteExperience = (formdata) => {
+    return API.post("experience/delete", formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}

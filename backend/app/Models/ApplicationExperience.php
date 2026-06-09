@@ -31,6 +31,7 @@ class ApplicationExperience extends Model
         'IS_JOB_CONTINUE',
         'SALARY',
         'REASON_FOR_LEAVING',
+        'IS_ADDITIONAL',
         'REMARKS',
         'ACTIVE'
     ];

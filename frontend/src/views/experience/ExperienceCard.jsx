@@ -8,7 +8,7 @@ import AlertConfirm from '../../components/AlertConfirm.js';
 import Alert from '../../components/Alert.js';
 import { formatDate } from '../../helper.js';
 
-const ExperienceCard = ({experience, onDelete}) => {
+const ExperienceCard = ({experience, onDelete, activeExperienceType}) => {
   const auth = useSelector((state) => state.auth.authData);
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -23,7 +23,8 @@ const ExperienceCard = ({experience, onDelete}) => {
             onClick={() => {
                 navigate('/experience-edit', {
                   state: {
-                    prevExp: exp
+                    prevExp: exp,
+                    activeExperienceType,
                   }
                 })
               }

@@ -113,6 +113,8 @@ Route::prefix('application')->group(function() {
     Route::get('experience/get/{id}', [ApplicationExperienceController::class, 'getUserApplicationExperience']);
     Route::put('experience/update/{id}', [ApplicationExperienceController::class, 'updateUserApplicationExperience']);
     Route::post('get_by_cnic', [ApplicationController::class, 'getApplicationByCNIC']);
+    Route::post('experience/add', [ApplicationExperienceController::class, 'addUserApplicationExperience']);
+    Route::post('experience/delete', [ApplicationExperienceController::class, 'deleteUserApplicationExperience']);
 });
 
 // routes/api.php

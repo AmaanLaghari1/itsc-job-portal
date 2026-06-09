@@ -187,6 +187,7 @@ const DateInput = props => {
                                 maxDate={maxDateDisabled ? null : maxDate}
                                 dateFormat="dd-MM-yyyy"
                                 customInput={<ReadOnlyInput />}
+                                disabled={rest.disabled}
                                 />
                             </div>
                         )

@@ -45,6 +45,7 @@ class ExperienceController extends Controller
             }
 
             $data = formatRequestData($request->all());
+            $data['IS_ADDITIONAL'] = $data['IS_ADDITIONAL']??0;
             $newExperience = Experience::create($data);
 
             if($newExperience){
