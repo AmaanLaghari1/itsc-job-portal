@@ -8,11 +8,13 @@ use App\Models\ApplicationExperience;
 use App\Models\ApplicationQualification;
 use App\Models\ApplicationStatus;
 use App\Models\User;
+use App\Services\PdfService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Application;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Models\ApplicationScrutiny;
 
 class ApplicationController extends Controller
 {
@@ -593,6 +595,241 @@ class ApplicationController extends Controller
         }
         catch (\Exception $e){
             \Log::error($e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getApplicationStatuses(){
+        try {
+            $records = ApplicationStatus::all();
+
+            return response()->json($records, 200);
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function handleAddScrutinyApplication(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'announcement_id' => 'required',
+                'application_id' => 'required',
+                'application_status_id' => 'required',
+            ])->stopOnFirstFailure();
+
+            if($validation->fails()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            $exists = ApplicationScrutiny::where('ANNOUNCEMENT_ID', $request->announcement_id)
+                ->where('APPLICATION_ID', $request->application_id)
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'error_message' => 'Record already exists for this announcement and application.'
+                ], 422);
+            }
+
+            DB::beginTransaction();
+            $newRecord = DB::table('applications_scrutiny')->insert([
+                'USER_ID' => $request->user_id,
+                'ANNOUNCEMENT_ID' => $request->announcement_id,
+                'APPLICATION_ID' => $request->application_id,
+                'APPLICATION_STATUS_ID' => $request->application_status_id,
+                'REMARKS' => strtoupper($request->remarks) ??NULL
+            ]);
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Applications added successfully...',
+            ], 200);
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            \Log::error("Scrutiny Add Error: ". $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function handleUpdateScrutinyApplication(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'announcement_id' => 'required',
+                'application_id' => 'required',
+                'application_status_id' => 'required',
+            ])->stopOnFirstFailure();
+
+            if($validation->fails()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            $record = ApplicationScrutiny::find($request->id);
+
+            if(is_null($record)){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Record not found'
+                ], 404);
+            }
+
+            DB::beginTransaction();
+            $record = $record->update([
+                'APPLICATION_STATUS_ID' => $request->application_status_id,
+                'REMARKS' => $request->remarks ?? NULL
+            ]);
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Applications updated successfully...'
+            ], 200);
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            \Log::error("Scrutiny Update Error: ". $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function handleDeleteScrutinyApplication(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'id' => 'required',
+            ])->stopOnFirstFailure();
+
+            if($validation->fails()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            $record = ApplicationScrutiny::find($request->id);
+
+            if(is_null($record)){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Record not found'
+                ], 404);
+            }
+
+            DB::beginTransaction();
+            $record = $record->delete();
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Applications deleted successfully...'
+            ], 200);
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            \Log::error("Scrutiny Delete Error: ". $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getApplicationScrutinyByAnnouncementId(Request $request){
+        try {
+            $validation = Validator::make($request->all(), [
+                'announcement_id' => 'required',
+            ])->stopOnFirstFailure();
+
+            if($validation->fails()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            $records = DB::table('applications_scrutiny as s')
+                ->join('applications as a', 'a.APPLICATION_ID', '=', 's.APPLICATION_ID')
+                ->join('announcements as an', 'an.ANNOUNCEMENT_ID', '=', 's.ANNOUNCEMENT_ID')
+                ->select(
+                    's.ID',
+                    's.APPLICATION_STATUS_ID',
+                    's.REMARKS',
+                    's.APPLICATION_ID',
+                    's.ANNOUNCEMENT_ID',
+                    's.USER_ID',
+
+                    'a.APPLICATION_STATUS',
+                    'a.CNIC_NO',
+                    'a.FIRST_NAME',
+                    'a.LAST_NAME',
+                )
+                ->where('an.ANNOUNCEMENT_ID', $request->announcement_id)
+                ->get();
+
+            return response()->json($records, 200);
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function downloadApplicationsScrutinyReport(Request $request, PdfService $pdfService)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'announcement_id' => 'required',
+            ])->stopOnFirstFailure();
+
+            if($validation->fails()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            // Generate PDF
+            $pdfContent = $pdfService->generateScrutinyReportPdf($request->announcement_id);
+
+            // Return file as download
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="applications-scrutiny-report.pdf"'
+            ]);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage()

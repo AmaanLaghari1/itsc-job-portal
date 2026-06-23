@@ -19,6 +19,8 @@ class PdfService
 
     protected $candidateInfoReportPDF;
 
+    protected $scrutinyReportPDF;
+
     public function __construct($applicationId = null)
     {
         $this->challanPDF = new ChallanPDF('L', 'mm', 'A4');
@@ -29,6 +31,7 @@ class PdfService
 
         $this->experienceReportPDF = new ExperienceReportPDF('P', 'mm', 'A3');
         $this->candidateInfoReportPDF = new CandidateInfoPDF('P', 'mm', 'A4');
+        $this->scrutinyReportPDF = new ScrutinyReportPDF('P', 'mm', 'A3');
     }
 
     public function generatePdf($applicationData)
@@ -725,6 +728,62 @@ class PdfService
         }
 
         return $this->candidateInfoReportPDF->Output('S', 'report.pdf');
+
+    }
+
+    public function generateScrutinyReportPdf($announcementId){
+        $reportData = $this->scrutinyReportPDF->requiredData($announcementId);
+
+        // Must call before AddPage() for {nb}
+        $this->scrutinyReportPDF->AliasNbPages();
+        $this->scrutinyReportPDF->SetMargins(15, 10, 15);
+        $this->scrutinyReportPDF->SetAutoPageBreak(true, 15);
+
+        $this->scrutinyReportPDF->AddPage('P', 'A3');
+        $this->scrutinyReportPDF->SetTitle('Applications Scrutiny Report');
+        $this->scrutinyReportPDF->setFont('Arial', 'B', 12);
+        $this->scrutinyReportPDF->MultiCell(0, 7, $reportData[0]->ANNOUNCEMENT_TITLE, 0, 'C');
+
+
+        $qualColWidths = [
+            10, // Sno
+            40,  // Name
+            40,  // Father's Name
+            45,  // Email
+            25,  // CNIC
+            30, // Mobile No.
+            30, // Status
+            45 // Remarks
+        ];
+
+        $alignments = [
+            'C', 'L', 'L', 'L', 'L', 'L', 'L', 'L'
+        ];
+
+        $tableData = [];
+        foreach ($reportData as $application){
+
+                $tableHeaders = ['ID', 'Name', "Father's Name", 'Email', 'CNIC No.', 'Mobile No.', 'Status', 'Remarks'];
+
+                $tableData[] = [
+                    $application->APPLICATION_ID,
+                    $application->FIRST_NAME . ' ' . $application->LAST_NAME??'',
+                    $application->FNAME,
+                    $application->EMAIL ?? '',
+                    $application->CNIC_NO ?? '',
+                    $application->MOBILE_NO ?? '',
+                    $application->STATUS ?? '',
+                    $application->REMARKS ?? ''
+                ];
+
+            }
+            $this->scrutinyReportPDF->TableHeader($tableHeaders, $qualColWidths);
+            $this->scrutinyReportPDF->FancyTable($tableHeaders, $tableData, $qualColWidths, $alignments);
+
+            $this->scrutinyReportPDF->Ln(10);
+
+
+        return $this->scrutinyReportPDF->Output('S', 'report.pdf');
 
     }
 

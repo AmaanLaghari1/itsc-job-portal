@@ -77,7 +77,12 @@ const _nav = data => {
         icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
       }
     ]
-  } else if (currentRole == 3 || currentRole == 2 || currentRole == 1) {
+  } else if (
+    currentRole == 5 || 
+    currentRole == 3 || 
+    currentRole == 2 || 
+    currentRole == 1
+  ) {
     return [
       {
         component: CNavItem,
@@ -122,6 +127,16 @@ const _nav = data => {
         name: 'Import Applications',
         to: '/admin/import/paid_applications',
         icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
+      }
+    ]
+  }
+  else if (currentRole == 6) {
+    return [
+      {
+        component: CNavItem,
+        name: 'Applications Scrutiny',
+        to: '/admin/scrutiny/applications',
+        icon: <CIcon icon={cilBullhorn} customClassName="nav-icon" />,
       }
     ]
   }

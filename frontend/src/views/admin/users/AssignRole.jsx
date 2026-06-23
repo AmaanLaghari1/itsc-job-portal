@@ -104,6 +104,8 @@ const AssignRole = ({ user, onRoleUpdate }) => {
                                 { key: 2, value: "Admin" },
                                 { key: 3, value: "Operator" },
                                 { key: 4, value: "Primary" },
+                                { key: 5, value: "Dean" },
+                                { key: 6, value: "Reviewer" },
                             ]}
                         />
 

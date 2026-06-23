@@ -6,7 +6,7 @@ import { login } from '../../../actions/AuthAction.js'
 import Alert from '../../../components/Alert.js'
 import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
-import { getRecentAnnouncement } from '../../../api/AnnouncementRequest.js'
+import { getNoticeAlertMsg, getRecentAnnouncement } from '../../../api/AnnouncementRequest.js'
 import { Link } from 'react-router-dom'
 import logoWhite from '../../../assets/images/logos/usindh-logo-white.png'
 import { CSpinner, CTable, CTableBody, CTableDataCell, CTableHead, CTableHeaderCell, CTableRow } from '@coreui/react'
@@ -23,6 +23,8 @@ const Login = () => {
     const [loading, setLoading] = useState(false)
     const [fetching, setFetching] = useState(false)
     const [announcements, setAnnouncements] = useState([])
+    const [showNotice, setShowNotice] = useState(false);
+    const [alertMsg, setAlertMsg] = useState('')
 
     const handleView = (announcement) => {
         setSelectedAnnouncement(announcement);
@@ -48,9 +50,30 @@ const Login = () => {
         setFetching(false)
     }
 
+    const fetchAlert = async () => {
+        try {
+            const response = await getNoticeAlertMsg()
+            // console.log(response)
+            setAlertMsg(response.data.CONTENT || '')
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         fetchAnnouncements()
-    }, [])
+        fetchAlert()
+
+        // const noticeShown = localStorage.getItem('important_notice_shown');
+
+        // if (!noticeShown) {
+        //     setShowNotice(true);
+        //     localStorage.setItem('important_notice_shown', 'true');
+        // }
+        if(alertMsg != ''){
+            setShowNotice(true);
+        }
+    }, [alertMsg])
 
     const initialValues = {
         cnic_no: '',
@@ -277,6 +300,34 @@ const Login = () => {
                     </div>
                 </div>
             </div>
+
+            {
+                alertMsg != '' &&
+                <Modal
+                    visible={showNotice}
+                    setVisible={setShowNotice}
+                    size="lg"
+                    position="center"
+                    onClose={() => setShowNotice(false)}
+                >
+                    <CCard className="border-0 shadow">
+                        <CCardBody>
+                            {
+                            <HtmlRenderer htmlContent={alertMsg} /> ?? ''
+                            }
+
+                            {/* <div className="text-center mt-4">
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => setShowNotice(false)}
+                                >
+                                    Acknowledged
+                                </button>
+                            </div> */}
+                        </CCardBody>
+                    </CCard>
+                </Modal>
+            }
         </div>
     )
 }

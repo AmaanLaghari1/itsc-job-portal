@@ -88,7 +88,15 @@ Route::prefix('announcement')->group(function() {
     Route::post('report/get', [AnnouncementController::class, 'generateReport']);
     Route::post('/report/applications', [AnnouncementController::class, 'downloadApplicationsReport']);
     Route::post('/report/experience', [AnnouncementController::class, 'downloadApplicationExperienceReport']);
-    Route::post('report/candidates', [AnnouncementController::class, 'downloadCandidatesReport']);;
+    Route::post('report/candidates', [AnnouncementController::class, 'downloadCandidatesReport']);
+    Route::post('assign_user', [AnnouncementController::class, 'assignUserToAnnouncement']);
+    Route::post('get_assigned_announcements', [AnnouncementController::class, 'getUserAssignedAnnouncements']);
+    Route::post('delete_assigned_announcement', [AnnouncementController::class, 'deleteUserAssignedAnnouncement']);
+    Route::post('notice_alert/add', [AnnouncementController::class, 'addNoticeAlertMsg']);
+    Route::post('notice_alert/update', [AnnouncementController::class, 'updateNoticeAlertMsg']);
+    Route::get('notice_alert/get', [AnnouncementController::class, 'getNoticeAlertMsg']);
+    Route::get('notice_alert/get_all', [AnnouncementController::class, 'getAllNoticeAlertMsg']);
+    Route::post('notice_alert/delete', [AnnouncementController::class, 'deleteNoticeAlertMsg']);
 });
 
 Route::get('/announcement/get/recent_announcements', [AnnouncementController::class, 'getSixMonthOldAnnouncements']);
@@ -115,6 +123,14 @@ Route::prefix('application')->group(function() {
     Route::post('get_by_cnic', [ApplicationController::class, 'getApplicationByCNIC']);
     Route::post('experience/add', [ApplicationExperienceController::class, 'addUserApplicationExperience']);
     Route::post('experience/delete', [ApplicationExperienceController::class, 'deleteUserApplicationExperience']);
+
+    Route::get('status/get', [ApplicationController::class, 'getApplicationStatuses']);
+
+    Route::post('scrutiny/add', [ApplicationController::class, 'handleAddScrutinyApplication']);
+    Route::post('scrutiny/update', [ApplicationController::class, 'handleUpdateScrutinyApplication']);
+    Route::post('scrutiny/get', [ApplicationController::class, 'getApplicationScrutinyByAnnouncementId']);
+    Route::post('scrutiny/report/download', [ApplicationController::class, 'downloadApplicationsScrutinyReport']);
+
 });
 
 // routes/api.php

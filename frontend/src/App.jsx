@@ -32,7 +32,6 @@ const App = () => {
     setColorMode(theme || storedTheme || 'light')
   }, []) // eslint-disable-line
 
-
   return (
     <Suspense fallback={<div className="pt-3 text-center"><CSpinner color="primary" variant="grow" /></div>}>
       <Routes>

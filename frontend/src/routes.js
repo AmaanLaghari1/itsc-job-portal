@@ -6,6 +6,9 @@ const Applications = React.lazy(() => import('./views/admin/applications/Applica
 const ApplicationEdit = React.lazy(() => import('./views/admin/applications/ApplicationEdit'))
 const ApplicationUpdateUser = React.lazy(() => import('./views/admin/applications/ApplicationUpdateUser'))
 const AnnouncementEdit = React.lazy(() => import('./views/admin/announcements/AnnouncementEdit'))
+const Alert = React.lazy(() => import('./views/admin/announcements/alert/Alert'))
+const AlertAdd = React.lazy(() => import('./views/admin/announcements/alert/AlertAdd'))
+const AlertEdit = React.lazy(() => import('./views/admin/announcements/alert/AlertEdit'))
 const UsersAll = React.lazy(() => import('./views/admin/users/UsersAll'))
 const UserAdd = React.lazy(() => import('./views/admin/users/UserAdd'))
 const UserEdit = React.lazy(() => import('./views/admin/users/UserEdit'))
@@ -15,6 +18,8 @@ const InstituteAdd = React.lazy(() => import('./views/admin/configurations/insti
 const InstituteEdit = React.lazy(() => import('./views/admin/configurations/institutes/InstituteEdit'))
 const ImportPaidApplications = React.lazy(() => import('./views/admin/applications/ImportPaidApplications'))
 const ApplicationUpdateExperience = React.lazy(() => import('./views/admin/applications/ApplicationUpdateExperience'))
+const ApplicationsScrutiny = React.lazy(() => import('./views/admin/scrutiny/ApplicationsScrutiny'))
+const ApplicationReviewScrutiny = React.lazy(() => import('./views/admin/scrutiny/ApplicationReviewScrutiny'))
 
 // Public Components
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
@@ -30,6 +35,7 @@ const Experience = React.lazy(() => import('./views/experience/Experience'))
 const ExperienceAdd = React.lazy(() => import('./views/experience/ExperienceAdd'))
 const ExperienceEdit = React.lazy(() => import('./views/experience/ExperienceEdit'))
 const Users = React.lazy(() => import('./views/users/Users'))
+const AssignAnnouncement = React.lazy(() => import('./views/admin/users/AssignAnnouncement'))
 const ResearchAndPublicationAdd = React.lazy(() => import('./views/profile/ResearchAndPublicationAdd'))
 const DesignProjects = React.lazy(() => import('./views/profile/design-projects/DesignProject'))
 
@@ -37,6 +43,9 @@ const routes = [
   // Protected Routes
   { path: '/', exact: true, name: 'Home' },
   { path: '/admin/dashboard', name: 'All Announcements', element: AdminDashboard },
+  { path: '/admin/announcement/alerts', name: 'Alerts', element: Alert },
+  { path: '/admin/announcement/alert/add', name: 'Add New Alert', element: AlertAdd },
+  { path: '/admin/announcement/alert/edit', name: 'Update Alert', element: AlertEdit },
   { path: '/admin/announcement/add', name: 'Add Announcement', element: AnnouncementAdd },
   { path: '/admin/announcement/edit', name: 'Edit Announcement', element: AnnouncementEdit },
   { path: '/admin/applications', name: 'All Applications', element: Applications },
@@ -45,12 +54,15 @@ const routes = [
   { path: '/admin/users', name: 'All Users', element: UsersAll },
   { path: '/admin/user/add', name: 'Add User', element: UserAdd },
   { path: '/admin/user/edit', name: 'Edit User', element: UserEdit },
+  { path: '/admin/user/assign-announcement', name: 'Assign Announcement', element: AssignAnnouncement },
   { path: '/admin/program/manage', name: 'Programs Management', element: ProgramManage },
   { path: '/admin/institute', name: 'All Institutes', element: Institutes },
   { path: '/admin/institute/add', name: 'Add Institute', element: InstituteAdd },
   { path: '/admin/institute/edit', name: 'Edit Institute', element: InstituteEdit },
   { path: '/admin/import/paid_applications', name: 'Import Paid Applications', element: ImportPaidApplications },
   { path: '/admin/application/update-experience', name: 'Application Update Experience', element: ApplicationUpdateExperience },
+  { path: '/admin/scrutiny/applications', name: 'Applications Scrutiny', element: ApplicationsScrutiny },
+  { path: '/admin/scrutiny/application_review', name: 'Applications Scrutiny', element: ApplicationReviewScrutiny },
 
   // Public routes
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },

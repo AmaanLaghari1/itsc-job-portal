@@ -16,7 +16,9 @@ const RoleSwitcher = () => {
     'Super Admin': 1,
     'Admin': 2,
     'Operator': 3,
-    'Primary': 4,
+    'Dean': 4,
+    'Reviewer': 5,
+    'Primary': 6,
   };
 
   useEffect(() => {

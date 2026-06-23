@@ -375,7 +375,7 @@ public function verifyEmail(Request $request)
         $validation = Validator::make(
             $request->all(),
             [
-                "cnic_no" => "required|digits:13|exists:users_reg,cnic_no",
+                "cnic_no" => "required|digits:13",
             ]
         );
 
@@ -389,6 +389,7 @@ public function verifyEmail(Request $request)
 
         // Find user
         $user = DB::table('users_reg')->where('CNIC_NO', $request->cnic_no)->first();
+//        return response()->json(!$user, 200);
 
         if (!$user) {
             return response()->json([

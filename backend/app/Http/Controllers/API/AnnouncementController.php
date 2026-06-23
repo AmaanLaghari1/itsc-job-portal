@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Validation\Rule;
 
 class AnnouncementController extends Controller
 {
@@ -447,5 +447,326 @@ class AnnouncementController extends Controller
         }
     }
 
+    public function assignUserToAnnouncement(Request $request)
+    {
+        try {
+            $validation = Validator::make(
+                $request->all(),
+                [
+                    'announcement_ids'   => 'required|array|min:1',
+                    'announcement_ids.*' => 'required|integer|exists:announcements,ANNOUNCEMENT_ID',
+                    'user_id'            => 'required|integer|exists:users_reg,USER_ID',
+                ],
+                [
+                    'announcement_ids.required' => 'Please select at least one announcement.',
+                    'announcement_ids.array'    => 'Announcements must be an array.',
+                    'user_id.required'          => 'User is required.',
+                ]
+            )->stopOnFirstFailure();
 
+            if ($validation->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            $announcementIds = $request->announcement_ids;
+            $userId = $request->user_id;
+
+            // Get already assigned announcements
+            $existingAssignments = DB::table('announcement_user_relations')
+                ->where('USER_ID', $userId)
+                ->whereIn('ANNOUNCEMENT_ID', $announcementIds)
+                ->pluck('ANNOUNCEMENT_ID')
+                ->toArray();
+
+            // Prepare new records only
+            $insertData = [];
+
+            foreach ($announcementIds as $announcementId) {
+                if (!in_array($announcementId, $existingAssignments)) {
+                    $insertData[] = [
+                        'ANNOUNCEMENT_ID' => $announcementId,
+                        'USER_ID' => $userId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            }
+
+            if (!empty($insertData)) {
+                DB::table('announcement_user_relations')->insert($insertData);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'inserted_count' => count($insertData),
+                'skipped_count' => count($existingAssignments),
+                'message' => 'Announcements assigned successfully.'
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            \Log::error('Announcement Assign Error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Something went wrong.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getUserAssignedAnnouncements(Request $request){
+        try {
+            $validation = Validator::make($request->all(), [
+                'user_id' => 'required|integer|exists:users_reg,USER_ID',
+            ])->stopOnFirstFailure();
+
+            if($validation->fails()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            $records = DB::table('announcement_user_relations as aur')
+                ->join('announcements as a', 'a.ANNOUNCEMENT_ID', '=', 'aur.ANNOUNCEMENT_ID')
+                ->where('aur.USER_ID', $request->user_id)
+                ->select(
+                    'a.ANNOUNCEMENT_ID',
+                    'a.ANNOUNCEMENT_TITLE',
+                    'aur.REL_ID'
+                )
+                ->orderByDesc('aur.REL_ID')
+                ->get();
+
+            return response()->json($records, 200);
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function deleteUserAssignedAnnouncement(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'announcement_ids' => 'required|array|min:1',
+                'announcement_ids.*' => 'required|integer',
+                'user_id' => 'required|integer|exists:users_reg,USER_ID',
+            ])->stopOnFirstFailure();
+
+            if ($validation->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            $deletedCount = DB::table('announcement_user_relations')
+                ->where('USER_ID', $request->user_id)
+                ->whereIn('ANNOUNCEMENT_ID', $request->announcement_ids)
+                ->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'deleted_count' => $deletedCount,
+                'message' => $deletedCount > 0
+                    ? 'Announcements unassigned successfully.'
+                    : 'No matching assignments found.'
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            \Log::error('Announcement Unassign Error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function addNoticeAlertMsg(Request $request){
+        try {
+            $validation = Validator::make($request->all(), [
+                'msg_content' => 'required|string',
+//                'type' => 'required|in:success,info,warning,danger',
+            ])->stopOnFirstFailure();
+
+            if($validation->fails()){
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            DB::beginTransaction();
+            $newRecord = DB::table('notice_alerts')->insert([
+                'CONTENT' => $request->msg_content,
+                'REMARKS' => $request->remarks,
+                'IS_ACTIVE' => $request->is_active,
+            ]);
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Alert Msg added successfully',
+                'data' => $newRecord
+            ], 200);
+        }
+        catch (\Exception $e){
+            DB::rollBack();
+            \Log::error('Alert Msg Error: ' . $e->getMessage());
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ],500);
+        }
+    }
+
+    public function getNoticeAlertMsg(){
+        try {
+            $records = DB::table('notice_alerts')->where('IS_ACTIVE', 1)->first();
+            return response()->json($records, 200);
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getAllNoticeAlertMsg(){
+        try {
+            $records = DB::table('notice_alerts')
+                ->orderByDesc('IS_ACTIVE')
+                ->get();
+            return response()->json($records, 200);
+        }
+        catch (\Exception $e){
+            return response()->json([
+                'status' => false,
+                'error_message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function updateNoticeAlertMsg(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'msg_content' => 'required|string',
+                'alert_id'    => 'required|integer|exists:notice_alerts,ALERT_ID',
+                // 'type' => 'required|in:success,info,warning,danger',
+            ])->stopOnFirstFailure();
+
+            if ($validation->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            $updated = DB::table('notice_alerts')
+                ->where('ALERT_ID', $request->alert_id)
+                ->update([
+                    'CONTENT'   => $request->msg_content,
+                    'REMARKS'   => $request->remarks,
+                    'IS_ACTIVE' => $request->is_active,
+                    'UPDATED_AT' => now(), // if applicable
+                ]);
+
+            $record = DB::table('notice_alerts')
+                ->where('ALERT_ID', $request->alert_id)
+                ->first();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Alert Msg updated successfully',
+                'data' => $record
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            \Log::error('Alert Msg Update Error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteNoticeAlertMsg(Request $request)
+    {
+        try {
+            $validation = Validator::make($request->all(), [
+                'alert_id' => 'required|integer|exists:notice_alerts,ALERT_ID',
+            ])->stopOnFirstFailure();
+
+            if ($validation->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'error_message' => $validation->errors()->first(),
+                    'message' => 'Validation failed'
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            $record = DB::table('notice_alerts')
+                ->where('ALERT_ID', $request->alert_id)
+                ->first();
+
+            $deleted = DB::table('notice_alerts')
+                ->where('ALERT_ID', $request->alert_id)
+                ->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Alert Msg deleted successfully',
+                'data' => $record
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            \Log::error('Alert Msg Delete Error: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

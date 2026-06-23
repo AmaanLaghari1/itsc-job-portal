@@ -36,7 +36,16 @@ export const roundOff = num => {
 }
 
 export function getDashboardPath(role) {
-    return role == 1 || role == 2 || role == 3 ? '/admin/dashboard' : '/dashboard'
+    if(role == 1 || role == 2 || role == 3){
+        return '/admin/dashboard' 
+    }
+    if(role == 6) 
+    {
+        return '/admin/scrutiny/applications' 
+    }
+    else {
+        return '/dashboard'
+    }
 }
 
 export function getFullname(firstName, lastName) {
@@ -54,6 +63,8 @@ export const getRoleNameById = (id) => {
         2: "ADMIN",
         3: "OPERATOR",
         4: "PRIMARY",
+        5: "DEAN",
+        6: "REVIEWER"
     };
     return roles[id];
 };

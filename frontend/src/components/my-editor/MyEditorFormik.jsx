@@ -4,15 +4,23 @@ import { useField, useFormikContext } from 'formik';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
-const MyEditorFormik = ({ name, label, required}) => {
+const MyEditorFormik = ({ name, label, required }) => {
   const [field, meta] = useField(name);
   const { setFieldValue } = useFormikContext();
 
   const formats = [
     'header',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'indent',
-    'link', 'image'
+    'bold',
+    'italic',
+    'underline',
+    'strike',
+    'blockquote',
+    'list',
+    'indent',
+    'link',
+    'image',
+    'code',
+    'code-block',
   ];
 
   const modules = {
@@ -21,13 +29,14 @@ const MyEditorFormik = ({ name, label, required}) => {
       ['bold', 'italic', 'underline', 'strike', 'blockquote'],
       [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
       ['link', 'image'],
+      ['code-block'],
       ['clean'],
     ],
   };
-
+  
   return (
     <div>
-        <label htmlFor={name} className="form-label">{label || ''}<span className="text-danger">{required? '*' : ''}</span></label>
+      <label htmlFor={name} className="form-label">{label || ''}<span className="text-danger">{required ? '*' : ''}</span></label>
       <ReactQuill
         theme="snow"
         id={name}

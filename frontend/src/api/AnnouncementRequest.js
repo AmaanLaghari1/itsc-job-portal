@@ -87,3 +87,70 @@ export const downloadCandidatesReport = async (payload) => {
     }
   );
 };
+
+export const assignAnnouncement = (formdata) => {
+    return API.post("assign_user", formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const getAssignedAnnouncements = (formdata) => {
+    return API.post("get_assigned_announcements", formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const removeAssignedAnnouncement = (formdata) => {
+    return API.post("delete_assigned_announcement", formdata, {
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const addNoticeAlertMsg = (formdata) => {
+    return API.post("notice_alert/add", formdata, {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const updateNoticeAlertMsg = (formdata) => {
+    return API.post("notice_alert/update", formdata, {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const deleteNoticeAlertMsg = (formdata) => {
+    return API.post("notice_alert/delete", formdata, {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const getNoticeAlertMsg = () => {
+    return API.get("notice_alert/get", {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+export const getAllNoticeAlertMsg = () => {
+    return API.get("notice_alert/get_all", {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+}

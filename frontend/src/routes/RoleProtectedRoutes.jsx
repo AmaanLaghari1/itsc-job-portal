@@ -11,7 +11,7 @@ const RoleProtectedRoute = ({ element: Element, path }) => {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  const isAdminRole = [1, 2, 3].includes(userRole)
+  const isAdminRole = [1, 2, 3, 5].includes(userRole)
   const isPrimaryRole = userRole === 4
 
   const isAdminRoute = path?.startsWith('/admin')
@@ -26,7 +26,7 @@ const RoleProtectedRoute = ({ element: Element, path }) => {
   if (isPrimaryRoute && isAdminRole) {
     return <Navigate to="/admin/dashboard" replace />
   }
-
+  
   return <Element />
 }
 

@@ -10,20 +10,20 @@ export default function AppRouter() {
     <>
       <DynamicRoutesLoader onRoutesReady={setRoutes} />
       <React.Suspense fallback={<div><CSpinner className='align-slef-start my-3' color='primary' /></div>}>
-<Routes>
-  {routes.map((r, i) => {
-    if (!r.element) return null
-    return (
-      <Route
-        key={i}
-        path={r.path}  // now normalized: "dashboard", "applications"
-        element={React.createElement(r.element)}
-      />
-    )
-  })}
-  {/* fallback: redirect to dashboard */}
-  <Route path="/" element={<Navigate to="dashboard" replace />} />
-</Routes>
+      <Routes>
+        {routes.map((r, i) => {
+          if (!r.element) return null
+          return (
+            <Route
+              key={i}
+              path={r.path}  // now normalized: "dashboard", "applications"
+              element={React.createElement(r.element)}
+            />
+          )
+        })}
+        {/* fallback: redirect to dashboard */}
+        <Route path="/" element={<Navigate to="dashboard" replace />} />
+      </Routes>
 
       </React.Suspense>
     </>

@@ -15,6 +15,7 @@ import Alert from "../../../components/Alert.js";
 import { useNavigate } from "react-router-dom";
 import { cilPlus } from "@coreui/icons";
 import CIcon from "@coreui/icons-react";
+import AssignAnnouncement from "./AssignAnnouncement.jsx";
 
 const UsersAll = () => {
   const [loader, showLoader] = useState(false);
@@ -117,15 +118,21 @@ const UsersAll = () => {
       ),
       sortable: true,
       wrap: true,
-      style: { width: "50px" },
+      style: { width: "350px" },
     },
     {
       name: "Actions",
       cell: (row) => (
         currentRole === 1 || currentRole === 2 ? (
-          <div className="d-flex align-items-center gap-1">
+          <div className="d-flex align-items-center flex-wrap gap-1">
             <button className="btn btn-outline-success btn-sm my-2" onClick={() => handleView(row, 'role')}>
               Edit Role
+            </button>
+            <button className="btn btn-outline-success btn-sm my-2" 
+            onClick={() => {
+              navigate('/admin/user/assign-announcement', { state: { user: row } })
+            }}>
+              Assign Announcement
             </button>
             <button className="btn btn-outline-secondary btn-sm my-2" onClick={() => handleChangePwd(row)}
               disabled={loading}
@@ -136,21 +143,23 @@ const UsersAll = () => {
             >
               Delete
             </button>
+
           </div>
         ) : '-'
       ),
       ignoreRowClick: true,
-      width: "260px",
+      width: "400px",
     },
   ];
 
   const handleRoleChange = (selectedOption, setFieldValue) => {
     const selectedOpt = selectedOption.target.value;
     setFieldValue('role_id', selectedOpt || '');
-    if (selectedOpt !== 5) {
+    if (selectedOpt != 7) {
       const filtered = users.filter(user => user.user_roles?.some(role => role.ROLE_ID == selectedOpt));
       setFilteredUsers(filtered);
-    } else {
+    }
+    if (selectedOpt == 7) {
       setFilteredUsers(users);
     }
   };
@@ -166,8 +175,9 @@ const UsersAll = () => {
           />
         )}
       </div>
+      
       <Formik
-        initialValues={{ role_id: 5 }}
+        initialValues={{ role_id: 7 }}
         validationSchema={Yup.object({})}
       >
         {({ setFieldValue }) => (
@@ -181,11 +191,13 @@ const UsersAll = () => {
                   id="role_id"
                   label=""
                   options={[
-                    { key: 5, value: "All" },
+                    { key: 7, value: "All" },
                     { key: 1, value: "Super Admin" },
                     { key: 2, value: "Admin" },
                     { key: 3, value: "Operator" },
                     { key: 4, value: "Primary" },
+                    { key: 5, value: "Dean" },
+                    { key: 6, value: "Reviewer" },
                   ]}
                   onChange={(selectedOption) => handleRoleChange(selectedOption, setFieldValue)}
                 />
@@ -260,10 +272,6 @@ const UsersAll = () => {
         </div>
       )}
     </div>
-
-
-
-
   );
 };
 
